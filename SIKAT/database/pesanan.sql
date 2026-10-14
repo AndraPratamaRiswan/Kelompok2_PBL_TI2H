@@ -6,9 +6,13 @@ CREATE TABLE pesanan (
     tanggal_pengiriman DATE          NOT NULL,
     jam_pengiriman     TIME          NOT NULL,
     alamat_pengiriman  VARCHAR(255)  NOT NULL,
+    nama_pembeli       VARCHAR(50)   NOT NULL,
     catatan            VARCHAR(255),
-    status_pesanan     VARCHAR(15)   NOT NULL DEFAULT 'Dikonfirmasi',
+    status_pesanan     VARCHAR(15)   NOT NULL DEFAULT 'Belum Dikonfirmasi',
     status_pembayaran  VARCHAR(15)   NOT NULL DEFAULT 'Belum Bayar',
+    total_harga        NUMERIC(12,2) NOT NULL DEFAULT 0,
+    biaya_ongkir       NUMERIC(12,2) NOT NULL DEFAULT 0,
+    created_at         TIMESTAMP     NOT NULL DEFAULT NOW(),
     updated_at         TIMESTAMP     NOT NULL DEFAULT NOW(),
     jumlah_dp          NUMERIC(12,2) NOT NULL DEFAULT 0,  -- diisi manual oleh admin
     CONSTRAINT fk_pesanan_admin
@@ -18,10 +22,11 @@ CREATE TABLE pesanan (
         FOREIGN KEY (id_pembeli) REFERENCES pembeli (id_pembeli)
         ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT chk_pesanan_status
-        CHECK (status_pesanan IN ('Dikonfirmasi', 'Diproses', 'Dikirim', 'Selesai')),
+        CHECK (status_pesanan IN ('Belum Dikonfirmasi', 'Dikonfirmasi', 'Diproses', 'Dikirim', 'Selesai')),
     CONSTRAINT chk_pesanan_pembayaran
         CHECK (status_pembayaran IN ('Belum Bayar', 'DP', 'Lunas')),
     CONSTRAINT chk_pesanan_dp CHECK (jumlah_dp >= 0),
     CONSTRAINT chk_pesanan_tanggal
-        CHECK (tanggal_pengiriman >= tanggal_dipesan::date)
+        CHECK (tanggal_pengiriman >= tanggal_dipesan::date),
+    CONSTRAINT chk_pesanan_no_hp CHECK (no_hp_pesanan ~ '^[0-9]{9,15}$')
 );
