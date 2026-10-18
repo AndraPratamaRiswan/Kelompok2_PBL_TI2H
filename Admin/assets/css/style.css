@@ -120,3 +120,24 @@ button { cursor: pointer; }
     transition: opacity .18s ease, transform .18s ease;
 }
 .toast-message.is-visible { opacity: 1; transform: translateY(0); }
+
+/* fitur 2, kartu statistik */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 8px;
+}
+.stat-card {
+    min-height: 61px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 8px 11px 7px;
+    border-radius: 6px;
+}
+.stat-card--soft { background: #c4d3e0; color: #34475a; }
+.stat-card--dark { background: #6b7a8d; color: #f5f7fa; }
+.stat-card p { margin: 0; font-size: 13px; font-weight: 600; }
+.stat-card strong { margin-top: 7px; font-size: 14px; font-weight: 700; }
+.stat-card--soft strong { color: #466783; }
