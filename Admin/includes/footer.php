@@ -1,4 +1,4 @@
-fitur 1, footer dan penutup struktur html
+<!-- fitur 1, footer dan penutup struktur html -->
 </main>
     <footer class="site-footer">
         <span>SIKAT · Sistem Informasi Katering</span>

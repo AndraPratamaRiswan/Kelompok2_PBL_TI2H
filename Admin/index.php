@@ -97,6 +97,11 @@ require __DIR__ . '/includes/header.php';
         <h1>Dashboard</h1>
         <p class="page-description">Pantau pesanan dan aktivitas SIKAT hari ini.</p>
     </div>
+    <!-- fitur 5, tombol cetak laporan (demo) -->
+    <button class="button button-report" id="printReport" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/><path d="M17 11h.01"/></svg>
+        Cetak Laporan
+    </button>
 </section>
 
 <!-- fitur 2, kartu statistik -->
@@ -211,3 +216,5 @@ require __DIR__ . '/includes/header.php';
     <!-- fitur 4, penanda data pesanan dummy -->
     <p class="prototype-note"><span class="prototype-dot"></span> Data dummy, belum terhubung ke database PostgreSQL.</p>
 </section>
+
+<?php require __DIR__ . '/includes/footer.php'; ?>

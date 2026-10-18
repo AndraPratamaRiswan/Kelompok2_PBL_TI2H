@@ -29,7 +29,12 @@ button, select { font: inherit; }
 button { cursor: pointer; }
 
 /* fitur 1, header dan navigasi */
+/* new sticky navbar */
 .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
     min-height: 62px;
     display: flex;
     align-items: center;
@@ -81,7 +86,7 @@ button { cursor: pointer; }
     padding: 14px 28px 18px;
 }
 
-/* fitur 1, judul halaman dan tombol cetak */
+/* fitur 1, fitur 5, judul halaman dan tombol cetak */
 .page-heading {
     display: flex;
     justify-content: space-between;
@@ -273,3 +278,13 @@ button { cursor: pointer; }
 .order-actions .button { width: 100%; padding-inline: 6px; }
 .prototype-note { display: flex; align-items: center; gap: 6px; margin: 8px 2px 0; color: #4f6b85; font-size: 10px; }
 .prototype-dot { width: 6px; height: 6px; border-radius: 50%; background: #6585a1; }
+
+/* fitur 5, cetak laporan */
+@media print {
+    body { padding: 0; background: #fff; }
+    .app-frame { border: 0; box-shadow: none; }
+    .topbar { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .button-report, .topnav, .orders-actions, .site-footer, .prototype-note { display: none !important; }
+    .main-content { width: 100%; max-width: none; padding: 16px; }
+    .stat-card, .panel, .orders-panel, .order-row { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
