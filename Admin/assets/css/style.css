@@ -141,3 +141,37 @@ button { cursor: pointer; }
 .stat-card p { margin: 0; font-size: 13px; font-weight: 600; }
 .stat-card strong { margin-top: 7px; font-size: 14px; font-weight: 700; }
 .stat-card--soft strong { color: #466783; }
+
+/* fitur 3, analisis dashboard */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1.18fr 1fr;
+    gap: 14px;
+    margin-bottom: 9px;
+}
+.panel { min-width: 0; padding: 10px 11px 9px; border-radius: 6px; background: #bfd0df; }
+.panel-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.panel h2, .orders-panel h2 { margin: 0; font-size: 14px; line-height: 1.25; font-weight: 700; }
+.panel-subtitle { margin: 3px 0 0; color: #687c90; font-size: 10px; }
+.mini-tag { padding: 3px 6px; border-radius: 4px; background: rgba(255,255,255,.45); color: #5d7185; font-size: 9px; white-space: nowrap; }
+
+/* fitur 3, tren pesanan mingguan */
+.bar-chart {
+    height: 118px;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 12px;
+    padding: 7px 6px 0;
+}
+.bar-chart__item { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.bar-chart__track { flex: 1; width: 100%; max-width: 17px; display: flex; align-items: flex-end; }
+.bar-chart__bar { display: block; width: 100%; min-height: 12px; background: #d9dce0; transition: height .25s ease; }
+.bar-chart__label { color: #55728c; font-size: 10px; font-weight: 600; }
+
+/* fitur 3, menu terlaris */
+.popular-list { display: grid; gap: 11px; margin-top: 12px; }
+.popular-item { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 8px; align-items: center; }
+.popular-item__name { overflow: hidden; color: #46596d; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.popular-item__track { height: 9px; overflow: hidden; border-radius: 99px; background: #dce1e6; }
+.popular-item__track span { display: block; height: 100%; border-radius: inherit; background: #6d7d90; }
