@@ -31,4 +31,23 @@
             }
         });
     }
+
+    // fitur 7, notifikasi toast
+    const toast = document.getElementById('toastMessage');
+    let toastTimer;
+    // notifikasi toast
+    function showToast(message) {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('is-visible');
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => toast.classList.remove('is-visible'), 3200);
+    }
+    // umpan balik tombol demo
+    document.querySelectorAll('[data-toast]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            showToast(button.dataset.toast || 'Fitur ini belum diaktifkan.');
+        });
+    });
 })();

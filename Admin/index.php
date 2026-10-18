@@ -217,4 +217,7 @@ require __DIR__ . '/includes/header.php';
     <p class="prototype-note"><span class="prototype-dot"></span> Data dummy, belum terhubung ke database PostgreSQL.</p>
 </section>
 
+<!-- fitur 7, notifikasi toast -->
+<div class="toast-message" id="toastMessage" role="status" aria-live="polite"></div>
+
 <?php require __DIR__ . '/includes/footer.php'; ?>

@@ -104,7 +104,7 @@ button { cursor: pointer; }
 .eyebrow { display: none; }
 .page-description { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
 
-/* fitur 1, footer dan notif toast */
+/* fitur 1, fitur 7, footer dan notif toast */
 .site-footer { display: flex; justify-content: space-between; gap: 10px; padding: 0 28px 10px; color: #8190a0; font-size: 10px; }
 .toast-message {
     position: fixed;
@@ -319,3 +319,5 @@ button { cursor: pointer; }
 .profile-menu strong, .profile-menu span { display: block; }
 .profile-menu span { margin: 2px 0 10px; color: var(--muted); font-size: 12px; }
 .profile-menu button { width: 100%; padding: 8px; border: 0; border-radius: 6px; background: #edf3f8; text-align: left; color: var(--text); }
+
+
