@@ -1,0 +1,122 @@
+/* fitur 1, kerangka dan tema dasar */
+:root {
+    --navy: #1f2f43;
+    --navy-soft: #34485f;
+    --text: #2c3a4b;
+    --muted: #64758a;
+    --page: #e3ebf3;
+    --panel: #c5d5e4;
+    --panel-blue: #b5d8f2;
+    --line: #d8e2ec;
+    --white: #ffffff;
+    --accent: #436681;
+    --shadow: 0 8px 22px rgba(32, 51, 72, .07);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #d4e1ee;
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+button, select { font: inherit; }
+button { cursor: pointer; }
+
+/* fitur 1, header dan navigasi */
+.topbar {
+    min-height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 8px clamp(20px, 9%, 72px);
+    background: var(--navy);
+    color: #f7f9fc;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    color: inherit;
+    text-decoration: none;
+    line-height: 1.12;
+}
+
+.brand__name {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+.brand__subtitle { font-size: 13px; color: #e1e8ef; }
+
+.topnav {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 3vw, 32px);
+}
+
+.topnav__link {
+    color: #e8edf3;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color .18s ease;
+}
+.topnav__link:hover, .topnav__link.is-active { color: #fff; }
+
+/* fitur 1, area konten */
+.main-content {
+    width: min(100%, 900px);
+    margin: 0 auto;
+    padding: 14px 28px 18px;
+}
+
+/* fitur 1, judul halaman dan tombol cetak */
+.page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+.page-heading h1 {
+    margin: 0;
+    color: #29394d;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(24px, 3vw, 29px);
+    line-height: 1.1;
+}
+.eyebrow { display: none; }
+.page-description { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+
+/* fitur 1, footer dan notif toast */
+.site-footer { display: flex; justify-content: space-between; gap: 10px; padding: 0 28px 10px; color: #8190a0; font-size: 10px; }
+.toast-message {
+    position: fixed;
+    z-index: 20;
+    right: 22px;
+    bottom: 22px;
+    max-width: min(360px, calc(100vw - 32px));
+    padding: 11px 15px;
+    border: 1px solid #3a526a;
+    border-radius: 8px;
+    background: #24374b;
+    box-shadow: 0 8px 24px rgba(18, 33, 49, .2);
+    color: #fff;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity .18s ease, transform .18s ease;
+}
+.toast-message.is-visible { opacity: 1; transform: translateY(0); }
