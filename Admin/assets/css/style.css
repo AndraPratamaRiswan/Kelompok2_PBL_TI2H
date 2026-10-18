@@ -320,4 +320,55 @@ button { cursor: pointer; }
 .profile-menu span { margin: 2px 0 10px; color: var(--muted); font-size: 12px; }
 .profile-menu button { width: 100%; padding: 8px; border: 0; border-radius: 6px; background: #edf3f8; text-align: left; color: var(--text); }
 
-
+/* fitur 8, responsif layar hp/tablet */
+@media (min-width: 1100px) {
+    .main-content { padding-top: 19px; }
+    .stats-grid { gap: 16px; }
+    .stat-card { min-height: 68px; padding: 10px 13px; }
+    .analytics-grid { gap: 16px; }
+    .bar-chart { height: 135px; }
+    .popular-list { gap: 13px; }
+    .orders-panel { padding: 12px 14px 11px; }
+    .order-row { min-height: 70px; }
+}
+/* tablet */
+@media (max-width: 700px) {
+    body { padding: 0; }
+    .app-frame { min-height: 100vh; border-width: 0; }
+    .topbar { align-items: flex-start; padding: 13px 17px; gap: 14px; }
+    .brand__name { font-size: 22px; }
+    .topnav { justify-content: flex-end; flex-wrap: wrap; gap: 10px 14px; padding-top: 4px; }
+    .topnav__link { font-size: 11px; }
+    .profile-button { width: 29px; height: 29px; }
+    .main-content { padding: 18px 16px 15px; }
+    .page-heading { align-items: flex-start; }
+    .page-heading h1 { font-size: 25px; }
+    .page-description { max-width: 250px; font-size: 11px; }
+    .button-report { padding: 7px 9px; font-size: 11px; }
+    .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .stat-card { min-height: 66px; }
+    .analytics-grid { grid-template-columns: 1fr; gap: 9px; }
+    .bar-chart { height: 126px; }
+    .popular-list { gap: 10px; }
+    .orders-toolbar { align-items: flex-start; flex-direction: column; }
+    .orders-title-group { width: 100%; justify-content: space-between; }
+    .orders-actions { width: 100%; justify-content: space-between; }
+    .order-row { grid-template-columns: minmax(0, 1fr) 54px; gap: 8px; padding: 9px; }
+    .order-info { grid-column: 1; }
+    .payment-badge { grid-column: 2; grid-row: 1; }
+    .order-actions { grid-column: 1 / -1; grid-row: 2; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .order-actions .button { min-width: 0; font-size: 11px; }
+    .site-footer { padding-inline: 16px; }
+}
+/* hp kecil */
+@media (max-width: 400px) {
+    .topbar { flex-direction: column; align-items: stretch; }
+    .topnav { justify-content: space-between; }
+    .page-heading { gap: 9px; }
+    .page-heading h1 { font-size: 22px; }
+    .button-report { max-width: 112px; white-space: normal; line-height: 1.2; }
+    .stat-card p { font-size: 12px; }
+    .popular-item { grid-template-columns: 90px minmax(0, 1fr); }
+    .orders-title-group { gap: 6px; }
+    .month-filter { max-width: 145px; }
+}
