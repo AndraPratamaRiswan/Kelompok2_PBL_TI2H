@@ -13,4 +13,22 @@
     if (printButton) {
         printButton.addEventListener('click', () => window.print());
         }
+
+    // fitur 6, pop up profil admin (demo)
+    const profileButton = document.getElementById('profileButton');
+    const profileMenu = document.getElementById('profileMenu');
+    if (profileButton && profileMenu) {
+        profileButton.addEventListener('click', () => {
+            const willOpen = profileMenu.hidden;
+            profileMenu.hidden = !willOpen;
+            profileButton.setAttribute('aria-expanded', String(willOpen));
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.profile-wrap')) {
+                profileMenu.hidden = true;
+                profileButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
 })();
