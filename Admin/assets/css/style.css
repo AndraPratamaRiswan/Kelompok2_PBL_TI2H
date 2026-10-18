@@ -175,3 +175,101 @@ button { cursor: pointer; }
 .popular-item__name { overflow: hidden; color: #46596d; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .popular-item__track { height: 9px; overflow: hidden; border-radius: 99px; background: #dce1e6; }
 .popular-item__track span { display: block; height: 100%; border-radius: inherit; background: #6d7d90; }
+
+/* fitur 4, style tombol (mungkin dipakai pada fitur lain) */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 31px;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: transform .15s ease, background .15s ease;
+}
+.button:active { transform: translateY(1px); }
+.button svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.button-report { background: #d4d9df; color: #303b48; }
+.button-report:hover { background: #c7d0da; }
+.button-primary { background: #3e5d79; color: #fff; }
+.button-primary:hover { background: #314c65; }
+.button-small { min-height: 28px; padding: 4px 11px; }
+.button-neutral { min-width: 74px; background: #d7d9dc; color: #344151; }
+.button-neutral:hover { background: #c8ced5; }
+
+/* fitur 4, panel dan filter daftar pesanan */
+.orders-panel { padding: 10px 11px 9px; border-radius: 10px; background: var(--panel-blue); }
+.orders-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 5px; }
+.orders-title-group, .orders-actions { display: flex; align-items: center; gap: 12px; }
+.orders-title-group { min-width: 0; }
+.orders-panel h2 { font-size: 14px; font-weight: 500; }
+.orders-panel .panel-subtitle { display: none; }
+.month-filter { display: inline-flex; align-items: center; gap: 5px; max-width: 155px; padding: 4px 7px; border-radius: 6px; background: #e7edf2; color: #394b5e; }
+.month-filter svg { flex: 0 0 auto; width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.month-filter select { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: inherit; font-size: 9px; }
+.text-button { padding: 5px 0; border: 0; background: transparent; color: #334b62; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.text-button span { margin-left: 2px; }
+.order-list {
+    display: grid;
+    gap: 6px;
+
+    max-height: 205px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-right: 4px;
+    align-content: start;
+
+    /* Tampilan scrollbar untuk Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #8296aa #dce5ed;
+}
+
+/* Tampilan scrollbar untuk Chrome dan browser berbasis Chromium */
+.order-list::-webkit-scrollbar {
+    width: 7px;
+}
+
+.order-list::-webkit-scrollbar-track {
+    background: #dce5ed;
+    border-radius: 10px;
+}
+
+.order-list::-webkit-scrollbar-thumb {
+    background: #8296aa;
+    border-radius: 10px;
+}
+
+.order-list::-webkit-scrollbar-thumb:hover {
+    background: #647b92;
+}
+
+/* fitur 4, baris informasi pesanan */
+.order-row {
+    min-height: 63px;
+    display: grid;
+    grid-template-columns: minmax(145px, 1fr) 65px minmax(0, 1.75fr);
+    align-items: center;
+    gap: 10px;
+    padding: 6px 9px;
+    border-radius: 5px;
+    background: #fff;
+}
+.order-info { min-width: 0; }
+.order-number { display: block; margin-bottom: 2px; font-size: 10px; font-weight: 700; }
+.order-meta { display: flex; flex-wrap: wrap; gap: 2px 10px; color: #53667b; font-size: 9px; }
+.order-menu { overflow: hidden; margin: 2px 0 0; color: #465b70; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.order-date { display: block; margin-top: 1px; color: #64778a; font-size: 9px; }
+
+/* fitur 4, status pembayaran dan tanda data dummy */
+.payment-badge { display: inline-flex; align-items: center; justify-content: center; min-height: 27px; padding: 4px 7px; border: 1px solid transparent; border-radius: 6px; font-size: 12px; }
+.payment-badge--paid { border-color: #6c9873; background: #9ab99d; color: #243d2c; }
+.payment-badge--dp { border-color: #f0dc45; background: #fff98e; color: #6d651b; }
+.order-actions { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 7px; }
+.order-actions .button { width: 100%; padding-inline: 6px; }
+.prototype-note { display: flex; align-items: center; gap: 6px; margin: 8px 2px 0; color: #4f6b85; font-size: 10px; }
+.prototype-dot { width: 6px; height: 6px; border-radius: 50%; background: #6585a1; }
