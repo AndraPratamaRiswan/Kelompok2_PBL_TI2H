@@ -1,0 +1,144 @@
+/* Warna yang dipakai di halaman Admin */
+:root {
+    --navy: #1f2f43;
+    --text: #2c3a4b;
+    --muted: #64758a;
+    --page: #e3ebf3;
+    --panel: #c5d5e4;
+    --panel-blue: #b5d8f2;
+    --white: #ffffff;
+}
+
+/* Biar padding dan border ikut dihitung dalam ukuran elemen */
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+
+/* Navbar sticky, tetap terlihat di atas saat halaman discroll */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    min-height: 72px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 10px 5%;
+    background: var(--navy);
+    color: #fff;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+    line-height: 1.15;
+}
+.brand__name { font: 700 30px Georgia, "Times New Roman", serif; }
+.brand__subtitle { font-size: 16px; color: #e1e8ef; }
+
+.topnav { display: flex; align-items: center; gap: 28px; }
+.topnav__link {
+    padding: 8px 0;
+    color: #e8edf3;
+    text-decoration: none;
+    transition: color .15s ease;
+}
+.topnav__link:hover, .topnav__link.is-active { color: #fff; text-decoration: underline; text-underline-offset: 5px; }
+.profile-icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: #d7d9dc;
+    color: #29394d;
+}
+.profile-icon svg { width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-width: 1.4; }
+
+.profile-icon svg { width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-width: 1.4; }
+
+/* Lebar isi halaman dijaga supaya tidak terlalu melebar di monitor besar. */
+.main-content { width: min(1100px, 90%); margin: 0 auto; padding: 20px 0 28px; }
+.page-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.page-heading h1 { margin: 0; font: 700 32px Georgia, "Times New Roman", serif; }
+.page-description { margin: 5px 0 0; color: var(--muted); }
+
+/* Tombol dibuat sederhana. Hover hanya mengubah warna latar. */
+.button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    padding: 6px 13px;
+    border: 0;
+    border-radius: 7px;
+    background: #d7d9dc;
+    color: var(--text);
+    transition: background .15s ease;
+}
+.button:hover { background: #c5cbd2; }
+.button-primary { background: #3e5d79; color: #fff; }
+.button-primary:hover { background: #314c65; }
+.button-report { background: #d7d9dc; }
+.button-neutral { min-width: 64px; }
+.button-delete { background: #f0d6d5; color: #823b39; }
+.button-delete:hover { background: #e7c3c1; }
+
+/* Empat kartu ringkasan dashboard. */
+.stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 14px; }
+.stat-card { min-height: 82px; display: flex; flex-direction: column; justify-content: space-between; padding: 12px 14px; border-radius: 8px; }
+.stat-card p { margin: 0; font-size: 15px; font-weight: 600; }
+.stat-card strong { margin-top: 8px; font-size: 18px; }
+.stat-card--soft { background: #c5d5e4; }
+.stat-card--dark { background: #6b7a8d; color: #fff; }
+
+/* Dua panel: grafik batang dan menu terlaris. */
+.analytics-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; margin-bottom: 14px; }
+.panel { min-width: 0; padding: 14px; border-radius: 8px; background: #bfd0df; }
+.panel h2, .orders-panel h2 { margin: 0; font-size: 17px; }
+.bar-chart { height: 170px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; align-items: stretch; padding: 14px 6px 0; }
+.bar-chart__item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.bar-chart__track { flex: 1; width: 100%; max-width: 26px; display: flex; align-items: flex-end; }
+.bar-chart__bar { display: block; width: 100%; min-height: 10px; background: #d9dce0; }
+.bar-chart__label { color: #55728c; font-weight: 600; }
+.popular-list { display: grid; gap: 17px; margin-top: 18px; }
+.popular-item { display: grid; grid-template-columns: 105px minmax(0, 1fr); gap: 12px; align-items: center; }
+.popular-item__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.popular-item__track { height: 10px; overflow: hidden; border-radius: 20px; background: #dce1e6; }
+.popular-item__track span { display: block; height: 100%; border-radius: inherit; background: #6d7d90; }
+
+/* Daftar pesanan: area biru dengan isi yang bisa digulir. */
+.orders-panel { padding: 14px; border-radius: 10px; background: var(--panel-blue); }
+.orders-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 10px; }
+.orders-title-group, .orders-actions { display: flex; align-items: center; gap: 12px; }
+.orders-panel h2 { font-weight: 500; }
+.simple-select { min-width: 150px; padding: 7px 9px; border: 1px solid #ccd4dc; border-radius: 7px; background: #f2f5f8; color: var(--text); }
+.text-button { padding: 6px 0; border: 0; background: transparent; color: #334b62; }
+.text-button:hover { text-decoration: underline; }
+.order-list { display: grid; gap: 8px; max-height: 310px; overflow-y: auto; padding-right: 5px; }
+.order-row { display: grid; grid-template-columns: minmax(210px, 1fr) 66px minmax(240px, 1fr); align-items: center; gap: 12px; padding: 10px; border-radius: 7px; background: #fff; }
+.order-info { display: grid; gap: 3px; min-width: 0; }
+.order-info strong { font-size: 13px; }
+.order-info span, .order-info small { overflow-wrap: anywhere; font-size: 11px; }
+.order-info small { color: var(--muted); }
+.status-pill { padding: 6px; border: 1px solid transparent; border-radius: 7px; text-align: center; }
+.status-pill--paid { border-color: #7da284; background: #a6c4a9; }
+.status-pill--dp { border-color: #f0e65c; background: #fff98e; }
+.order-buttons { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
+.process-status { font-size: 12px; color: var(--muted); }
+.prototype-note { margin: 10px 0 0; color: #526b81; font-size: 12px; }
+.site-footer { display: flex; justify-content: space-between; gap: 12px; padding: 0 5% 18px; color: #78899a; font-size: 12px; }
