@@ -222,7 +222,7 @@ require __DIR__ . '/includes/header.php';
         <form id="orderForm">
             <input type="hidden" id="orderId">
             <div class="form-grid">
-                <!-- F04.3.1 — IDENTITAS PEMESAN: nomor WhatsApp dan nama. -->
+                <!-- fitur 4, nomor WhatsApp dan nama. -->
                 <label class="form-field">
                     <span>Nomor / WhatsApp <b>*</b></span>
                     <input id="orderPhone" name="nomor" type="tel" placeholder="Contoh: 081234567890" required>
@@ -232,8 +232,8 @@ require __DIR__ . '/includes/header.php';
                     <input id="orderName" name="nama" type="text" placeholder="Nama pelanggan" required>
                 </label>
 
-                <!-- F04.3.2 — PILIHAN MENU DAN COUNTER KUANTITAS.
-                     Harga satuan disimpan pada data-price untuk dihitung oleh JavaScript. -->
+                <!-- fitur 4, dropdown menu dan counter qty.
+                     Harga satuan disimpan pada data price untuk dihitung oleh JawaScript. -->
                 <label class="form-field">
                     <span>Menu yang dipesan <b>*</b></span>
                     <select id="orderMenu" name="menu" required>
@@ -256,7 +256,7 @@ require __DIR__ . '/includes/header.php';
                     </div>
                 </div>
 
-                <!-- F04.3.3 — STATUS PESANAN DAN STATUS PEMBAYARAN. -->
+                <!-- fitur 4, status pesanan dan status bayar -->
                 <label class="form-field">
                     <span>Status Pesanan <b>*</b></span>
                     <select id="orderStatus" required>
@@ -274,7 +274,7 @@ require __DIR__ . '/includes/header.php';
                     </select>
                 </label>
 
-                <!-- F04.3.4 — TANGGAL DAN JAM PENGIRIMAN. -->
+                <!-- fitur 4, tanggal dan jam ngirim -->
                 <label class="form-field">
                     <span>Tanggal <b>*</b></span>
                     <input id="orderDate" type="date" required>
@@ -284,8 +284,8 @@ require __DIR__ . '/includes/header.php';
                     <input id="orderTime" type="time" required>
                 </label>
 
-                <!-- F04.3.5 — ONGKIR DAN UANG MUKA (DP).
-                     Field DP ditampilkan dan diwajibkan hanya jika status pembayaran DP. -->
+                <!-- fitur 4, ongkir dan dp).
+                     kotak field DP ditampilkan dan diwajibkan hanya jika status pembayaran DP. -->
                 <label class="form-field">
                     <span>Ongkir (Rp)</span>
                     <input id="shippingCost" type="number" min="0" step="1000" placeholder="15000" value="0">
@@ -295,7 +295,7 @@ require __DIR__ . '/includes/header.php';
                     <input id="dpAmount" type="number" min="0" step="1000" placeholder="Contoh: 100000" value="0">
                 </label>
 
-                <!-- F04.3.6 — ALAMAT DAN CATATAN KHUSUS PEMESAN. -->
+                <!-- fitur 4, alamat dan note psanan -->
                 <label class="form-field form-field--full">
                     <span>Alamat Pengiriman</span>
                     <input id="orderAddress" type="text" placeholder="Alamat pengiriman pelanggan">
@@ -305,8 +305,8 @@ require __DIR__ . '/includes/header.php';
                     <textarea id="orderNotes" rows="2" placeholder="Catatan khusus untuk pesanan"></textarea>
                 </label>
             </div>
-            <!-- F04.3.7 — PREVIEW NILAI DAN TOMBOL AKSI FORM.
-                 Tombol Simpan masih menyimpan ke array JavaScript sementara (demo). -->
+            <!-- fitur 4, preview nilai dan tombol simpan
+                 tombol simpan masih menyimpan ke array JavaScript sementara (demo). -->
             <div class="form-total" id="orderTotalPreview">Estimasi subtotal menu: Rp0</div>
             <div class="modal-footer modal-footer--center">
                 <button class="button button-primary modal-save" type="submit" id="saveOrderButton">Simpan (Demo)</button>
@@ -316,7 +316,7 @@ require __DIR__ . '/includes/header.php';
     </section>
 </div>
 
-<!-- F04.4 — OVERLAY KONFIRMASI PEMBATALAN FORM
+<!-- fitur 4, overlay konfirmasi batal form
      Kembali menutup konfirmasi saja; Ya membuang isian dan menutup form. -->
 <div class="modal-overlay modal-overlay--confirm" id="confirmCloseModal" hidden>
     <section class="confirm-panel" role="alertdialog" aria-modal="true" aria-labelledby="confirmCloseTitle" aria-describedby="confirmCloseMessage">
@@ -330,8 +330,8 @@ require __DIR__ . '/includes/header.php';
     </section>
 </div>
 
-     <!-- F04.5 — OVERLAY DETAIL PESANAN (READ-ONLY)
-     Modal ini hanya menampilkan data; tidak menyediakan kontrol untuk mengedit. -->
+     <!-- fitur 4, overlay detail ppesanan (READ ONLY)
+     cuman menampilkan data pada pesanan tersebut, tidak bisa edit -->
 
 <div class="modal-overlay" id="detailModal" hidden>
     <section class="modal-panel modal-panel--detail" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
@@ -343,13 +343,13 @@ require __DIR__ . '/includes/header.php';
             </div>
             <button class="modal-close" type="button" data-close-detail aria-label="Tutup detail">×</button>
         </header>
-        <!-- F04.5.1 — BADGE STATUS PESANAN DAN PEMBAYARAN. -->
+        <!--fitur 4, status pesanan dan pembayaran -->
         <div class="detail-status-row">
             <span class="detail-status" id="detailOrderStatus">Status pesanan</span>
             <span class="detail-status detail-status--payment" id="detailPaymentStatus">Status pembayaran</span>
         </div>
         <div class="detail-grid">
-            <!-- F04.5.2 — RINGKASAN PEMESAN DAN JADWAL KIRIM. -->
+            <!-- fitur 4, ringkasan pemesan dan jadwal kirim -->
             <section class="detail-card">
                 <h3>Informasi Pemesan & Pengiriman</h3>
                 <dl>
@@ -360,7 +360,7 @@ require __DIR__ . '/includes/header.php';
                     <div><dt>Jam Kirim</dt><dd id="detailTime">-</dd></div>
                 </dl>
             </section>
-            <!-- F04.5.3 — RINCIAN MENU, ONGKIR, DP, DAN TOTAL. -->
+            <!-- fitur 4, rincian menu, ongkir, dp, dan total -->
             <section class="detail-card">
                 <h3>Ringkasan Pembayaran</h3>
                 <dl>
@@ -373,7 +373,7 @@ require __DIR__ . '/includes/header.php';
                     <div class="detail-total"><dt>Total</dt><dd id="detailTotal">-</dd></div>
                 </dl>
             </section>
-            <!-- F04.5.4 — CATATAN PESANAN HANYA UNTUK DIBACA. -->
+            <!-- fitur 4, catatan pesanan -->
             <section class="detail-card detail-card--notes">
                 <h3>Catatan Pesanan</h3>
                 <p id="detailNotes">Tidak ada catatan.</p>
@@ -385,8 +385,7 @@ require __DIR__ . '/includes/header.php';
     </section>
 </div>
 
-<!-- F05.1 — OVERLAY CETAK LAPORAN KEUANGAN
-     Judul dan identitas toko tampil di header laporan. -->
+<!-- fitur 5, overlay cetak laporan -->
 <div class="modal-overlay" id="reportModal" hidden>
     <section class="modal-panel modal-panel--report" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
         <header class="report-heading">
@@ -399,7 +398,7 @@ require __DIR__ . '/includes/header.php';
             <button class="modal-close" type="button" data-close-report aria-label="Tutup laporan">×</button>
         </header>
         <div class="report-content" id="reportPrintableArea">
-            <!-- F05.2 — FILTER PERIODE BULAN DAN KETERANGAN STATUS.
+            <!-- fitur 5, filter periode bulan dan keterangan status
                  Rekap hanya menghitung pesanan berstatus Selesai. -->
             <div class="report-period-row">
                 <label for="reportMonthFilter">Periode laporan</label>
@@ -410,13 +409,13 @@ require __DIR__ . '/includes/header.php';
                 </select>
                 <span class="report-status-note">Hanya pesanan berstatus Selesai</span>
             </div>
-            <!-- F05.3 — TIGA KARTU RINGKASAN: TOTAL QTY, JENIS MENU, PENDAPATAN. -->
+            <!-- fitur 5, 3 card ringkasan (kek di figma) pada cetak laporan -->
             <div class="report-summary-grid">
                 <article class="report-summary-card"><span>Total Quantity</span><strong id="reportTotalQty">0</strong><small>box / porsi / unit</small></article>
                 <article class="report-summary-card"><span>Jenis Menu</span><strong id="reportMenuKinds">0</strong><small>menu berbeda</small></article>
                 <article class="report-summary-card report-summary-card--dark"><span>Total Pendapatan</span><strong id="reportTotalIncome">Rp0</strong><small>dari pesanan selesai</small></article>
             </div>
-            <!-- F05.4 — TABEL DETAIL TRANSAKSI DAN BARIS TOTAL. -->
+            <!-- fitur 5, tabel detail transaksi dan baris total -->
             <div class="report-table-wrap">
                 <table class="report-table">
                     <thead><tr><th>Tanggal</th><th>Menu</th><th>Qty</th><th>Harga Satuan</th><th>Total</th></tr></thead>
@@ -427,8 +426,8 @@ require __DIR__ . '/includes/header.php';
             </div>
             <p class="report-footnote">Laporan ini dibuat dari data dummy untuk keperluan demonstrasi SIKAT.</p>
         </div>
-        <!-- F05.5 — TOMBOL TUTUP DAN UNDUH PDF.
-             Unduh PDF dibuat oleh JavaScript dari periode aktif, tanpa library eksternal. -->
+        <!-- fitur 5, tombol tutup dan tombol unduh laporan
+             Unduh PDF dibuat oleh JavaScript dari periode aktif -->
         <div class="modal-footer report-actions">
             <button class="button button-quiet" type="button" data-close-report>Batal</button>
             <button class="button button-primary" type="button" id="downloadReportPdf">
@@ -442,8 +441,8 @@ require __DIR__ . '/includes/header.php';
 <!-- fitur 7, notifikasi toast -->
 <div class="toast-message" id="toastMessage" role="status" aria-live="polite"></div>
 
-<!-- F04.1 — MENYERAHKAN ARRAY PESANAN PHP KE JAVASCRIPT.
-     Data ini hanya salinan awal; perubahan berikutnya berlangsung di memori browser. -->
+<!-- fitur 4, menyerahkan array pesanan php ke js
+     Data ini hanya salinan awal, perubahan berikutnya berlangsung di memori browser -->
 <script>
     window.sikatOrders = <?= json_encode($daftarPesanan, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
 </script>

@@ -1,11 +1,10 @@
 (() => {
     'use strict';
     // Rombak JS
-    // ========================================================
-    // F04.1 — DATA DAN UTILITAS UMUM PESANAN
+ 
+    // fitur 4, DATA DAN UTILITAS UMUM PESANAN
     // Menyiapkan salinan array dummy, format rupiah/tanggal, dan helper tampilan.
-    // Seluruh perubahan hanya di memori browser; refresh mengembalikan data awal.
-    // ========================================================
+    // Seluruh perubahan hanya di memori browser, refresh mengembalikan data awal.
     let orders = Array.isArray(window.sikatOrders) ? window.sikatOrders.map(order => ({ ...order })) : [];
     let toastTimer;
 
@@ -58,10 +57,9 @@
         toastTimer = window.setTimeout(() => toast.classList.remove('is-visible'), 3200);
     }
 
-    // ========================================================
-    // F04.2 — RENDER KARTU DAN FILTER BULAN
+  
+    // fitur 4, render card dan filter bulan
     // Membuat opsi bulan yang diperlukan, menyaring pesanan, lalu merender kartu.
-    // ========================================================
     const orderList = $('#orderList');
     const monthFilter = $('#monthFilter');
     const emptyOrders = $('#emptyOrders');
@@ -113,7 +111,7 @@
     if (monthFilter) monthFilter.addEventListener('change', renderOrderList);
     renderOrderList();
 
-    // F04.3 — AKSI PADA KARTU PESANAN
+    // fitur 4, aksi pada card pesanan
     // Event delegation tetap bekerja setelah daftar dirender ulang: Detail membuka
     // preview, Edit membuka form terisi, dan tombol status menampilkan notifikasi demo.
     if (orderList) {
@@ -133,10 +131,9 @@
         });
     }
 
-    // ========================================================
-    // F04.4 — STATE DAN ELEMEN FORM TAMBAH/EDIT
-    // Kedua aksi memakai form yang sama; ID tersembunyi menentukan mode Edit.
-    // ========================================================
+    
+    // fitur 4, state dan elemen form tambah/edit
+    // Kedua aksi memakai form yang sama, ID tersembunyi menentukan mode Edit
     const orderModal = $('#orderModal');
     const orderForm = $('#orderForm');
     const orderModalTitle = $('#orderModalTitle');
@@ -159,8 +156,8 @@
     const confirmCloseModal = $('#confirmCloseModal');
     let orderModalMode = 'add';
 
-    // F04.4.1 — HARGA SATUAN DAN KUANTITAS TERPILIH
-    // Harga dibaca dari data-price pada opsi menu; jumlah dibaca dari counter.
+    // fitur 4, harga satuan dan kuantitas terpilih
+    // Harga dibaca dari data-price pada opsi menu, jumlah dibaca dari counter
     function selectedUnitPrice() {
         const option = orderMenu?.selectedOptions?.[0];
         return Number(option?.dataset?.price || 0);
@@ -176,7 +173,7 @@
         updateOrderPreview();
     }
 
-    // F04.4.2 — PREVIEW SUBTOTAL DAN VISIBILITAS INPUT DP
+    // fitur 4, PREVIEW SUBTOTAL DAN VISIBILITAS INPUT DP
     // Subtotal mengikuti harga x jumlah; field DP diwajibkan hanya untuk pembayaran DP.
     function updateOrderPreview() {
         const price = selectedUnitPrice();
@@ -192,7 +189,7 @@
         }
     }
 
-    // F04.4.3 — RESET FORM KE NILAI AWAL
+    // fitur 4, RESET FORM KE NILAI AWAL
     // Mengosongkan input dan mengembalikan default sebelum mode Tambah dibuka.
     function resetOrderForm() {
         orderForm?.reset();
@@ -207,7 +204,7 @@
         updateOrderPreview();
     }
 
-    // F04.4.4 — MEMBUKA MODAL TAMBAH ATAU EDIT
+    // fitur 4, MEMBUKA MODAL TAMBAH ATAU EDIT
     // Mode Edit mengisi kembali form dengan data pesanan yang dipilih.
     function openOrderModal(mode, order = null) {
         orderModalMode = mode;
@@ -242,7 +239,7 @@
         window.setTimeout(() => orderPhone?.focus(), 30);
     }
 
-    // F04.4.5 — TOMBOL TAMBAH DAN COUNTER MENU
+    // fitur 4, TOMBOL TAMBAH DAN COUNTER MENU
     // Tombol +/- mengubah kuantitas; memilih menu otomatis memilih jumlah awal 1.
     $('#addOrderButton')?.addEventListener('click', () => openOrderModal('add'));
     $('#quantityMinus')?.addEventListener('click', () => setQuantity(selectedQuantity() - 1));
@@ -254,7 +251,7 @@
     paymentStatus?.addEventListener('change', updateOrderPreview);
     shippingCost?.addEventListener('input', updateOrderPreview);
 
-    // F04.5 — KONFIRMASI SAAT FORM DITUTUP
+    // fitur 4, KONFIRMASI SAAT FORM DITUTUP
     // X, Batal, atau Escape meminta konfirmasi agar isian tidak hilang tanpa sengaja.
     function requestCloseOrderModal() {
         if (orderModal && !orderModal.hidden) confirmCloseModal.hidden = false;
@@ -270,7 +267,7 @@
         showToast('Pengisian pesanan dibatalkan. Perubahan belum disimpan.');
     });
 
-    // F04.6 — VALIDASI DAN SIMPAN DEMO
+    // fitur 4, VALIDASI DAN SIMPAN DEMO
     // Validasi field, lalu menambah/memperbarui array JavaScript (bukan PostgreSQL).
     orderForm?.addEventListener('submit', event => {
         event.preventDefault();
@@ -323,7 +320,7 @@
         document.body.classList.remove('modal-open');
     });
 
-    // F04.7 — MEMBUAT ID PESANAN DEMO BERIKUTNYA
+    // fitur 4, MEMBUAT ID PESANAN DEMO BERIKUTNYA
     // Cari nomor terbesar lalu tambahkan satu untuk membuat ID SKKT baru.
     function nextOrderId() {
         const highest = orders.reduce((max, order) => {
@@ -333,10 +330,9 @@
         return `SKKT-${String(highest + 1).padStart(3, '0')}`;
     }
 
-    // ========================================================
-    // F04.8 — DETAIL PESANAN (READ-ONLY)
+    
+    // fitur 4, DETAIL PESANAN (READ-ONLY)
     // Mengisi komponen detail dari data terpilih tanpa membuka form edit.
-    // ========================================================
     const detailModal = $('#detailModal');
 
     function setText(id, value) {
@@ -373,18 +369,16 @@
         if (!isAnyModalOpen()) document.body.classList.remove('modal-open');
     }));
 
-    // ========================================================
-    // F05.1 — FILTER DATA LAPORAN DAN RINGKASAN
+    // fitur 5, FILTER DATA LAPORAN DAN RINGKASAN
     // Hanya pesanan Selesai pada bulan aktif yang dihitung.
     // Pendapatan menu = qty x harga satuan; ongkir tidak ikut dijumlahkan.
-    // ========================================================
     const reportModal = $('#reportModal');
     const reportMonthFilter = $('#reportMonthFilter');
     const reportTableBody = $('#reportTableBody');
     const reportTableFoot = $('#reportTableFoot');
     const reportEmpty = $('#reportEmpty');
 
-    // F05.1.1 — FILTER BERDASARKAN STATUS DAN BULAN
+    // fitur 5, FILTER BERDASARKAN STATUS DAN BULAN
     function getReportOrders() {
         const month = reportMonthFilter?.value || '';
         return orders
@@ -392,7 +386,7 @@
             .sort((a, b) => String(a.tanggal).localeCompare(String(b.tanggal)));
     }
 
-    // F05.1.2 — HITUNG TOTAL QTY, JENIS MENU, DAN PENDAPATAN
+    // fitur 5, HITUNG TOTAL QTY, JENIS MENU, DAN PENDAPATAN
     function calculateReportSummary(reportOrders) {
         return {
             qty: reportOrders.reduce((sum, order) => sum + (Number(order.qty) || 0), 0),
@@ -401,7 +395,7 @@
         };
     }
 
-    // F05.2 — RENDER KARTU RINGKASAN DAN TABEL LAPORAN
+    // fitur 5, RENDER KARTU RINGKASAN DAN TABEL LAPORAN
     // Nilai kartu, baris tabel, dan footer total dihitung dari data terfilter.
     function renderReport() {
         if (!reportTableBody) return;
@@ -431,7 +425,7 @@
         reportEmpty.hidden = reportOrders.length > 0;
     }
 
-    // F05.2.1 — BUKA/TUTUP OVERLAY DAN GANTI PERIODE
+    // fitur 5, BUKA/TUTUP OVERLAY DAN GANTI PERIODE
     $('#printReport')?.addEventListener('click', () => {
         renderReport();
         reportModal.hidden = false;
@@ -447,11 +441,9 @@
         return [orderModal, confirmCloseModal, detailModal, reportModal].some(modal => modal && !modal.hidden);
     }
 
-    // ========================================================
-    // F05.3 — GENERATOR PDF TANPA LIBRARY EKSTERNAL
+    // fitur 5, GENERATOR PDF TANPA LIBRARY EKSTERNAL
     // Membentuk file PDF berisi identitas toko, periode, ringkasan, rincian, dan total.
-    // ========================================================
-    // F05.3.1 — AMANKAN TEKS UNTUK FORMAT PDF
+    // fitur 5,  AMANKAN TEKS UNTUK FORMAT PDF
     // Mengganti karakter non-ASCII dan melakukan escape tanda kurung/backslash.
     function pdfSafeText(value) {
         return String(value ?? '')
@@ -461,7 +453,7 @@
             .replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
     }
 
-    // F05.3.2 — SUSUN HALAMAN, HEADER, KARTU, DAN TABEL PDF
+    // fitur 5, SUSUN HALAMAN, HEADER, KARTU, DAN TABEL PDF
     // Jika baris banyak, data dibagi ke beberapa halaman.
     function buildReportPdf() {
         const reportOrders = getReportOrders();
@@ -553,7 +545,7 @@
             return commands.join('\n');
         });
 
-        // F05.3.3 — RAKIT STRUKTUR FILE PDF
+        // fitur 5, struktur file pdf
         // Membuat objek halaman, font, tabel referensi xref, dan trailer PDF.
         const objects = [];
         objects[1] = '<< /Type /Catalog /Pages 2 0 R >>';
@@ -585,7 +577,7 @@
         return pdf;
     }
 
-    // F05.4 — UNDUH PDF BERDASARKAN PERIODE AKTIF
+    // fitur 5, UNDUH PDF BERDASARKAN PERIODE AKTIF
     // Membuat Blob PDF, memicu unduhan, lalu membersihkan URL sementara.
     $('#downloadReportPdf')?.addEventListener('click', () => {
         const period = reportMonthFilter?.value || 'semua-periode';
@@ -602,10 +594,8 @@
         showToast('PDF laporan berhasil dibuat dari data dummy.');
     });
 
-    // ========================================================
-    // F06.1 — POPUP PROFIL ADMIN
+    // fitur 6, POPUP PROFIL ADMIN
     // Tombol membuka popup; klik di luar popup menutupnya kembali.
-    // ========================================================
     const profileButton = $('#profileButton');
     const profileMenu = $('#profileMenu');
     if (profileButton && profileMenu) {
@@ -622,10 +612,9 @@
         });
     }
 
-    // ========================================================
-    // F07.1 — NOTIFIKASI TOAST UNTUK AKSI DEMO
+  
+    // fitur 7, NOTIFIKASI TOAST UNTUK AKSI DEMO
     // Menampilkan umpan balik singkat tanpa mengalihkan halaman.
-    // ========================================================
     $$('[data-toast]').forEach(button => {
         button.addEventListener('click', event => {
             event.preventDefault();
@@ -633,9 +622,9 @@
         });
     });
 
-    // F04.2.1 — Tombol Lihat Semua sengaja belum diberi handler sesuai arahan.
+    // fitur 4, Tombol Lihat Semua sengaja belum diberi handler sesuai arahan.
 
-    // F04.9 — TUTUP MODAL DENGAN TOMBOL ESCAPE
+    // fitur 4, TUTUP MODAL DENGAN TOMBOL ESCAPE
     // Form Tambah/Edit tetap meminta konfirmasi; modal baca dan laporan bisa ditutup.
     // Overlay yang sudah tertutup juga membuka kembali scroll halaman bila perlu.
     document.addEventListener('keydown', event => {
@@ -653,7 +642,7 @@
         if (!isAnyModalOpen()) document.body.classList.remove('modal-open');
     });
 
-    // F04.10 / F05.5 — TUTUP DENGAN KLIK AREA GELAP
+    // fitur 4,5 , TUTUP DENGAN KLIK AREA GELAP
     // Form pesanan meminta konfirmasi; Detail dan Laporan ditutup langsung.
     orderModal?.addEventListener('click', event => {
         if (event.target === orderModal) requestCloseOrderModal();
@@ -671,7 +660,7 @@
         }
     });
 
-    // F04.11 / F05.6 — INISIALISASI SAAT HALAMAN DIBUKA
+    // fitur 4, 5, INISIALISASI SAAT HALAMAN DIBUKA
     // Menghitung preview form dan membangun laporan awal dari data dummy.
     updateOrderPreview();
     renderReport();

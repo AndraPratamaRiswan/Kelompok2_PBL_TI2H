@@ -373,10 +373,10 @@ button { cursor: pointer; }
     .month-filter { max-width: 145px; }
 }
 
-/* ============================================================
-   F04.5 — DASAR OVERLAY TAMBAH / EDIT / DETAIL
-   Semua modal masih prototype; data tidak persisten ke database.
-============================================================ */
+
+/* fitur 4, dasar overlay tambah/ edit/ detail
+   Semua modal masih prototype; data tidak persisten ke database. */
+
 [hidden] { display: none !important; }
 
 .modal-overlay {
@@ -407,7 +407,7 @@ button { cursor: pointer; }
     from { opacity: 0; transform: translateY(8px) scale(.99); }
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
-/* F04.6 — HEADER MODAL FORM/DETAIL DAN HEADER LAPORAN. */
+/* fitur 4, header modal form/detail dan header cetak laporan */
 .modal-header, .report-heading {
     display: flex;
     align-items: flex-start;
@@ -447,8 +447,8 @@ button { cursor: pointer; }
 }
 .modal-close:hover { background: #d0dfeb; transform: rotate(4deg); }
 
-/* F04.7.1 — STYLE INPUT FORM DAN FOKUS VALIDASI. */
-/* F04.7 — GRID INPUT, LABEL, DAN KONTROL FORM PESANAN. */
+/* fitur 4, style input form dan fokus validasi */
+/* fitur 4, grid input, label, dan kontrol from pesanan */
 #orderForm { padding: 0 28px 25px; }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px 22px; }
 .form-field { display: flex; min-width: 0; flex-direction: column; gap: 6px; color: #26374a; font-size: 13px; font-weight: 600; }
@@ -501,7 +501,7 @@ button { cursor: pointer; }
 .button-outline { border-color: #b8c8d8; background: #fff; color: #344e68; }
 .button-outline:hover { background: #f1f5f8; }
 
-/* F04.8 — STYLE OVERLAY KONFIRMASI PEMBATALAN FORM. */
+/* fitur 4, style overlay konfirmasi pembatalan form */
 .modal-overlay--confirm { z-index: 1200; background: rgba(17, 26, 36, .26); backdrop-filter: none; }
 .confirm-panel {
     width: min(100%, 380px);
@@ -519,7 +519,7 @@ button { cursor: pointer; }
 .confirm-actions { display: flex; justify-content: center; gap: 10px; }
 .confirm-actions .button { min-width: 105px; }
 
-/* F04.9 — STYLE PREVIEW DETAIL PESANAN READ-ONLY. */
+/* fitur 4, style preview detail pesanan */
 .modal-panel--detail { width: min(100%, 820px); }
 .detail-status-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 28px 17px; }
 .detail-status { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 20px; background: #e4edf5; color: #38536e; font-size: 11px; font-weight: 700; }
@@ -536,9 +536,7 @@ button { cursor: pointer; }
 .detail-card--notes { grid-column: 1 / -1; }
 .detail-card--notes p { margin: 0; color: #43576b; font-size: 12px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
 
-/* ============================================================
-   F05.2 — OVERLAY LAPORAN, FILTER PERIODE, KARTU RINGKASAN, DAN TABEL
-============================================================ */
+/* fitur 5, overlay cetak laporan, filter periode, card laporan, tabel*/
 .modal-panel--report { width: min(100%, 900px); }
 .report-heading { border-bottom: 1px solid #e0e6ec; padding-bottom: 17px; }
 .report-heading h2 { margin-bottom: 8px; }
@@ -574,14 +572,14 @@ button { cursor: pointer; }
 .report-actions .button svg { width: 16px; height: 16px; }
 .empty-orders { margin: 0; padding: 18px; color: #566d82; text-align: center; font-size: 12px; }
 
-/* F04.10 — DETAIL VISUAL KARTU DAN TOMBOL HASIL RENDER JAVASCRIPT. */
+/* fitur 4, detail visual card dan tombol hasil render js */
 .order-row { transition: box-shadow .15s ease; }
 .order-row:hover { box-shadow: 0 2px 8px rgba(33, 54, 76, .08); }
 .order-actions .button { font-size: 11px; }
 .order-actions .button-order-status { background: #dbe5ee; color: #35516b; }
 .order-actions .button-order-status:hover { background: #cbd9e6; }
 
-/* F05.3 — MODE CETAK UNTUK LAPORAN.
+/* fitur 5, mode cetak laporan
    Ini fallback Print browser; tombol Unduh PDF memakai generator JavaScript. */
 @media print {
     @page { size: A4 landscape; margin: 12mm; }
@@ -594,7 +592,7 @@ button { cursor: pointer; }
     #reportModal .report-summary-card, #reportModal .report-table th, #reportModal .report-table tfoot td { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 
-/* F04.11 / F05.4 — RESPONSIVE UNTUK FORM, DETAIL, DAN LAPORAN. */
+/* fitur 4,5, responsif untuk form, detail, dan cetak laporan */
 @media (max-width: 700px) {
     .modal-overlay { align-items: flex-start; padding: 12px; }
     .modal-panel { max-height: calc(100vh - 24px); border-radius: 10px; }
@@ -628,5 +626,5 @@ button { cursor: pointer; }
     .confirm-panel { padding: 23px 17px 19px; }
 }
 
-/* F04.12 / F05.5 — KUNCI SCROLL HALAMAN LATAR SAAT MODAL TERBUKA. */
+/* fitur 4, 5, kunci scroll halaman saat overlay */
 body.modal-open { overflow: hidden; }
