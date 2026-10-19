@@ -2,7 +2,7 @@ CREATE TABLE pesanan (
     id_pesanan         SERIAL        PRIMARY KEY,
     id_admin           INTEGER       NOT NULL,    -- admin yang memproses/mencatat
     id_pembeli         INTEGER       NOT NULL,
-    tanggal_dipesan    TIMESTAMP     NOT NULL DEFAULT NOW(),
+    tanggal_dipesan    DATE          NOT NULL DEFAULT NOW(),
     tanggal_pengiriman DATE          NOT NULL,
     jam_pengiriman     TIME          NOT NULL,
     alamat_pengiriman  VARCHAR(255)  NOT NULL,

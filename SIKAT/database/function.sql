@@ -33,3 +33,35 @@ create or replace function fn_hitung_total(
     return v_total + (select p.biaya_ongkir from pesanan p where p.id_pesanan = p_id_pesanan);
     end;
     $$;
+
+    -- fungsi buat cetak laporan, untuk tanggal disesuaikan oleh backend
+
+create or replace function fn_cetak_laporan(
+    p_tanggal_awal text,
+    p_tanggal_akhir text
+)
+    returns setof v_cetak_laporan_admin
+    language plpgsql
+    as $$
+    begin
+    return query execute format(
+        'select * from v_cetak_laporan_admin where tanggal_dipesan between %L::date and %L::date', p_tanggal_awal, p_tanggal_akhir
+    );
+    end;
+    $$;
+
+--pake ini kalau menu terlarisnya mau dibatasi tangal
+create or replace function fn_menu_terlaris(
+    p_tanggal_awal text,
+    p_tanggal_akhir text
+)
+    returns setof v_menu_terlaris
+    language plpgsql
+    as $$
+    begin
+    return query execute format(
+        'select * from v_menu_terlaris where tanggal_dipesan between %L::date and %L::date', p_tanggal_awal, p_tanggal_akhir
+    );
+    end;
+    $$;
+returns 

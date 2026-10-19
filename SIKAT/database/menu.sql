@@ -8,7 +8,6 @@ CREATE TABLE menu (
     is_tersedia BOOLEAN       NOT NULL DEFAULT TRUE,
     created_at  TIMESTAMP     NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMP     NOT NULL DEFAULT NOW(),
-    kategori    VARCHAR(50)   NOT NULL,
     CONSTRAINT fk_menu_admin
         FOREIGN KEY (id_admin) REFERENCES admin (id_admin)
         ON UPDATE CASCADE ON DELETE RESTRICT,

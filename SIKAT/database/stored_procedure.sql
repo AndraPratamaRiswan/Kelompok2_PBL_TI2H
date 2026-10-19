@@ -136,4 +136,86 @@ exception
     end;
     $$;
 
+create or replace procedure sp_tambah_menu(
+    p_id_admin integer,
+    p_id_kategori integer[],
+    p_nama_menu varchar(100),
+    p_harga numeric(12,2),
+    p_deskripsi varchar(255),
+    p_gambar_menu varchar(255)
+)
+
+    language plpgsql
+    as $$
+    declare 
+    v_id_menu integer;
+    begin 
+    insert into menu (
+        id_admin,
+        nama_menu,
+        deskripsi,
+        harga_menu,
+        gambar_url
+    )
+    values (
+        p_id_admin,
+        p_nama_menu,
+        p_deskripsi,
+        p_harga,
+        p_gambar_menu
+    )
+    returning id_menu into v_id_menu;
+    raise notice 'data menu masuk';
+    insert into kategori_menu (
+        id_menu,
+        id_kategori 
+    )
+    select 
+        v_id_menu,
+        unnest(p_id_kategori);
+
+    raise notice 'relasi kategori dan menu berhasil ditambahkan';
+    end;
+    $$;
+
+    create or replace procedure sp_edit_menu(
+        p_id_menu integer,
+        p_id_kategori integer[],
+        p_nama_menu varchar(100),
+        p_harga numeric(12,2),
+        p_deskripsi varchar(255),
+        p_gambar_menu varchar(255)
+    )
+    
+    language plpgsql
+    as $$
+    begin 
+    update menu
+    set 
+    nama_menu = p_nama_menu,
+    deskripsi = p_deskripsi,
+    harga_menu = p_harga,
+    gambar_url = p_gambar_menu,
+    updated_at = current_timestamp
+    where id_menu = p_id_menu;
+    raise notice 'data pesanan diedit';
+
+    delete from kategori_menu km
+    where km.id_menu = p_id_menu;
+
+     insert into kategori_menu (
+        id_menu,
+        id_kategori 
+    )
+    select 
+        p_id_menu,
+        unnest(p_id_kategori);
+
+    raise notice 'relasi kategori dan menu berhasil diedit kembali';
+    end;
+    $$;
+    
+
+
+
     
