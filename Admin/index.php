@@ -222,7 +222,7 @@ require __DIR__ . '/includes/header.php';
         <form id="orderForm">
             <input type="hidden" id="orderId">
             <div class="form-grid">
-                <!-- LANJUTAN F04.3.1 — IDENTITAS PEMESAN: nomor WhatsApp dan nama. -->
+                <!-- F04.3.1 — IDENTITAS PEMESAN: nomor WhatsApp dan nama. -->
                 <label class="form-field">
                     <span>Nomor / WhatsApp <b>*</b></span>
                     <input id="orderPhone" name="nomor" type="tel" placeholder="Contoh: 081234567890" required>
@@ -232,7 +232,7 @@ require __DIR__ . '/includes/header.php';
                     <input id="orderName" name="nama" type="text" placeholder="Nama pelanggan" required>
                 </label>
 
-                <!-- LANJUTAN F04.3.2 — PILIHAN MENU DAN COUNTER KUANTITAS.
+                <!-- F04.3.2 — PILIHAN MENU DAN COUNTER KUANTITAS.
                      Harga satuan disimpan pada data-price untuk dihitung oleh JavaScript. -->
                 <label class="form-field">
                     <span>Menu yang dipesan <b>*</b></span>
@@ -256,7 +256,7 @@ require __DIR__ . '/includes/header.php';
                     </div>
                 </div>
 
-                <!-- LANJUTAN F04.3.3 — STATUS PESANAN DAN STATUS PEMBAYARAN. -->
+                <!-- F04.3.3 — STATUS PESANAN DAN STATUS PEMBAYARAN. -->
                 <label class="form-field">
                     <span>Status Pesanan <b>*</b></span>
                     <select id="orderStatus" required>
@@ -274,7 +274,7 @@ require __DIR__ . '/includes/header.php';
                     </select>
                 </label>
 
-                <!-- LANJUTAN F04.3.4 — TANGGAL DAN JAM PENGIRIMAN. -->
+                <!-- F04.3.4 — TANGGAL DAN JAM PENGIRIMAN. -->
                 <label class="form-field">
                     <span>Tanggal <b>*</b></span>
                     <input id="orderDate" type="date" required>
@@ -284,7 +284,7 @@ require __DIR__ . '/includes/header.php';
                     <input id="orderTime" type="time" required>
                 </label>
 
-                <!-- LANJUTAN F04.3.5 — ONGKIR DAN UANG MUKA (DP).
+                <!-- F04.3.5 — ONGKIR DAN UANG MUKA (DP).
                      Field DP ditampilkan dan diwajibkan hanya jika status pembayaran DP. -->
                 <label class="form-field">
                     <span>Ongkir (Rp)</span>
@@ -295,7 +295,7 @@ require __DIR__ . '/includes/header.php';
                     <input id="dpAmount" type="number" min="0" step="1000" placeholder="Contoh: 100000" value="0">
                 </label>
 
-                <!-- LANJUTAN F04.3.6 — ALAMAT DAN CATATAN KHUSUS PEMESAN. -->
+                <!-- F04.3.6 — ALAMAT DAN CATATAN KHUSUS PEMESAN. -->
                 <label class="form-field form-field--full">
                     <span>Alamat Pengiriman</span>
                     <input id="orderAddress" type="text" placeholder="Alamat pengiriman pelanggan">
@@ -305,7 +305,7 @@ require __DIR__ . '/includes/header.php';
                     <textarea id="orderNotes" rows="2" placeholder="Catatan khusus untuk pesanan"></textarea>
                 </label>
             </div>
-            <!-- LANJUTAN F04.3.7 — PREVIEW NILAI DAN TOMBOL AKSI FORM.
+            <!-- F04.3.7 — PREVIEW NILAI DAN TOMBOL AKSI FORM.
                  Tombol Simpan masih menyimpan ke array JavaScript sementara (demo). -->
             <div class="form-total" id="orderTotalPreview">Estimasi subtotal menu: Rp0</div>
             <div class="modal-footer modal-footer--center">
@@ -315,6 +315,22 @@ require __DIR__ . '/includes/header.php';
         </form>
     </section>
 </div>
+
+<!-- F04.4 — OVERLAY KONFIRMASI PEMBATALAN FORM
+     Kembali menutup konfirmasi saja; Ya membuang isian dan menutup form. -->
+<div class="modal-overlay modal-overlay--confirm" id="confirmCloseModal" hidden>
+    <section class="confirm-panel" role="alertdialog" aria-modal="true" aria-labelledby="confirmCloseTitle" aria-describedby="confirmCloseMessage">
+        <div class="confirm-icon" aria-hidden="true">i</div>
+        <h2 id="confirmCloseTitle">Batalkan pengisian?</h2>
+        <p id="confirmCloseMessage">Form Anda tidak tersimpan. Apakah Anda yakin ingin membatalkan pengisian?</p>
+        <div class="confirm-actions">
+            <button class="button button-outline" id="returnToFormButton" type="button">Kembali</button>
+            <button class="button button-primary" id="discardFormButton" type="button">Ya</button>
+        </div>
+    </section>
+</div>
+
+
 
 <!-- fitur 7, notifikasi toast -->
 <div class="toast-message" id="toastMessage" role="status" aria-live="polite"></div>
