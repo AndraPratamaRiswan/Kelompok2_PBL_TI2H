@@ -76,7 +76,7 @@ button { cursor: pointer; }
 .page-heading h1 { margin: 0; font: 700 32px Georgia, "Times New Roman", serif; }
 .page-description { margin: 5px 0 0; color: var(--muted); }
 
-/* Tombol dibuat sederhana. Hover hanya mengubah warna latar. */
+/* tombol, hover tombol */
 .button {
     display: inline-flex;
     justify-content: center;
@@ -98,7 +98,7 @@ button { cursor: pointer; }
 .button-delete { background: #f0d6d5; color: #823b39; }
 .button-delete:hover { background: #e7c3c1; }
 
-/* Empat kartu ringkasan dashboard. */
+/* empat kartu ringkasan dashboard. */
 .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 14px; }
 .stat-card { min-height: 82px; display: flex; flex-direction: column; justify-content: space-between; padding: 12px 14px; border-radius: 8px; }
 .stat-card p { margin: 0; font-size: 15px; font-weight: 600; }
@@ -106,7 +106,7 @@ button { cursor: pointer; }
 .stat-card--soft { background: #c5d5e4; }
 .stat-card--dark { background: #6b7a8d; color: #fff; }
 
-/* Dua panel: grafik batang dan menu terlaris. */
+/* grafik tren pesanan dan tren menu */
 .analytics-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; margin-bottom: 14px; }
 .panel { min-width: 0; padding: 14px; border-radius: 8px; background: #bfd0df; }
 .panel h2, .orders-panel h2 { margin: 0; font-size: 17px; }
@@ -121,7 +121,7 @@ button { cursor: pointer; }
 .popular-item__track { height: 10px; overflow: hidden; border-radius: 20px; background: #dce1e6; }
 .popular-item__track span { display: block; height: 100%; border-radius: inherit; background: #6d7d90; }
 
-/* Daftar pesanan: area biru dengan isi yang bisa digulir. */
+/* daftar pesanan, area biru dengan isinya bisa di scroll */
 .orders-panel { padding: 14px; border-radius: 10px; background: var(--panel-blue); }
 .orders-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 10px; }
 .orders-title-group, .orders-actions { display: flex; align-items: center; gap: 12px; }
@@ -142,3 +142,44 @@ button { cursor: pointer; }
 .process-status { font-size: 12px; color: var(--muted); }
 .prototype-note { margin: 10px 0 0; color: #526b81; font-size: 12px; }
 .site-footer { display: flex; justify-content: space-between; gap: 12px; padding: 0 5% 18px; color: #78899a; font-size: 12px; }
+
+/* Tampilan katalog menu */
+.catalog-toolbar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+.catalog-toolbar input { min-width: 0; padding: 9px 12px; border: 1px solid #d0d8e0; border-radius: 8px; background: #f2f5f8; }
+.catalog-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.menu-card { overflow: hidden; display: flex; flex-direction: column; border-radius: 8px; background: #fff; }
+.menu-card img { width: 100%; height: 145px; object-fit: cover; background: #dce5ed; }
+.menu-card__body { display: flex; flex: 1; flex-direction: column; padding: 10px; }
+.menu-card h2 { margin: 0 0 5px; font-size: 18px; }
+.menu-card p { flex: 1; margin: 0 0 12px; color: #526175; font-size: 13px; }
+.menu-card__bottom { display: flex; flex-direction: column; gap: 9px; }
+.menu-card__bottom strong { font-size: 16px; }
+.menu-card__buttons { display: flex; justify-content: flex-end; gap: 7px; }
+
+/* Kalau layar kecil, kartu disusun ke bawah biar gak sesak */
+@media (max-width: 850px) {
+    .main-content { width: 92%; }
+    .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .analytics-grid { grid-template-columns: 1fr; }
+    .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .catalog-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .order-row { grid-template-columns: 1fr auto; }
+    .order-buttons { grid-column: 1 / -1; justify-content: flex-start; flex-wrap: wrap; }
+}
+
+@media (max-width: 520px) {
+    .topbar { align-items: flex-start; padding: 10px 4%; }
+    .brand__name { font-size: 24px; }
+    .brand__subtitle { font-size: 13px; }
+    .topnav { gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .topnav__link { font-size: 12px; }
+    .profile-icon { width: 34px; height: 34px; }
+    .page-heading { align-items: flex-start; }
+    .page-heading h1 { font-size: 27px; }
+    .page-heading .button { font-size: 12px; }
+    .orders-toolbar, .orders-title-group { align-items: flex-start; flex-direction: column; }
+    .orders-actions { align-self: flex-end; }
+    .catalog-toolbar, .catalog-grid { grid-template-columns: 1fr; }
+    .menu-card img { height: 190px; }
+    .site-footer { flex-direction: column; }
+}
