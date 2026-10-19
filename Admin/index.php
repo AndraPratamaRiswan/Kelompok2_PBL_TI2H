@@ -30,58 +30,74 @@ $menuTerlaris = [
 // fitur 4, data dummy daftar pesanan
 $daftarPesanan = [
     [
-        'nomor' => 'Pesanan 1',
-        'telepon' => '0812-6786-0980',
-        'pelanggan' => 'Ibu Narsis',
-        'menu' => 'Nasi Ayam Bakar (50 box)',
-        'tanggal' => '12 Okt 2026',
-        'pembayaran' => 'Lunas',
-        'status' => 'Dikonfirmasi',
+        'id' => 'SKKT-001', 'nomor' => '0812-6786-0980', 'nama' => 'Bu Narsis',
+        'alamat' => 'Malang', 'menu' => 'Nasi Ayam Bakar Sedap', 'qty' => 50,
+        'harga_satuan' => 25000, 'tanggal' => '2026-09-01', 'jam' => '10:40',
+        'status' => 'Selesai', 'pembayaran' => 'Lunas', 'ongkir' => 15000,
+        'dp' => 0, 'catatan' => 'Sambal dipisah, minta diantar tepat pukul 10:40 WIB'
     ],
     [
-        'nomor' => 'Pesanan 2',
-        'telepon' => '0812-6786-0980',
-        'pelanggan' => 'Ibu Sulami',
-        'menu' => 'Nasi Ayam Bakar (50 box)',
-        'tanggal' => '12 Okt 2026',
-        'pembayaran' => 'Lunas',
-        'status' => 'Dikirim',
+        'id' => 'SKKT-002', 'nomor' => '0812-6786-0981', 'nama' => 'Bu Sulami',
+        'alamat' => 'Lowokwaru, Malang', 'menu' => 'Nasi Ayam Geprek Jos', 'qty' => 50,
+        'harga_satuan' => 25000, 'tanggal' => '2026-09-01', 'jam' => '11:00',
+        'status' => 'Selesai', 'pembayaran' => 'Lunas', 'ongkir' => 15000,
+        'dp' => 0, 'catatan' => 'Sambal level sedang'
     ],
     [
-        'nomor' => 'Pesanan 3',
-        'telepon' => '0812-6786-0980',
-        'pelanggan' => 'Ibu Sulami',
-        'menu' => 'Nasi Ayam Bakar (50 box)',
-        'tanggal' => '12 Okt 2026',
-        'pembayaran' => 'DP',
-        'status' => 'Diproses',
+        'id' => 'SKKT-003', 'nomor' => '0812-6786-0982', 'nama' => 'Pak Yanto',
+        'alamat' => 'Blimbing, Malang', 'menu' => 'Nasi Rendang Nyam', 'qty' => 50,
+        'harga_satuan' => 25000, 'tanggal' => '2026-09-02', 'jam' => '11:30',
+        'status' => 'Selesai', 'pembayaran' => 'Lunas', 'ongkir' => 20000,
+        'dp' => 0, 'catatan' => 'Mohon pesanan diberi label'
     ],
     [
-        'nomor' => 'Pesanan 4',
-        'telepon' => '0812-6786-0980',
-        'pelanggan' => 'Ibu Sulami',
-        'menu' => 'Nasi Ayam Bakar (50 box)',
-        'tanggal' => '12 Okt 2026',
-        'pembayaran' => 'DP',
-        'status' => 'Diproses',
+        'id' => 'SKKT-004', 'nomor' => '0812-6786-0983', 'nama' => 'Bu Ratna',
+        'alamat' => 'Klojen, Malang', 'menu' => 'Nasi Kuning', 'qty' => 50,
+        'harga_satuan' => 25000, 'tanggal' => '2026-09-02', 'jam' => '12:00',
+        'status' => 'Selesai', 'pembayaran' => 'Lunas', 'ongkir' => 15000,
+        'dp' => 0, 'catatan' => ''
     ],
     [
-        'nomor' => 'Pesanan 5',
-        'telepon' => '0812-6786-0980',
-        'pelanggan' => 'Ibu Sulami',
-        'menu' => 'Nasi Ayam Bakar (50 box)',
-        'tanggal' => '12 Okt 2026',
-        'pembayaran' => 'Lunas',
-        'status' => 'Dikonfirmasi',
+        'id' => 'SKKT-005', 'nomor' => '0812-6786-0984', 'nama' => 'Ibu Siti',
+        'alamat' => 'Dinoyo, Malang', 'menu' => 'Nasi Ayam Bakar Sedap', 'qty' => 50,
+        'harga_satuan' => 25000, 'tanggal' => '2026-10-12', 'jam' => '10:00',
+        'status' => 'Dikonfirmasi', 'pembayaran' => 'Lunas', 'ongkir' => 15000,
+        'dp' => 0, 'catatan' => 'Pesanan untuk acara keluarga'
     ],
     [
-        'nomor' => 'Pesanan 6',
-        'telepon' => '0812-6786-0980',
-        'pelanggan' => 'Ibu Sulami',
-        'menu' => 'Nasi Ayam Bakar (50 box)',
-        'tanggal' => '12 Okt 2026',
-        'pembayaran' => 'DP',
-        'status' => 'Diproses',
+        'id' => 'SKKT-006', 'nomor' => '0812-6786-0985', 'nama' => 'Ibu Sulami',
+        'alamat' => 'Sukun, Malang', 'menu' => 'Nasi Kuning', 'qty' => 30,
+        'harga_satuan' => 22000, 'tanggal' => '2026-10-12', 'jam' => '13:00',
+        'status' => 'Diproses', 'pembayaran' => 'DP', 'ongkir' => 15000,
+        'dp' => 200000, 'catatan' => 'Jangan terlalu pedas'
+    ],
+    [
+        'id' => 'SKKT-007', 'nomor' => '0812-6786-0986', 'nama' => 'Pak Budi',
+        'alamat' => 'Sawojajar, Malang', 'menu' => 'Snack Box Premium', 'qty' => 25,
+        'harga_satuan' => 22000, 'tanggal' => '2026-10-15', 'jam' => '09:30',
+        'status' => 'Dikirim', 'pembayaran' => 'DP', 'ongkir' => 10000,
+        'dp' => 150000, 'catatan' => 'Hubungi sebelum sampai'
+    ],
+    [
+        'id' => 'SKKT-008', 'nomor' => '0812-6786-0987', 'nama' => 'Bu Dewi',
+        'alamat' => 'Tlogomas, Malang', 'menu' => 'Nasi Ayam Geprek Jos', 'qty' => 40,
+        'harga_satuan' => 25000, 'tanggal' => '2026-10-18', 'jam' => '11:00',
+        'status' => 'Selesai', 'pembayaran' => 'Lunas', 'ongkir' => 15000,
+        'dp' => 0, 'catatan' => ''
+    ],
+    [
+        'id' => 'SKKT-009', 'nomor' => '0812-6786-0988', 'nama' => 'Pak Arif',
+        'alamat' => 'Kedungkandang, Malang', 'menu' => 'Tumpeng Mini', 'qty' => 5,
+        'harga_satuan' => 150000, 'tanggal' => '2026-08-21', 'jam' => '08:00',
+        'status' => 'Selesai', 'pembayaran' => 'Lunas', 'ongkir' => 25000,
+        'dp' => 0, 'catatan' => 'Acara kantor'
+    ],
+    [
+        'id' => 'SKKT-010', 'nomor' => '0812-6786-0989', 'nama' => 'Bu Maya',
+        'alamat' => 'Batu', 'menu' => 'Snack Box Premium', 'qty' => 20,
+        'harga_satuan' => 22000, 'tanggal' => '2026-08-25', 'jam' => '14:00',
+        'status' => 'Selesai', 'pembayaran' => 'Lunas', 'ongkir' => 20000,
+        'dp' => 0, 'catatan' => ''
     ],
 ];
 
@@ -172,50 +188,133 @@ require __DIR__ . '/includes/header.php';
             <label class="month-filter">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
                 <select id="monthFilter" aria-label="Pilih bulan pesanan">
-                    <option value="Oktober 2026">Oktober 2026</option>
-                    <option value="September 2026">September 2026</option>
-                    <option value="Agustus 2026">Agustus 2026</option>
+                    <option value="2026-10" selected>Oktober 2026</option>
+                    <option value="2026-09">September 2026</option>
+                    <option value="2026-08">Agustus 2026</option>
                 </select>
             </label>
         </div>
         
         <!-- fitur 4, tombol tambah dan lihat semua (demo) -->
         <div class="orders-actions">
-            <button class="button button-primary button-small" type="button" data-toast="Fitur tambah pesanan dijadwalkan untuk tahap berikutnya.">+ Add</button>
-            <button class="text-button" type="button" data-toast="Daftar lengkap pesanan belum diaktifkan.">Lihat Semua <span aria-hidden="true">→</span></button>
+            <button class="button button-primary button-small" id="addOrderButton" type="button">+ Add</button>
+            <button class="text-button" id="viewAllButton" type="button" aria-label="Lihat semua pesanan belum aktif">Lihat Semua <span aria-hidden="true">→</span></button>
         </div>
     </div>
 
     <!-- fitur 4, baris dummy pesanan -->
-    <div class="order-list">
-        <?php foreach ($daftarPesanan as $pesanan): ?>
-            <article class="order-row">
-                <div class="order-info">
-                    <strong class="order-number"><?= htmlspecialchars($pesanan['nomor']) ?></strong>
-                    <div class="order-meta">
-                        <span><?= htmlspecialchars($pesanan['telepon']) ?></span>
-                        <span><?= htmlspecialchars($pesanan['pelanggan']) ?></span>
-                    </div>
-                    <p class="order-menu"><?= htmlspecialchars($pesanan['menu']) ?></p>
-                    <time class="order-date" datetime="2026-10-12"><?= htmlspecialchars($pesanan['tanggal']) ?></time>
-                </div>
-
-                <!-- fitur 4, status pembayaran pesanan -->
-                <span class="payment-badge payment-badge--<?= $pesanan['pembayaran'] === 'Lunas' ? 'paid' : 'dp' ?>">
-                    <?= htmlspecialchars($pesanan['pembayaran']) ?>
-                </span>
-
-                <div class="order-actions">
-                    <button class="button button-neutral" type="button" data-toast="Aksi status pesanan belum terhubung ke backend."><?= htmlspecialchars($pesanan['status']) ?></button>
-                    <button class="button button-neutral" type="button" data-toast="Detail pesanan akan tersedia pada tahap fitur pesanan.">Detail</button>
-                    <button class="button button-neutral" type="button" data-toast="Edit pesanan belum diaktifkan.">Edit</button>
-                </div>
-            </article>
-        <?php endforeach; ?>
-    </div>
-    <!-- fitur 4, penanda data pesanan dummy -->
+    <div class="order-list" id="orderList" aria-live="polite"></div>
+    <p class="empty-orders" id="emptyOrders" hidden>Tidak ada pesanan pada bulan yang dipilih.</p>
     <p class="prototype-note"><span class="prototype-dot"></span> Data dummy, belum terhubung ke database PostgreSQL.</p>
 </section>
+
+<!-- fitur 4, overlay form tambah dan edit pesanan -->
+<div class="modal-overlay" id="orderModal" hidden>
+    <section class="modal-panel modal-panel--form" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
+        <header class="modal-header">
+            <div>
+                <p class="modal-eyebrow">PENGELOLAAN PESANAN</p>
+                <h2 id="orderModalTitle">Tambah Pesanan</h2>
+            </div>
+            <button class="modal-close" type="button" data-close-order aria-label="Tutup formulir">×</button>
+        </header>
+
+        <form id="orderForm">
+            <input type="hidden" id="orderId">
+            <div class="form-grid">
+                <!-- LANJUTAN F04.3.1 — IDENTITAS PEMESAN: nomor WhatsApp dan nama. -->
+                <label class="form-field">
+                    <span>Nomor / WhatsApp <b>*</b></span>
+                    <input id="orderPhone" name="nomor" type="tel" placeholder="Contoh: 081234567890" required>
+                </label>
+                <label class="form-field">
+                    <span>Nama Pemesan <b>*</b></span>
+                    <input id="orderName" name="nama" type="text" placeholder="Nama pelanggan" required>
+                </label>
+
+                <!-- LANJUTAN F04.3.2 — PILIHAN MENU DAN COUNTER KUANTITAS.
+                     Harga satuan disimpan pada data-price untuk dihitung oleh JavaScript. -->
+                <label class="form-field">
+                    <span>Menu yang dipesan <b>*</b></span>
+                    <select id="orderMenu" name="menu" required>
+                        <option value="">Pilih Menu</option>
+                        <option value="Nasi Ayam Bakar Sedap" data-price="25000">Nasi Ayam Bakar Sedap — Rp25.000</option>
+                        <option value="Nasi Ayam Geprek Jos" data-price="25000">Nasi Ayam Geprek Jos — Rp25.000</option>
+                        <option value="Nasi Rendang Nyam" data-price="25000">Nasi Rendang Nyam — Rp25.000</option>
+                        <option value="Nasi Kuning" data-price="22000">Nasi Kuning — Rp22.000</option>
+                        <option value="Snack Box Premium" data-price="22000">Snack Box Premium — Rp22.000</option>
+                        <option value="Tumpeng Mini" data-price="150000">Tumpeng Mini — Rp150.000</option>
+                    </select>
+                    <small class="field-help" id="unitPriceHint">Harga satuan akan mengikuti menu pilihan.</small>
+                </label>
+                <div class="form-field">
+                    <span>Jumlah pesanan <b>*</b></span>
+                    <div class="quantity-control">
+                        <button type="button" id="quantityMinus" aria-label="Kurangi jumlah">−</button>
+                        <output id="quantityValue" for="quantityMinus quantityPlus">0</output>
+                        <button type="button" id="quantityPlus" aria-label="Tambah jumlah">+</button>
+                    </div>
+                </div>
+
+                <!-- LANJUTAN F04.3.3 — STATUS PESANAN DAN STATUS PEMBAYARAN. -->
+                <label class="form-field">
+                    <span>Status Pesanan <b>*</b></span>
+                    <select id="orderStatus" required>
+                        <option value="Dikonfirmasi">Dikonfirmasi</option>
+                        <option value="Diproses">Diproses</option>
+                        <option value="Dikirim">Dikirim</option>
+                        <option value="Selesai">Selesai</option>
+                    </select>
+                </label>
+                <label class="form-field">
+                    <span>Status Pembayaran <b>*</b></span>
+                    <select id="paymentStatus" required>
+                        <option value="DP">DP</option>
+                        <option value="Lunas">Lunas</option>
+                    </select>
+                </label>
+
+                <!-- LANJUTAN F04.3.4 — TANGGAL DAN JAM PENGIRIMAN. -->
+                <label class="form-field">
+                    <span>Tanggal <b>*</b></span>
+                    <input id="orderDate" type="date" required>
+                </label>
+                <label class="form-field">
+                    <span>Jam Kirim <b>*</b></span>
+                    <input id="orderTime" type="time" required>
+                </label>
+
+                <!-- LANJUTAN F04.3.5 — ONGKIR DAN UANG MUKA (DP).
+                     Field DP ditampilkan dan diwajibkan hanya jika status pembayaran DP. -->
+                <label class="form-field">
+                    <span>Ongkir (Rp)</span>
+                    <input id="shippingCost" type="number" min="0" step="1000" placeholder="15000" value="0">
+                </label>
+                <label class="form-field" id="dpAmountField">
+                    <span>Jumlah DP (Rp) <b>*</b></span>
+                    <input id="dpAmount" type="number" min="0" step="1000" placeholder="Contoh: 100000" value="0">
+                </label>
+
+                <!-- LANJUTAN F04.3.6 — ALAMAT DAN CATATAN KHUSUS PEMESAN. -->
+                <label class="form-field form-field--full">
+                    <span>Alamat Pengiriman</span>
+                    <input id="orderAddress" type="text" placeholder="Alamat pengiriman pelanggan">
+                </label>
+                <label class="form-field form-field--full">
+                    <span>Catatan Pesanan</span>
+                    <textarea id="orderNotes" rows="2" placeholder="Catatan khusus untuk pesanan"></textarea>
+                </label>
+            </div>
+            <!-- LANJUTAN F04.3.7 — PREVIEW NILAI DAN TOMBOL AKSI FORM.
+                 Tombol Simpan masih menyimpan ke array JavaScript sementara (demo). -->
+            <div class="form-total" id="orderTotalPreview">Estimasi subtotal menu: Rp0</div>
+            <div class="modal-footer modal-footer--center">
+                <button class="button button-primary modal-save" type="submit" id="saveOrderButton">Simpan (Demo)</button>
+                <button class="button button-quiet" type="button" data-close-order>Batal</button>
+            </div>
+        </form>
+    </section>
+</div>
 
 <!-- fitur 7, notifikasi toast -->
 <div class="toast-message" id="toastMessage" role="status" aria-live="polite"></div>
