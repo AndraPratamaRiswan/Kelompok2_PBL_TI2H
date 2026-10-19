@@ -385,6 +385,59 @@ require __DIR__ . '/includes/header.php';
     </section>
 </div>
 
+<!-- F05.1 — OVERLAY CETAK LAPORAN KEUANGAN
+     Judul dan identitas toko tampil di header laporan. -->
+<div class="modal-overlay" id="reportModal" hidden>
+    <section class="modal-panel modal-panel--report" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+        <header class="report-heading">
+            <div>
+                <p class="modal-eyebrow">LAPORAN PENJUALAN</p>
+                <h2 id="reportTitle">Cetak Laporan Keuangan</h2>
+                <p class="report-store-name">SIKAT — Catering Nasi Kotak Malang by Tya</p>
+                <p class="report-store-info">Jl. Raya Malang No. 123 <span aria-hidden="true">|</span> WA: 0812-3768-xxxx</p>
+            </div>
+            <button class="modal-close" type="button" data-close-report aria-label="Tutup laporan">×</button>
+        </header>
+        <div class="report-content" id="reportPrintableArea">
+            <!-- F05.2 — FILTER PERIODE BULAN DAN KETERANGAN STATUS.
+                 Rekap hanya menghitung pesanan berstatus Selesai. -->
+            <div class="report-period-row">
+                <label for="reportMonthFilter">Periode laporan</label>
+                <select id="reportMonthFilter">
+                    <option value="2026-09" selected>September 2026</option>
+                    <option value="2026-10">Oktober 2026</option>
+                    <option value="2026-08">Agustus 2026</option>
+                </select>
+                <span class="report-status-note">Hanya pesanan berstatus Selesai</span>
+            </div>
+            <!-- F05.3 — TIGA KARTU RINGKASAN: TOTAL QTY, JENIS MENU, PENDAPATAN. -->
+            <div class="report-summary-grid">
+                <article class="report-summary-card"><span>Total Quantity</span><strong id="reportTotalQty">0</strong><small>box / porsi / unit</small></article>
+                <article class="report-summary-card"><span>Jenis Menu</span><strong id="reportMenuKinds">0</strong><small>menu berbeda</small></article>
+                <article class="report-summary-card report-summary-card--dark"><span>Total Pendapatan</span><strong id="reportTotalIncome">Rp0</strong><small>dari pesanan selesai</small></article>
+            </div>
+            <!-- F05.4 — TABEL DETAIL TRANSAKSI DAN BARIS TOTAL. -->
+            <div class="report-table-wrap">
+                <table class="report-table">
+                    <thead><tr><th>Tanggal</th><th>Menu</th><th>Qty</th><th>Harga Satuan</th><th>Total</th></tr></thead>
+                    <tbody id="reportTableBody"></tbody>
+                    <tfoot id="reportTableFoot"></tfoot>
+                </table>
+                <p class="report-empty" id="reportEmpty" hidden>Tidak ada pesanan selesai pada periode ini.</p>
+            </div>
+            <p class="report-footnote">Laporan ini dibuat dari data dummy untuk keperluan demonstrasi SIKAT.</p>
+        </div>
+        <!-- F05.5 — TOMBOL TUTUP DAN UNDUH PDF.
+             Unduh PDF dibuat oleh JavaScript dari periode aktif, tanpa library eksternal. -->
+        <div class="modal-footer report-actions">
+            <button class="button button-quiet" type="button" data-close-report>Batal</button>
+            <button class="button button-primary" type="button" id="downloadReportPdf">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></svg>
+                Unduh PDF
+            </button>
+        </div>
+    </section>
+</div>
 
 <!-- fitur 7, notifikasi toast -->
 <div class="toast-message" id="toastMessage" role="status" aria-live="polite"></div>
