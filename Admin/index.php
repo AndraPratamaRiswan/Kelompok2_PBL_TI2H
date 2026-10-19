@@ -330,9 +330,68 @@ require __DIR__ . '/includes/header.php';
     </section>
 </div>
 
+     <!-- F04.5 — OVERLAY DETAIL PESANAN (READ-ONLY)
+     Modal ini hanya menampilkan data; tidak menyediakan kontrol untuk mengedit. -->
+
+<div class="modal-overlay" id="detailModal" hidden>
+    <section class="modal-panel modal-panel--detail" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
+        <header class="modal-header">
+            <div>
+                <p class="modal-eyebrow">PRATINJAU PESANAN</p>
+                <h2 id="detailModalTitle">Detail Pesanan</h2>
+                <p class="modal-description" id="detailCreatedAt">Data contoh pesanan</p>
+            </div>
+            <button class="modal-close" type="button" data-close-detail aria-label="Tutup detail">×</button>
+        </header>
+        <!-- F04.5.1 — BADGE STATUS PESANAN DAN PEMBAYARAN. -->
+        <div class="detail-status-row">
+            <span class="detail-status" id="detailOrderStatus">Status pesanan</span>
+            <span class="detail-status detail-status--payment" id="detailPaymentStatus">Status pembayaran</span>
+        </div>
+        <div class="detail-grid">
+            <!-- F04.5.2 — RINGKASAN PEMESAN DAN JADWAL KIRIM. -->
+            <section class="detail-card">
+                <h3>Informasi Pemesan & Pengiriman</h3>
+                <dl>
+                    <div><dt>Nama</dt><dd id="detailName">-</dd></div>
+                    <div><dt>Nomor</dt><dd id="detailPhone">-</dd></div>
+                    <div><dt>Alamat</dt><dd id="detailAddress">-</dd></div>
+                    <div><dt>Tanggal Kirim</dt><dd id="detailDate">-</dd></div>
+                    <div><dt>Jam Kirim</dt><dd id="detailTime">-</dd></div>
+                </dl>
+            </section>
+            <!-- F04.5.3 — RINCIAN MENU, ONGKIR, DP, DAN TOTAL. -->
+            <section class="detail-card">
+                <h3>Ringkasan Pembayaran</h3>
+                <dl>
+                    <div><dt>Menu</dt><dd id="detailMenu">-</dd></div>
+                    <div><dt>Jumlah</dt><dd id="detailQty">-</dd></div>
+                    <div><dt>Harga Satuan</dt><dd id="detailUnitPrice">-</dd></div>
+                    <div><dt>Subtotal Menu</dt><dd id="detailSubtotal">-</dd></div>
+                    <div><dt>Ongkir</dt><dd id="detailShipping">-</dd></div>
+                    <div><dt>Jumlah DP</dt><dd id="detailDp">-</dd></div>
+                    <div class="detail-total"><dt>Total</dt><dd id="detailTotal">-</dd></div>
+                </dl>
+            </section>
+            <!-- F04.5.4 — CATATAN PESANAN HANYA UNTUK DIBACA. -->
+            <section class="detail-card detail-card--notes">
+                <h3>Catatan Pesanan</h3>
+                <p id="detailNotes">Tidak ada catatan.</p>
+            </section>
+        </div>
+        <div class="modal-footer modal-footer--center">
+            <button class="button button-primary" type="button" data-close-detail>Tutup</button>
+        </div>
+    </section>
+</div>
 
 
 <!-- fitur 7, notifikasi toast -->
 <div class="toast-message" id="toastMessage" role="status" aria-live="polite"></div>
 
+<!-- F04.1 — MENYERAHKAN ARRAY PESANAN PHP KE JAVASCRIPT.
+     Data ini hanya salinan awal; perubahan berikutnya berlangsung di memori browser. -->
+<script>
+    window.sikatOrders = <?= json_encode($daftarPesanan, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+</script>
 <?php require __DIR__ . '/includes/footer.php'; ?>
