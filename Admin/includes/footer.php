@@ -1,10 +1,7 @@
-<!-- fitur 1, footer dan penutup struktur html -->
 </main>
-    <footer class="site-footer">
-        <span>SIKAT · Sistem Informasi Katering</span>
-        <span>Prototype frontend</span>
-    </footer>
-</div>
-<script src="assets/js/app.js"></script>
+
+<footer class="site-footer">
+    <small>&copy; 2026 Nasi Kotak Malang by Tya. All rights reserved.</small>
+</footer>
 </body>
 </html>

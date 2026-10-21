@@ -52,3 +52,16 @@ on dp.id_menu = m.id_menu
 join pesanan p
 on dp.id_pesanan = p.id_pesanan
 group by dp.id_menu, m.nama_menu
+
+create view v_tampil_menu_catalog as 
+select 
+    m.nama_menu,
+    m.deskripsi,
+    m.harga_menu,
+    m.gambar_url,
+    k.nama_kategori
+from menu m
+join kategori_menu km
+on m.id_menu = km.id_menu
+join kategori k
+on k.id_kategori = km.id_kategori

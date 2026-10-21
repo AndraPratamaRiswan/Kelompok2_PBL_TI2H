@@ -64,4 +64,3 @@ create or replace function fn_menu_terlaris(
     );
     end;
     $$;
-returns 

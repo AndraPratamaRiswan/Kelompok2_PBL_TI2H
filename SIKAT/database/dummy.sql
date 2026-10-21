@@ -12,7 +12,7 @@ INSERT INTO pembeli (username, password_hash, nama_pembeli, no_hp, alamat_pembel
 
 -- 3. menu
 INSERT INTO menu (id_admin, nama_menu, deskripsi, harga_menu, gambar_url, is_tersedia, kategori) VALUES
-(1, 'Nasi Box Ayam Bakar', 'Nasi, ayam bakar, lalapan, sambal, dan kerupuk', 28000.00, 'https://example.com/img/nasi-box-ayam.jpg', TRUE,  'Nasi Box'),
-(2, 'Snack Box Premium',   'Risoles, lemper, kue lapis, dan air mineral',    22000.00, 'https://example.com/img/snack-box.jpg',    TRUE,  'Snack Box'),
-(3, 'Tumpeng Mini',        'Tumpeng nasi kuning dengan lauk pauk lengkap',  150000.00, NULL,                                       FALSE, 'Tumpeng');
+(1, 'Nasi Box Ayam Bakar', 'Nasi, ayam bakar, lalapan, sambal, dan kerupuk', 28000.00, 'https://example.com/img/nasi-box-ayam.jpg', TRUE),
+(2, 'Snack Box Premium',   'Risoles, lemper, kue lapis, dan air mineral',    22000.00, 'https://example.com/img/snack-box.jpg',    TRUE),
+(3, 'Tumpeng Mini',        'Tumpeng nasi kuning dengan lauk pauk lengkap',  150000.00, NULL,                                       FALSE);
 
