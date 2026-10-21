@@ -1,4 +1,4 @@
-create table kategori_menu {
+create table kategori_menu (
     id_menu integer,
     id_kategori integer,
 
@@ -8,4 +8,4 @@ create table kategori_menu {
     constraint fk_id_kategori
     foreign key (id_kategori) references kategori (id_kategori)
     on delete cascade,
-}
+)
