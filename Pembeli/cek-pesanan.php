@@ -7,8 +7,13 @@ include 'includes/header.php';
     <div class="row align-items-center">
         <!-- Kolom Kiri -->
         <div class="col-6 text-start">
+            <!-- ID MENU -->
             <h5 class="fw-bold font-24 mb-1">SKT-002</h5>
+            <!-- ID MENU END -->
+
+            <!-- KIRIM  -->
             <p class="font-18 mb-0">Dikirim: Sabtu, 22 Des</p> 
+            <!-- KIRIM END -->
         </div>
 
         <!-- Kolom Kanan -->
@@ -17,6 +22,7 @@ include 'includes/header.php';
             <span class="badge bg-red rounded-pill px-3 py-2 mb-2 d-inline-block font-18 fw-normal">
                 Dikonfirmasi
             </span>
+            <br>
             <br>
             <button type="button" class="btn bg-red text-white rounded-pill font-18 fw-normal" data-bs-toggle="collapse" data-bs-target="#demo" style="--bs-btn-padding-y: .120rem; --bs-btn-padding-x: 2.3rem; --bs-btn-font-size: .75rem;">
                 Rincian
@@ -58,6 +64,8 @@ include 'includes/header.php';
             </div>
         </div>
 
+        <!-- [BACKEND MENU] BUAT LIST MENU DAN HARGA -->
+         <!-- manu satuan -->
         <div class="row">
             <div class="col-8 text-start">
                  <p class="fw-light font-18 mb-0">Nasi box ayam x10</p>
@@ -68,15 +76,22 @@ include 'includes/header.php';
             </div>
             
         </div>
+        <!-- menu satuan end -->
 
+
+        <!-- total harga keranajnga -->
         <div class="row">
             <div class="col-6 text-start fw-bold font-18">TOTAL</div>
             <div class="col-6 text-end fw-bold font-18">rp.50000</div>
         </div>
+        <!-- total harga keranjang end -->
 
+
+        <!-- ceteak nota -->
         <div class="d-grid gap-2 mt-4">
                 <button class="btn bg-red text-white font-18 fw-bold " type="button">Cetak Nota</button>
         </div>
+        <!-- cetak nota enda -->
 
     </div>
 
