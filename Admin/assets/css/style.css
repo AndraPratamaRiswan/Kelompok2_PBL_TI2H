@@ -183,3 +183,35 @@ button { cursor: pointer; }
     .menu-card img { height: 190px; }
     .site-footer { flex-direction: column; }
 }
+
+
+/* Form tambah/edit */
+.form-message { padding: 10px 12px; margin-bottom: 12px; border-radius: 7px; }
+.form-message--success { background: #dcefe0; color: #285a35; }
+.form-message--error { background: #f8dddd; color: #842b2b; overflow-wrap: anywhere; }
+.menu-form-panel { margin-bottom: 18px; padding: 16px; border-radius: 10px; background: #fff; }
+.menu-form-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+.menu-form-heading h2 { margin: 0; font-size: 20px; }
+.menu-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+.menu-form label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; }
+.menu-form input, .menu-form select, .menu-form textarea { width: 100%; min-width: 0; padding: 9px 10px; border: 1px solid #ccd4dc; border-radius: 7px; background: #f9fbfd; color: var(--text); }
+.menu-form textarea { resize: vertical; }
+.menu-form small { color: var(--muted); font-weight: 400; }
+.menu-form-actions { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 4px; }
+.button { text-decoration: none; }
+.button:disabled { opacity: .65; cursor: not-allowed; }
+.catalog-search { display: flex; min-width: 0; gap: 6px; }
+.catalog-search input { width: 100%; }
+.menu-category { display: block; margin: 0 0 8px; color: var(--muted); font-size: 12px; }
+.menu-state { display: inline-block; width: fit-content; margin-top: 7px; padding: 3px 7px; border-radius: 5px; font-size: 11px; }
+.menu-state--active { background: #dcefe0; color: #285a35; }
+.menu-state--inactive { background: #f8dddd; color: #842b2b; }
+.menu-card--inactive .menu-card__body { background: #f8fafc; }
+.button-status { white-space: nowrap; }
+.empty-state { grid-column: 1 / -1; padding: 24px; background: rgba(255,255,255,.7); border-radius: 8px; text-align: center; }
+@media (max-width: 520px) {
+    .menu-form { grid-template-columns: 1fr; }
+    .menu-form-actions { grid-column: auto; flex-wrap: wrap; }
+    .catalog-toolbar { grid-template-columns: 1fr; }
+    .catalog-search { width: 100%; }
+}
