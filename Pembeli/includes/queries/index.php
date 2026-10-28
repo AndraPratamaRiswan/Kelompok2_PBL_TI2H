@@ -11,8 +11,14 @@ function ambilKatalogMenu(PDO $pdo, string $q = '', string $kategori = ''): arra
         $params[':q'] = "%$q%";
     }
     if ($kategori !== '') {
-        $sql .= " AND :kategori = ANY(STRING_TO_ARRAY(daftar_kategori, ','))";
-        $params[':kategori'] = $kategori;
+    $sql .= " AND EXISTS (
+                SELECT *
+                FROM menu_kategori mk
+                JOIN kategori k ON k.id_kategori = mk.id_kategori
+                WHERE mk.id_menu = v.id_menu
+                  AND k.nama_kategori = :kategori
+             )";
+    $params[':kategori'] = $kategori;
     }
 
     $stmt = $pdo->prepare($sql);
