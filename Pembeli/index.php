@@ -1,49 +1,15 @@
 
-<?php 
-$halaman = 'menu'; 
+<?php
+$halaman = 'menu';
+require __DIR__ . '/../pembeli/includes/koneksi.php';
+require __DIR__ . '/../pembeli/includes/queries/index.php';
 
-// Simulasi data dari tabel 'menu_katering'
-$katalog_menu = [
-    [
-        'nama' => 'Chicken breast frozen',
-        'porsi' => '450-500gr /pack',
-        'harga' => 29000,
-        'gambar' => 'https://picsum.photos/400/300?random=1'
-    ],
-    [
-        'nama' => 'Ayam Bakar Madu',
-        'porsi' => '1 Porsi Lengkap',
-        'harga' => 35000,
-        'gambar' => 'https://picsum.photos/400/300?random=2'
-    ],
-    [
-        'nama' => 'Nasi Kuning Bento',
-        'porsi' => '1 Porsi Anak',
-        'harga' => 25000,
-        'gambar' => 'https://picsum.photos/400/300?random=3'
-    ],
-    [
-        'nama' => 'Sapi Lada Hitam',
-        'porsi' => '300gr /pack',
-        'harga' => 45000,
-        'gambar' => 'https://picsum.photos/400/300?random=4'
-    ],
-    [
-        'nama' => 'Sapi Lada Hitam',
-        'porsi' => '300gr /pack',
-        'harga' => 45000,
-        'gambar' => 'https://picsum.photos/400/300?random=4'
-    ],
-    [
-        'nama' => 'Sapi Lada Hitam',
-        'porsi' => '300gr /pack',
-        'harga' => 45000,
-        'gambar' => 'https://picsum.photos/400/300?random=4'
-    ]
+$q        = trim($_GET['q'] ?? '');
+$kategori = trim($_GET['kategori'] ?? '');
 
-];
+$katalog_menu = ambilKatalogMenu($pdo, $q, $kategori);
 
-include 'includes/header.php'; 
+include 'includes/header.php';
 ?>
 <!-- Jumbotron -->
 <div class="container mt-5 mb-5">
@@ -67,35 +33,36 @@ include 'includes/header.php';
     
     <!-- Grid for component -->
     <div class="col-md-3 mb-3">
-        
-        <!--  Komponen Search Bar -->
-        <div class="input-group">
-            
-            <input type="text" class="form-control rounded-start-pill-3 border-end-0" placeholder="Cari menu...">
-            
-            <!-- Tombol Ikon, Garis batas kiri dihapus dengan border-start-0, background diubah jadi putih -->
-            <button class="btn border  border-start-0 rounded-end-pill-3" type="button">
-                <!-- Ikon Kaca Pembesar (Warna merah disesuaikan dengan tema di css) -->
+        <form method="get" class="input-group">
+            <?php if ($kategori !== '') : ?>
+                <input type="hidden" name="kategori" value="<?= htmlspecialchars($kategori); ?>">
+            <?php endif; ?>
+
+            <input type="text" name="q" value="<?= htmlspecialchars($q); ?>"
+                class="form-control rounded-start-pill-3 border-end-0" placeholder="Cari menu...">
+            <button class="btn border border-start-0 rounded-end-pill-3" type="submit">
                 <i class="bi bi-search isi-red"></i>
             </button>
-            
-        </div>
-        
-    </div>
+        </form>
+    </div>  
 <!-- filter makanan -->
-<div class="col-md-9 mb-3">
-    
-    <button type="button" class="btn btn-outline-secondary  text-dark me-2 mb-2">Makanan Oriental</button>
-    
-    
-    <button type="button" class="btn bg-red text-white  me-2 mb-2">Semua</button>
-    
-    
-    <button type="button" class="btn btn-outline-secondary  text-dark me-2 mb-2">Makanan Khas Indonesia</button>
-    
-    
-    <button type="button" class="btn btn-outline-secondary l text-dark me-2 mb-2">Makanan Western</button>
-</div>
+    <div class="col-md-9 mb-3">
+        <?php
+        $daftar_kategori = ['Makanan Oriental', 'Makanan Khas Indonesia', 'Makanan Western'];
+        ?>
+
+        <a href="menu.php" 
+        class="btn me-2 mb-2 <?= $kategori === '' ? 'bg-red text-white' : 'btn-outline-secondary text-dark'; ?>">
+            Semua
+        </a>
+
+        <?php foreach ($daftar_kategori as $kat) : ?>
+            <a href="menu.php?kategori=<?= urlencode($kat); ?>" 
+            class="btn me-2 mb-2 <?= $kategori === $kat ? 'bg-red text-white' : 'btn-outline-secondary text-dark'; ?>">
+                <?= $kat; ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
 <!-- filter makanan end -->
 
     
@@ -109,25 +76,32 @@ include 'includes/header.php';
 <div class="row gx-4 gy-4 mt-4">
     
     <!-- MULAI LOOPING DATABASE -->
+    <?php if (empty($katalog_menu)) : ?>
+    <div class="col-12 text-center text-muted py-5">
+        Menu tidak ditemukan.
+    </div>
+    <?php endif; ?>
+
     <?php foreach ($katalog_menu as $item) : ?>
-        
         <div class="col-md-3">
             <div class="card h-100 shadow-sm border-0 rounded-4">
-                
-                <!-- Injeksi Variabel Gambar -->
-                <img src="<?= $item['gambar']; ?>" class="card-img-top gambar-menu rounded-top-4" alt="<?= $item['nama']; ?>">
-                
+
+                <img src="<?= htmlspecialchars($item['gambar_url']); ?>" 
+                    class="card-img-top gambar-menu rounded-top-4" 
+                    alt="<?= htmlspecialchars($item['nama_menu']); ?>">
+
                 <div class="card-body">
-                    <!-- Injeksi Variabel Judul & Porsi -->
-                    <h6 class="card-title fw-bold mb-1"><?= $item['nama']; ?></h6>
-                    <small class="text-muted d-block mb-3"><?= $item['porsi']; ?></small>
-                    
-                    <!-- Injeksi Variabel Harga dengan Format Rupiah -->
+                    <h6 class="card-title fw-bold mb-1">
+                        <?= htmlspecialchars($item['nama_menu']); ?>
+                    </h6>
+                    <small class="text-muted d-block mb-3">
+                        <?= htmlspecialchars($item['deskripsi']); ?>
+                    </small>
+
                     <span class="fw-bold fs-5 d-block mb-2">
-                        Rp <?= number_format($item['harga'], 0, ',', '.'); ?>
+                        Rp <?= number_format($item['harga_menu'], 0, ',', '.'); ?>
                     </span>
 
-                    <!-- Area Action, UNTUK Tombol - 1 + dan Keranjang -->
                     <div class="d-flex gap-2">
                         <div class="input-group input-group-sm w-50 shadow-sm">
                             <button class="btn btn-outline-secondary border-secondary-subtle" type="button">-</button>
@@ -139,12 +113,11 @@ include 'includes/header.php';
                         </button>
                     </div>
                 </div>
-                
+
             </div>
         </div>
-
     <?php endforeach; ?>
-    <!-- AKHIR LOOPING DATABASE -->
+        <!-- AKHIR LOOPING DATABASE -->
 
 </div>
 

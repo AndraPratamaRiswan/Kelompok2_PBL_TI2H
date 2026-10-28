@@ -1,5 +1,6 @@
 <?php
 // data dummy untuk kartu statistik, nanti konek ke database
+
 $statistik = [
     ['label' => 'Total Pesanan', 'nilai' => '140', 'tema' => 'soft'],
     ['label' => 'Pesanan Diproses', 'nilai' => '12', 'tema' => 'dark'],
