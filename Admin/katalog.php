@@ -1,4 +1,6 @@
 <?php
+
+
 // dummy menu 
 $katalogMenu = [
     ['nama' => 'Nasi Kuning', 'deskripsi' => 'Nasi kuning, telur dadar, bihun, kering tempe', 'harga' => 25000, 'gambar' => 'assets/img/nasikuning.jpg'],
