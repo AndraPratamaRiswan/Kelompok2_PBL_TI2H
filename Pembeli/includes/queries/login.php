@@ -6,6 +6,7 @@ function loginAkun(PDO $pdo, string $no_hp, string $password) {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
 
+    
     $pembeli = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$pembeli) {

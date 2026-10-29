@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pembeli = loginAkun($pdo, $no_hp, $password);
 
             if ($pembeli) {
-                // Login sah -> simpan penanda login di session
+                // Login sah lgsg simpan login di session
                 session_regenerate_id(true);
                 $_SESSION['id_pembeli'] = $pembeli['id_pembeli'];
                 $_SESSION['no_hp']      = $pembeli['no_hp'];

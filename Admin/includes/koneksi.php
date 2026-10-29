@@ -3,7 +3,7 @@ $host = 'localhost';
 $port = '5432';
 $db   = 'sikat_db';
 $user = 'postgres';
-$pass = 'postgres';
+$pass = '12345';
 
 try {
     $pdo = new PDO(

@@ -4,6 +4,7 @@ function registerAkun(PDO $pdo, string $no_hp, string $password) {
     $sql = "INSERT INTO pembeli( password_hash, no_hp) VALUES ( :password_hash, :no_hp)";
     $params = [];
 
+    
     $params[":password_hash"] = $password_hash;
     $params[":no_hp"] = $no_hp;
 

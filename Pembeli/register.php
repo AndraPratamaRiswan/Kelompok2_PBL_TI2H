@@ -13,7 +13,7 @@ $error = '';
 $no_hp = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // name di form HTML = "no_hp" (harus sama persis dengan yang dibaca di sini)
+    // name di form HTML = "no_hp" 
     $no_hp    = preg_replace('/[\s\-]/', '', trim($_POST['no_hp'] ?? ''));
     $password = $_POST['password'] ?? '';
 
