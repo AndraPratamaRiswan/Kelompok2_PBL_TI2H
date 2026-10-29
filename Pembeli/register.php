@@ -1,3 +1,45 @@
+<?php
+session_start();
+require_once 'includes/koneksi.php';
+require_once 'includes/queries/register.php';
+
+// Kalau sudah login, tidak perlu daftar lagi
+if (isset($_SESSION['id_pembeli'])) {
+    header('Location: index.php');
+    exit();
+}
+
+$error = '';
+$no_hp = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // name di form HTML = "no_hp" (harus sama persis dengan yang dibaca di sini)
+    $no_hp    = preg_replace('/[\s\-]/', '', trim($_POST['no_hp'] ?? ''));
+    $password = $_POST['password'] ?? '';
+
+    if ($no_hp === '' || $password === '') {
+        $error = 'Semua kolom wajib diisi!';
+    } elseif (!preg_match('/^[0-9]{9,15}$/', $no_hp)) {
+        // sama dengan CHECK constraint di tabel pembeli
+        $error = 'Nomor HP harus berupa angka 9-15 digit.';
+    } elseif (strlen($password) < 6) {
+        $error = 'Kata sandi minimal 6 karakter.';
+    } else {
+        try {
+            if (registerAkun($pdo, $no_hp, $password)) {
+                // Berhasil daftar -> pindah ke halaman login
+                header('Location: login.php?status=registered');
+                exit();
+            }
+            $error = 'Nomor HP sudah terdaftar!';
+        } catch (PDOException $e) {
+            // Detail error asli masuk ke log PHP (bukan ke layar pengguna)
+            error_log('Register gagal: ' . $e->getMessage());
+            $error = 'Gagal mendaftar. Silakan coba lagi.';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -37,22 +79,29 @@
                     <small class="text-muted">Silahkan daftar dengan data diri anda</small>
                 </div>
 
-                <form action="login.php" method="POST">
-                    <div class="mb-3">
-                        <label class="form-label small text-muted mb-1">Nomor Handphone</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-phone"></i></span>
-                            <input type="text" class="form-control border-start-0 ps-0" name="nomor_hp" placeholder="Masukkan Nomor Handphone" required>
-                        </div>
-                    </div>
+                <?php if ($error !== '') : ?>
+                    <div class="alert alert-danger py-2 small"><?= htmlspecialchars($error); ?></div>
+                <?php endif; ?>
 
-                    <div class="mb-4">
-                        <label class="form-label small text-muted mb-1">Kata Sandi</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control border-start-0 ps-0" name="password" placeholder="Masukkan Kata Sandi" required>
-                        </div>
-                    </div>
+                <form action="register.php" method="POST">
+
+    <!-- Input Nomor HP -->
+    <div class="mb-3">
+        <label class="form-label small text-muted mb-1">Nomor Handphone</label>
+        <div class="input-group">
+            <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-phone"></i></span>
+            <input type="text" class="form-control border-start-0 ps-0" name="no_hp" value="<?= htmlspecialchars($no_hp); ?>" placeholder="Masukkan Nomor Handphone" required>
+        </div>
+    </div>
+
+    <!-- Input Kata Sandi -->
+    <div class="mb-4">
+        <label class="form-label small text-muted mb-1">Kata Sandi</label>
+        <div class="input-group">
+            <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control border-start-0 ps-0" name="password" placeholder="Masukkan Kata Sandi" required>
+        </div>
+    </div>
 
                     <!-- Tombol Merah Maroon -->
                     <button type="submit" class="btn btn-maroon w-100 py-2 mb-3">Daftar</button>

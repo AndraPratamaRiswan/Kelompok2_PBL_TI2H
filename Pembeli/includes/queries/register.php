@@ -1,10 +1,9 @@
 <?php
-function registerAkun(PDO $pdo,string $username, string $no_hp, string $password) {
+function registerAkun(PDO $pdo, string $no_hp, string $password) {
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO pembeli(username, password_hash, no_hp) VALUES (:username, :password_hash, :no_hp)";
+    $sql = "INSERT INTO pembeli( password_hash, no_hp) VALUES ( :password_hash, :no_hp)";
     $params = [];
 
-    $params[":username"] = $username;
     $params[":password_hash"] = $password_hash;
     $params[":no_hp"] = $no_hp;
 

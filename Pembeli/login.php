@@ -1,3 +1,47 @@
+<?php
+session_start();
+require_once 'includes/koneksi.php';
+require_once 'includes/queries/login.php';
+
+// Kalau sudah login, langsung ke halaman utama
+if (isset($_SESSION['id_pembeli'])) {
+    header('Location: index.php');
+    exit();
+}
+
+$error = '';
+$no_hp = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $no_hp    = preg_replace('/[\s\-]/', '', trim($_POST['no_hp'] ?? ''));
+    $password = $_POST['password'] ?? '';
+
+    if ($no_hp === '' || $password === '') {
+        $error = 'Semua kolom wajib diisi!';
+    } else {
+        try {
+            // Mengembalikan data pembeli jika cocok, atau false jika tidak
+            $pembeli = loginAkun($pdo, $no_hp, $password);
+
+            if ($pembeli) {
+                // Login sah -> simpan penanda login di session
+                session_regenerate_id(true);
+                $_SESSION['id_pembeli'] = $pembeli['id_pembeli'];
+                $_SESSION['no_hp']      = $pembeli['no_hp'];
+
+                header('Location: index.php');
+                exit();
+            }
+
+            // Pesan sengaja sama untuk "nomor tidak ada" dan "sandi salah"
+            $error = 'Nomor HP atau kata sandi salah, atau akun belum terdaftar.';
+        } catch (PDOException $e) {
+            error_log('Login gagal: ' . $e->getMessage());
+            $error = 'Terjadi kesalahan sistem. Coba lagi nanti.';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -31,12 +75,19 @@
 
         <!-- Form Body -->
         <div class="p-4">
-            <form action="index.php" method="POST">
+            <?php if (($_GET['status'] ?? '') === 'registered') : ?>
+                <div class="alert alert-success py-2 small">Pendaftaran berhasil! Silakan masuk.</div>
+            <?php endif; ?>
+            <?php if ($error !== '') : ?>
+                <div class="alert alert-danger py-2 small"><?= htmlspecialchars($error); ?></div>
+            <?php endif; ?>
+
+            <form action="login.php" method="POST">
                 <div class="mb-3">
                     <label class="form-label small text-muted mb-1">Nomor Handphone</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-phone"></i></span>
-                        <input type="text" class="form-control border-start-0 ps-0" name="nomor_hp" placeholder="Masukkan Nomor Handphone" required>
+                        <input type="text" class="form-control border-start-0 ps-0" name="no_hp" value="<?= htmlspecialchars($no_hp); ?>" placeholder="Masukkan Nomor Handphone" required>
                     </div>
                 </div>
 
@@ -48,7 +99,7 @@
                     </div>
                 </div>
 
-                <!-- Tombol Merah Maroon -->
+                <!-- Tombol Merah Masuk  -->
                 <button type="submit" class="btn btn-maroon w-100 py-2 mb-3">Masuk</button>
             </form>
 
