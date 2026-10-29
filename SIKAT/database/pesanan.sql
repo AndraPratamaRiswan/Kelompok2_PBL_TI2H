@@ -27,6 +27,5 @@ CREATE TABLE pesanan (
         CHECK (status_pembayaran IN ('Belum Bayar', 'DP', 'Lunas')),
     CONSTRAINT chk_pesanan_dp CHECK (jumlah_dp >= 0),
     CONSTRAINT chk_pesanan_tanggal
-        CHECK (tanggal_pengiriman >= tanggal_dipesan::date),
-    CONSTRAINT chk_pesanan_no_hp CHECK (no_hp_pesanan ~ '^[0-9]{9,15}$')
+        CHECK (tanggal_pengiriman >= tanggal_dipesan::date)
 );
