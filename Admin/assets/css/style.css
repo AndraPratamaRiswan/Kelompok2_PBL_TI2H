@@ -215,3 +215,47 @@ button { cursor: pointer; }
     .catalog-toolbar { grid-template-columns: 1fr; }
     .catalog-search { width: 100%; }
 }
+
+/* tampilan hal tambah/edit pesanan */
+.order-form-panel {
+    padding: 20px;
+    border-radius: 10px;
+    background: #fff;
+}
+.order-form { display: grid; gap: 20px; }
+.order-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 22px;
+}
+.order-form label { display: flex; flex-direction: column; gap: 7px; font-weight: 600; }
+.order-form input,
+.order-form select,
+.order-form textarea {
+    width: 100%; min-width: 0; padding: 10px 11px;
+    border: 1px solid #ccd4dc; border-radius: 7px;
+    background: #f9fbfd; color: var(--text); font: inherit;
+}
+.order-form textarea { resize: vertical; }
+.order-form small, .order-section-heading p { color: var(--muted); font-size: 12px; font-weight: 400; }
+.optional-label { color: var(--muted); font-size: 12px; font-weight: 400; }
+.order-items-section { padding: 16px; border: 1px solid #e0e6ec; border-radius: 9px; background: #f8fafc; }
+.order-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+.order-section-heading h2 { margin: 0; font-size: 17px; }
+.order-section-heading p { margin: 4px 0 0; }
+.button-add-item { border: 1px solid #a8d7a3; background: #dcf8d5; color: #315b34; }
+.button-add-item:hover { background: #c9efc0; }
+.order-item-list { display: grid; gap: 10px; }
+.order-item-row { display: grid; grid-template-columns: minmax(0, 1fr) 190px auto; align-items: end; gap: 12px; padding: 12px; border: 1px solid #e0e6ec; border-radius: 8px; background: #fff; }
+.order-menu-field select { min-height: 40px; }
+.order-qty-field { display: grid; gap: 7px; font-weight: 600; }
+.qty-control { display: grid; grid-template-columns: 38px minmax(45px, 1fr) 38px; gap: 5px; }
+.qty-control input { text-align: center; padding: 7px 4px; }
+.qty-button { min-height: 38px; border: 1px solid #cbd5df; border-radius: 7px; background: #fff; color: var(--text); font-size: 19px; }
+.qty-button:hover { background: #e8eef4; }
+.remove-order-item { min-height: 38px; padding: 7px 10px; border: 0; border-radius: 7px; background: #f5e0df; color: #8a4140; cursor: pointer; }
+.remove-order-item:hover { background: #edcdcb; }
+.order-note-field { display: flex; flex-direction: column; gap: 7px; font-weight: 600; }
+.order-note-field textarea { width: 100%; padding: 10px 11px; border: 1px solid #ccd4dc; border-radius: 7px; background: #f9fbfd; color: var(--text); font: inherit; }
+.order-form-actions { display: flex; gap: 9px; }
+.order-form [hidden] { display: none !important; }
