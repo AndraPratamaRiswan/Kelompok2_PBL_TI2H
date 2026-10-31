@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/koneksi.php';
 require_once __DIR__ . '/includes/menu_helper.php';
+require_once __DIR__ . '/includes/queries/tambah_menu.php';
 
 $pilihanGambar = pilihanGambarMenu();
 $kategoriList = $pdo->query(
@@ -33,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pesanError = 'Pilih gambar yang tersedia.';
     } else {
         try {
-            // Cari admin yang sudah ada supaya fk id_admin valid
+    // Cari admin yang sudah ada supaya fk id_admin valid
             $idAdmin = $pdo->query(
                 'SELECT id_admin FROM admin ORDER BY id_admin LIMIT 1'
             )->fetchColumn();
@@ -42,41 +43,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException('Tabel admin masih kosong. Masukkan data admin dulu.');
             }
 
-            $pdo->beginTransaction();
-
-            // Simpan menu baru ke tabel menu
-            $stmt = $pdo->prepare(
-                'INSERT INTO menu (id_admin, nama_menu, deskripsi, harga_menu, gambar_url, is_tersedia)
-                 VALUES (:id_admin, :nama_menu, :deskripsi, :harga_menu, :gambar_url, TRUE)
-                 RETURNING id_menu'
+            tambahMenu(
+                $pdo,
+                (int) $idAdmin,
+                $formData['id_kategori'] !== '' ? [(int) $formData['id_kategori']] : [],
+                $formData['nama_menu'],
+                (float) $formData['harga_menu'],
+                $formData['deskripsi'] !== '' ? $formData['deskripsi'] : null,
+                $formData['gambar_url']
             );
-            $stmt->execute([
-                'id_admin' => (int) $idAdmin,
-                'nama_menu' => $formData['nama_menu'],
-                'deskripsi' => $formData['deskripsi'],
-                'harga_menu' => (float) $formData['harga_menu'],
-                'gambar_url' => $formData['gambar_url'],
-            ]);
-            $idMenuBaru = (int) $stmt->fetchColumn();
 
-            // Kategori boleh dikosongkan; kalau dipilih, simpan relasinya
-            if ($formData['id_kategori'] !== '') {
-                $stmtKategori = $pdo->prepare(
-                    'INSERT INTO kategori_menu (id_menu, id_kategori) VALUES (:id_menu, :id_kategori)'
-                );
-                $stmtKategori->execute([
-                    'id_menu' => $idMenuBaru,
-                    'id_kategori' => (int) $formData['id_kategori'],
-                ]);
-            }
-
-            $pdo->commit();
             header('Location: katalog.php?pesan=tambah');
             exit;
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
             $pesanError = 'Menu belum berhasil disimpan. Detail: ' . $error->getMessage();
         }
     }

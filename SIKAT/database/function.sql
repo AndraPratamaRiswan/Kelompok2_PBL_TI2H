@@ -1,4 +1,4 @@
-fungsi hitung_subtotal buat ngehitung subtotal pesanan * jumlah per row di detail_pesanan
+--fungsi hitung_subtotal buat ngehitung subtotal pesanan * jumlah per row di detail_pesanan
 create or replace function fn_hitung_subtotal(
     p_harga_satuan numeric (12,2), 
     p_jumlah integer)
@@ -51,7 +51,7 @@ create or replace function fn_cetak_laporan(
     $$;
 
 --pake ini kalau menu terlarisnya mau dibatasi tangal
-create or replace function fn_menu_terlaris(
+create function fn_menu_terlaris(
     p_tanggal_awal text,
     p_tanggal_akhir text
 )
@@ -59,8 +59,22 @@ create or replace function fn_menu_terlaris(
     language plpgsql
     as $$
     begin
-    return query execute format(
-        'select * from v_menu_terlaris where tanggal_dipesan between %L::date and %L::date', p_tanggal_awal, p_tanggal_akhir
-    );
+    return query
+    select
+        v.id_menu,
+        v.nama_menu,
+        null::date,
+        sum(v.total_unit_dipesan)::bigint
+    from v_menu_terlaris v
+    where v.tanggal_dipesan between p_tanggal_awal::date and p_tanggal_akhir::date
+    group by v.id_menu, v.nama_menu
+    order by sum(v.total_unit_dipesan) desc;
     end;
     $$;
+
+create or replace function fn_grafik_total_pendapatan(
+    p_tanggal_awal text,
+    p_tanggal_akhir text
+)
+
+returns setof 

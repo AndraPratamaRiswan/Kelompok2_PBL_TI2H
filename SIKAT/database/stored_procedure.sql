@@ -88,7 +88,6 @@ create or replace procedure sp_edit_pesanan(
 language plpgsql
 as $$
 begin
-begin
     update pesanan
     set 
     nama_pembeli = p_nama_pembeli,
@@ -127,13 +126,6 @@ begin
     set total_harga = fn_hitung_total(p_id_pesanan)
     where id_pesanan = p_id_pesanan;
 end;
-exception
-    when others then
-    rollback;
-    raise;
-    commit;
-    
-    end;
     $$;
 
 create or replace procedure sp_tambah_menu(
@@ -189,7 +181,7 @@ create or replace procedure sp_tambah_menu(
     
     language plpgsql
     as $$
-    begin 
+    begin
     update menu
     set 
     nama_menu = p_nama_menu,

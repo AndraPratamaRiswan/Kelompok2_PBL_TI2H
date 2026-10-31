@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/includes/koneksi.php';
 require __DIR__ . '/includes/queries/katalog.php';
+require __DIR__ . '/includes/queries/edit_menu.php';
 
 $idMenu = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$idMenu || $idMenu < 1) {
@@ -15,18 +16,14 @@ $menu = null;
 $idKategori = 0;
 
 try {
-    $stmt = $pdo->prepare('SELECT id_menu, nama_menu, deskripsi, harga_menu, gambar_url, is_tersedia FROM menu WHERE id_menu = :id');
-    $stmt->execute([':id' => $idMenu]);
-    $menu = $stmt->fetch();
+    $menu = ambilMenuById($pdo, $idMenu);
     if (!$menu) {
         header('Location: katalog.php');
         exit;
     }
 
     $kategoriList = ambilKategori($pdo);
-    $stmtKategori = $pdo->prepare('SELECT id_kategori FROM kategori_menu WHERE id_menu = :id ORDER BY id_kategori LIMIT 1');
-    $stmtKategori->execute([':id' => $idMenu]);
-    $idKategori = (int) ($stmtKategori->fetchColumn() ?: 0);
+    $idKategori = ambilIdKategoriMenu($pdo, $idMenu);
 } catch (PDOException $e) {
     $error = 'Data menu gagal dibaca. Detail: ' . $e->getMessage();
 }
@@ -43,32 +40,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === '' && $menu) {
         $error = 'Isi nama, harga yang valid, dan gambar terlebih dahulu.';
     } else {
         try {
-            $pdo->beginTransaction();
-            $stmt = $pdo->prepare('UPDATE menu SET nama_menu = :nama, deskripsi = :deskripsi, harga_menu = :harga, gambar_url = :gambar, updated_at = NOW() WHERE id_menu = :id');
-            $stmt->execute([
-                ':nama' => $nama,
-                ':deskripsi' => $deskripsi !== '' ? $deskripsi : null,
-                ':harga' => (float) $harga,
-                ':gambar' => '../Admin/assets/img/' . $gambarFile,
-                ':id' => $idMenu,
-            ]);
+            editMenu(
+                $pdo,
+                $idMenu,
+                $idKategoriForm > 0 ? [$idKategoriForm] : [],
+                $nama,
+                (float) $harga,
+                $deskripsi !== '' ? $deskripsi : null,
+                '../Admin/assets/img/' . $gambarFile
+            );
 
-            if ($idKategoriForm > 0) {
-                $stmtHapusKategori = $pdo->prepare('DELETE FROM kategori_menu WHERE id_menu = :id');
-                $stmtHapusKategori->execute([':id' => $idMenu]);
-                $stmtTambahKategori = $pdo->prepare('INSERT INTO kategori_menu (id_menu, id_kategori) VALUES (:id_menu, :id_kategori)');
-                $stmtTambahKategori->execute([':id_menu' => $idMenu,':id_kategori' => $idKategoriForm]);
-            }
-            $pdo->commit();
-
-            header('Location: katalog.php?pesan=diedit');
-            exit;
-        } catch (Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
-            $error = 'Perubahan menu gagal disimpan. Detail: ' . $e->getMessage();
-        }
+    header('Location: katalog.php?pesan=diedit');
+    exit;
+} catch (Throwable $e) {
+    $error = 'Perubahan menu gagal disimpan. Detail: ' . $e->getMessage();
+}
     }
 }
 

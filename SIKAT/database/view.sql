@@ -45,23 +45,25 @@ create view v_menu_terlaris as
 select
     dp.id_menu,
     m.nama_menu,
+    p.tanggal_dipesan,
     sum(dp.jumlah) as total_unit_dipesan
 from detail_pesanan dp
 join menu m
 on dp.id_menu = m.id_menu
 join pesanan p
 on dp.id_pesanan = p.id_pesanan
-group by dp.id_menu, m.nama_menu
+group by dp.id_menu, m.nama_menu, p.tanggal_dipesan;
 
-create view v_tampil_menu_catalog as 
-select 
+CREATE VIEW v_tampil_menu_catalog AS
+SELECT
+    m.id_menu,
     m.nama_menu,
     m.deskripsi,
     m.harga_menu,
     m.gambar_url,
-    k.nama_kategori
-from menu m
-join kategori_menu km
-on m.id_menu = km.id_menu
-join kategori k
-on k.id_kategori = km.id_kategori
+    m.is_tersedia,
+    COALESCE(STRING_AGG(DISTINCT k.nama_kategori, ', '), 'Belum ada kategori') AS daftar_kategori
+FROM menu m
+LEFT JOIN kategori_menu km ON km.id_menu = m.id_menu
+LEFT JOIN kategori k ON k.id_kategori = km.id_kategori
+GROUP BY m.id_menu;

@@ -1,31 +1,23 @@
 <?php
 function ambilKatalogMenu(PDO $pdo, string $q = ''): array
 {
-    $sql = "
-        SELECT
-            m.id_menu,
-            m.nama_menu,
-            m.deskripsi,
-            m.harga_menu,
-            m.gambar_url,
-            m.is_tersedia,
-            COALESCE(STRING_AGG(DISTINCT k.nama_kategori, ', '), 'Belum ada kategori') AS daftar_kategori
-        FROM menu m
-        LEFT JOIN kategori_menu km ON km.id_menu = m.id_menu
-        LEFT JOIN kategori k ON k.id_kategori = km.id_kategori
-    ";
-
+    $sql = "SELECT * FROM v_tampil_menu_catalog";
     $params = [];
+
     if ($q !== '') {
-        $sql .= " WHERE m.nama_menu ILIKE :nama OR COALESCE(m.deskripsi, '') ILIKE :deskripsi ";
-        $params[':nama'] = '%' . $q . '%';
+        $sql .= " WHERE nama_menu ILIKE :nama
+                  OR COALESCE(deskripsi, '') ILIKE :deskripsi
+                  OR daftar_kategori ILIKE :kategori";
+        $params[':nama']      = '%' . $q . '%';
         $params[':deskripsi'] = '%' . $q . '%';
+        $params[':kategori']  = '%' . $q . '%';
     }
 
-    $sql .= " GROUP BY m.id_menu ORDER BY m.id_menu DESC";
+    $sql .= " ORDER BY id_menu DESC";
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
-    return $stmt->fetchAll();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function ambilKategori(PDO $pdo): array
