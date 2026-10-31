@@ -259,3 +259,43 @@ button { cursor: pointer; }
 .order-note-field textarea { width: 100%; padding: 10px 11px; border: 1px solid #ccd4dc; border-radius: 7px; background: #f9fbfd; color: var(--text); font: inherit; }
 .order-form-actions { display: flex; gap: 9px; }
 .order-form [hidden] { display: none !important; }
+
+/* tampilan hal detail pesanan */
+.detail-status-row { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-bottom: 16px; padding: 13px 16px; border-radius: 9px; background: #d4e0eb; }
+.detail-status-item { display: flex; align-items: center; gap: 10px; }
+.detail-status-item > span { color: var(--muted); }
+.detail-badge { display: inline-block; padding: 5px 13px; border-radius: 20px; background: #d5d9de; font-size: 13px; font-weight: 500; }
+.detail-badge--paid { background: #dcefe0; color: #285a35; }
+.detail-badge--dp { background: #fff3bd; color: #745c12; }
+.order-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.detail-card { min-width: 0; padding: 17px; border-radius: 9px; background: #fff; }
+.detail-card h2 { margin: 0 0 12px; font-size: 17px; }
+.detail-card--wide { grid-column: 1 / -1; }
+.detail-list { margin: 0; }
+.detail-list > div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid #e8edf2; }
+.detail-list > div:last-child { border-bottom: 0; }
+.detail-list dt { color: var(--muted); }
+.detail-list dd { margin: 0; text-align: right; font-weight: 600; }
+.detail-list-total { margin-top: 4px; border-top: 1px solid #ccd6df; font-size: 15px; }
+.detail-list-remaining dd { color: #8a4140; }
+.detail-table-wrap { overflow-x: auto; }
+.detail-table { width: 100%; border-collapse: collapse; }
+.detail-table th, .detail-table td { padding: 10px; border-bottom: 1px solid #e8edf2; text-align: left; white-space: nowrap; }
+.detail-table th { background: #eef3f7; color: #40566c; font-weight: 600; }
+.detail-note { min-height: 45px; margin: 0; color: var(--muted); white-space: normal; }
+.detail-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 16px; }
+
+@media (max-width: 700px) {
+    .order-form-grid, .order-detail-grid { grid-template-columns: 1fr; }
+    .order-item-row { grid-template-columns: 1fr 150px; }
+    .remove-order-item { grid-column: 1 / -1; justify-self: start; }
+    .detail-card--wide { grid-column: auto; }
+}
+@media (max-width: 480px) {
+    .order-form-panel { padding: 13px; }
+    .order-section-heading { align-items: flex-start; flex-direction: column; }
+    .order-item-row { grid-template-columns: 1fr; }
+    .remove-order-item { grid-column: auto; }
+    .detail-status-row, .detail-status-item { align-items: flex-start; flex-direction: column; }
+    .detail-actions { flex-wrap: wrap; }
+}
