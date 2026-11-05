@@ -28,39 +28,29 @@ $menuTerlaris = [
     ['nama' => 'Nasi Tumpeng', 'persentase' => 34],
 ];
 
-// pesanan dummy, blon konek database
-$daftarPesanan = [
-    [
-        'id' => 1, 'kode' => 'SKKT-001', 'nomor' => '0812-6786-0980', 'nama' => 'Ibu Narsis',
-        'ringkasan_menu' => 'Nasi Ayam Bakar (50 box)', 'status_pesanan' => 'Dikonfirmasi',
-        'status_pembayaran' => 'Lunas', 'tanggal' => '2 November 2026',
-    ],
-    [
-        'id' => 2, 'kode' => 'SKKT-002', 'nomor' => '0812-6786-0981', 'nama' => 'Ibu Sulami',
-        'ringkasan_menu' => 'Nasi Ayam Bakar (50 box)', 'status_pesanan' => 'Diproses',
-        'status_pembayaran' => 'DP', 'tanggal' => '3 November 2026',
-    ],
-    [
-        'id' => 3, 'kode' => 'SKKT-003', 'nomor' => '0812-6786-0982', 'nama' => 'Pak Yanto',
-        'ringkasan_menu' => 'Nasi Rendang (30 box), Nasi Uduk (10 box)', 'status_pesanan' => 'Dikirim',
-        'status_pembayaran' => 'Lunas', 'tanggal' => '4 November 2026',
-    ],
-    [
-        'id' => 4, 'kode' => 'SKKT-004', 'nomor' => '0812-6786-0983', 'nama' => 'Bu Ratna',
-        'ringkasan_menu' => 'Nasi Kuning (20 box)', 'status_pesanan' => 'Dikonfirmasi',
-        'status_pembayaran' => 'DP', 'tanggal' => '5 November 2026',
-    ],
-    [
-        'id' => 5, 'kode' => 'SKKT-005', 'nomor' => '0812-6786-0984', 'nama' => 'Ibu Siti',
-        'ringkasan_menu' => 'Snack Box Premium (25 box)', 'status_pesanan' => 'Selesai',
-        'status_pembayaran' => 'Lunas', 'tanggal' => '15 Oktober 2026',
-    ],
-    [
-        'id' => 6, 'kode' => 'SKKT-006', 'nomor' => '0812-6786-0985', 'nama' => 'Pak Budi',
-        'ringkasan_menu' => 'Tumpeng Mini (5 box)', 'status_pesanan' => 'Diproses',
-        'status_pembayaran' => 'DP', 'tanggal' => '6 November 2026',
-    ],
-];
+// daftar pesanan diambil dari database (sebelumnya data dummy)
+require_once __DIR__ . '/includes/koneksi.php';
+require_once __DIR__ . '/includes/queries/pesanan_crud.php';
+require_once __DIR__ . '/includes/pesanan_helper.php';
+
+$daftarPesanan = [];
+$errorPesanan = '';
+try {
+    foreach (array_slice(psnDaftar($pdo), 0, 20) as $baris) {
+        $daftarPesanan[] = [
+            'id' => (int) $baris['id_pesanan'],
+            'kode' => psnKode((int) $baris['id_pesanan']),
+            'nomor' => $baris['no_hp'],
+            'nama' => $baris['nama_pembeli'],
+            'ringkasan_menu' => $baris['ringkasan_menu'],
+            'status_pesanan' => $baris['status_pesanan'],
+            'status_pembayaran' => $baris['status_pembayaran'],
+            'tanggal' => psnTanggalIndo($baris['tanggal_pengiriman']),
+        ];
+    }
+} catch (PDOException $e) {
+    $errorPesanan = 'Data pesanan gagal dibaca. Detail: ' . $e->getMessage();
+}
 
 $pageTitle = 'Dashboard';
 $activeNav = 'dashboard';
@@ -129,27 +119,32 @@ require __DIR__ . '/includes/header.php';
             </select>
         </div>
         <div class="orders-actions">
-            <a class="button button-primary" href="tambah_pesanan.php">+ Add</a>
-            <button class="text-button" type="button">Lihat Semua</button>
+            <a class="button button-primary" href="pesanan_tambah.php">+ Add</a>
+            <a class="text-button" href="pesanan_daftar.php">Lihat Semua</a>
         </div>
     </div>
 
     <div class="order-list">
+        <?php if ($errorPesanan !== ''): ?>
+            <div class="form-message form-message--error"><?= htmlspecialchars($errorPesanan, ENT_QUOTES, 'UTF-8') ?></div>
+        <?php elseif (empty($daftarPesanan)): ?>
+            <p class="empty-state">Belum ada pesanan.</p>
+        <?php endif; ?>
         <?php foreach ($daftarPesanan as $pesanan): ?>
-            <article class="order-row">
+            <article class="order-row" style="grid-template-columns: minmax(210px, 1fr) 96px minmax(240px, 1fr);">
                 <div class="order-info">
                     <strong>Pesanan <?= htmlspecialchars($pesanan['kode'], ENT_QUOTES, 'UTF-8') ?></strong>
                     <span><?= htmlspecialchars($pesanan['nomor'], ENT_QUOTES, 'UTF-8') ?> · <?= htmlspecialchars($pesanan['nama'], ENT_QUOTES, 'UTF-8') ?></span>
                     <span><?= htmlspecialchars($pesanan['ringkasan_menu'], ENT_QUOTES, 'UTF-8') ?></span>
                     <small><?= htmlspecialchars($pesanan['tanggal'], ENT_QUOTES, 'UTF-8') ?></small>
                 </div>
-                <span class="status-pill <?= $pesanan['status_pembayaran'] === 'Lunas' ? 'status-pill--paid' : 'status-pill--dp' ?>">
+                <span class="status-pill <?= psnKelasBayar((string) $pesanan['status_pembayaran']) ?>">
                     <?= htmlspecialchars($pesanan['status_pembayaran'], ENT_QUOTES, 'UTF-8') ?>
                 </span>
                 <div class="order-buttons">
                     <span class="process-status"><?= htmlspecialchars($pesanan['status_pesanan'], ENT_QUOTES, 'UTF-8') ?></span>
-                    <a class="button button-neutral" href="detail_pesanan.php?id=<?= (int) $pesanan['id'] ?>">Detail</a>
-                    <a class="button button-neutral" href="edit_pesanan.php?id=<?= (int) $pesanan['id'] ?>">Edit</a>
+                    <a class="button button-neutral" href="pesanan_detail.php?id=<?= (int) $pesanan['id'] ?>">Detail</a>
+                    <a class="button button-neutral" href="pesanan_ubah.php?id=<?= (int) $pesanan['id'] ?>">Edit</a>
                 </div>
             </article>
         <?php endforeach; ?>
