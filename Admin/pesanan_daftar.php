@@ -39,7 +39,10 @@ require __DIR__ . '/includes/header.php';
         <h1>Daftar Pesanan</h1>
         <p class="page-description">Kelola pesanan katering SIKAT dari database.</p>
     </div>
-    <a class="button button-primary" href="pesanan_tambah.php">+ Tambah Pesanan</a>
+    <div class="page-actions">
+        <a class="button button-neutral" href="index.php">Kembali ke Dashboard</a>
+        <a class="button button-primary" href="pesanan_tambah.php">+ Tambah Pesanan</a>
+    </div>
 </section>
 
 <?php if ($pesan): ?>
@@ -86,8 +89,8 @@ require __DIR__ . '/includes/header.php';
                 </span>
                 <div class="order-buttons">
                     <span class="process-status"><?= psnE($pesananRow['status_pesanan']) ?></span>
-                    <a class="button button-neutral" href="pesanan_detail.php?id=<?= (int) $pesananRow['id_pesanan'] ?>">Detail</a>
-                    <a class="button button-neutral" href="pesanan_ubah.php?id=<?= (int) $pesananRow['id_pesanan'] ?>">Edit</a>
+                    <a class="button button-neutral" href="pesanan_detail.php?id=<?= (int) $pesananRow['id_pesanan'] ?>&amp;asal=daftar">Detail</a>
+                    <a class="button button-neutral" href="pesanan_ubah.php?id=<?= (int) $pesananRow['id_pesanan'] ?>&amp;asal=daftar">Edit</a>
                     <form method="post" action="pesanan_hapus.php" style="margin:0"
                           onsubmit="return confirm('Hapus pesanan <?= psnE($kode) ?>? Data yang dihapus tidak bisa dikembalikan.');">
                         <input type="hidden" name="id_pesanan" value="<?= (int) $pesananRow['id_pesanan'] ?>">
