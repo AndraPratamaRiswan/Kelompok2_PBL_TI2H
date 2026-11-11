@@ -8,6 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+$asal = (($_POST['asal'] ?? 'daftar') === 'dashboard') ? 'dashboard' : 'daftar';
+$tujuan = ($asal === 'dashboard') ? 'index.php' : 'pesanan_daftar.php';
+
 $idPesanan = filter_input(INPUT_POST, 'id_pesanan', FILTER_VALIDATE_INT);
 $kode = 'tidak_ditemukan';
 
@@ -19,5 +22,5 @@ if ($idPesanan && $idPesanan > 0) {
     }
 }
 
-header('Location: pesanan_daftar.php?pesan=' . $kode);
+header('Location: ' . $tujuan . '?pesan=' . $kode);
 exit;

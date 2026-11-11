@@ -4,9 +4,13 @@ require_once __DIR__ . '/includes/koneksi.php';
 require_once __DIR__ . '/includes/queries/pesanan_crud.php';
 require_once __DIR__ . '/includes/pesanan_helper.php';
 
+// halaman asal untuk menentukan tujuan tombol "kembali"
+$asal = (($_GET['asal'] ?? 'daftar') === 'dashboard') ? 'dashboard' : 'daftar';
+$urlKembali = ($asal === 'dashboard') ? 'index.php' : 'pesanan_daftar.php';
+
 $idPesanan = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$idPesanan || $idPesanan < 1) {
-    header('Location: pesanan_daftar.php');
+    header('Location: ' . $urlKembali);
     exit;
 }
 
@@ -17,7 +21,7 @@ $error   = '';
 try {
     $pesanan = psnAmbil($pdo, $idPesanan);
     if (!$pesanan) {
-        header('Location: pesanan_daftar.php?pesan=tidak_ditemukan');
+        header('Location: ' . $urlKembali . '?pesan=tidak_ditemukan');
         exit;
     }
     $items = psnItems($pdo, $idPesanan);
@@ -49,7 +53,7 @@ require __DIR__ . '/includes/header.php';
 <?php if ($error !== '' || !$pesanan): ?>
     <section class="page-heading">
         <div><h1>Detail Pesanan</h1></div>
-        <a class="button button-neutral" href="pesanan_daftar.php">Kembali</a>
+        <a class="button button-neutral" href="<?= psnE($urlKembali) ?>">Kembali</a>
     </section>
     <div class="form-message form-message--error"><?= psnE($error !== '' ? $error : 'Pesanan tidak ditemukan.') ?></div>
 <?php else: ?>
@@ -59,7 +63,7 @@ require __DIR__ . '/includes/header.php';
         <h1>Detail Pesanan</h1>
         <p class="page-description"><?= psnE(psnKode($idPesanan)) ?> · Dibuat <?= psnE(date('d/m/Y H:i', strtotime((string) $pesanan['created_at']))) ?></p>
     </div>
-    <a class="button button-neutral" href="pesanan_daftar.php">Kembali</a>
+    <a class="button button-neutral" href="<?= psnE($urlKembali) ?>">Kembali</a>
 </section>
 
 <div class="detail-status-row">
@@ -122,13 +126,14 @@ require __DIR__ . '/includes/header.php';
 </div>
 
 <div class="detail-actions">
-    <a class="button button-neutral" href="pesanan_daftar.php">Tutup</a>
+    <a class="button button-neutral" href="<?= psnE($urlKembali) ?>">Tutup</a>
     <form method="post" action="pesanan_hapus.php" style="margin:0"
           onsubmit="return confirm('Hapus pesanan <?= psnE(psnKode($idPesanan)) ?>? Data yang dihapus tidak bisa dikembalikan.');">
         <input type="hidden" name="id_pesanan" value="<?= (int) $idPesanan ?>">
+        <input type="hidden" name="asal" value="<?= psnE($asal) ?>">
         <button class="button button-delete" type="submit">Hapus Pesanan</button>
     </form>
-    <a class="button button-primary" href="pesanan_ubah.php?id=<?= (int) $idPesanan ?>">Edit Pesanan</a>
+    <a class="button button-primary" href="pesanan_ubah.php?id=<?= (int) $idPesanan ?>&amp;asal=<?= psnE($asal) ?>">Edit Pesanan</a>
 </div>
 
 <?php endif; ?>

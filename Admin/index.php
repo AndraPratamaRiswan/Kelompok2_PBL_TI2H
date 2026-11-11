@@ -63,7 +63,7 @@ require __DIR__ . '/includes/header.php';
         <h1>Dashboard</h1>
         <p class="page-description">Pantau pesanan dan aktivitas SIKAT hari ini.</p>
     </div>
-    <button class="button button-report" type="button">Cetak Laporan</button>
+    <a class="button button-report" href="pesanan_laporan.php">Cetak Laporan</a>
 </section>
 
 <!-- kartu statistik dijadiin array, biar ndak nulis berulang -->
@@ -143,8 +143,8 @@ require __DIR__ . '/includes/header.php';
                 </span>
                 <div class="order-buttons">
                     <span class="process-status"><?= htmlspecialchars($pesanan['status_pesanan'], ENT_QUOTES, 'UTF-8') ?></span>
-                    <a class="button button-neutral" href="pesanan_detail.php?id=<?= (int) $pesanan['id'] ?>">Detail</a>
-                    <a class="button button-neutral" href="pesanan_ubah.php?id=<?= (int) $pesanan['id'] ?>">Edit</a>
+                    <a class="button button-neutral" href="pesanan_detail.php?id=<?= (int) $pesanan['id'] ?>&amp;asal=dashboard">Detail</a>
+                    <a class="button button-neutral" href="pesanan_ubah.php?id=<?= (int) $pesanan['id'] ?>&amp;asal=dashboard">Edit</a>
                 </div>
             </article>
         <?php endforeach; ?>

@@ -7,9 +7,13 @@ require_once __DIR__ . '/includes/pesanan_helper.php';
 
 date_default_timezone_set('Asia/Jakarta');
 
+// halaman asal untuk menentukan tujuan tombol "kembali"
+$asal = (($_GET['asal'] ?? 'daftar') === 'dashboard') ? 'dashboard' : 'daftar';
+$urlKembali = ($asal === 'dashboard') ? 'index.php' : 'pesanan_daftar.php';
+
 $idPesanan = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$idPesanan || $idPesanan < 1) {
-    header('Location: pesanan_daftar.php');
+    header('Location: ' . $urlKembali);
     exit;
 }
 
@@ -21,7 +25,7 @@ $daftarMenu = [];
 try {
     $pesanan = psnAmbil($pdo, $idPesanan);
     if (!$pesanan) {
-        header('Location: pesanan_daftar.php?pesan=tidak_ditemukan');
+        header('Location: ' . $urlKembali . '?pesan=tidak_ditemukan');
         exit;
     }
     $items = psnItems($pdo, $idPesanan);
@@ -76,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pesanan && $pesanForm === '') {
                 $hasil['ongkir_num']
             );
 
-            header('Location: pesanan_daftar.php?pesan=diubah');
+            header('Location: ' . ($asal === 'dashboard' ? 'index.php' : 'pesanan_daftar.php?pesan=diubah'));
             exit;
         } catch (Throwable $e) {
             $pesanForm = 'Perubahan pesanan gagal disimpan. Detail: ' . $e->getMessage();
@@ -85,9 +89,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pesanan && $pesanForm === '') {
 }
 
 $mode        = 'ubah';
-$formAction  = 'pesanan_ubah.php?id=' . (int) $idPesanan;
+$formAction  = 'pesanan_ubah.php?id=' . (int) $idPesanan . '&asal=' . $asal;
 $labelSimpan = 'Simpan Perubahan';
-$urlBatal    = 'pesanan_daftar.php';
+$urlBatal    = $urlKembali;
 
 $pageTitle = 'Edit Pesanan';
 $activeNav = 'dashboard';
@@ -99,7 +103,7 @@ require __DIR__ . '/includes/header.php';
         <h1>Edit Pesanan</h1>
         <p class="page-description"><?= $pesanan ? psnE(psnKode($idPesanan)) . ' · ubah data pesanan yang sudah ada.' : 'Pesanan tidak ditemukan.' ?></p>
     </div>
-    <a class="button button-neutral" href="pesanan_daftar.php" onclick="return confirm('Yakin ingin keluar? Perubahan yang belum disimpan akan hilang.');">Kembali</a>
+    <a class="button button-neutral" href="<?= psnE($urlKembali) ?>" onclick="return confirm('Yakin ingin keluar? Perubahan yang belum disimpan akan hilang.');">Kembali</a>
 </section>
 
 <?php if ($pesanan): ?>
