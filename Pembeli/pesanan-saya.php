@@ -74,7 +74,7 @@ include 'includes/header.php';
                 <h2 class="fw-bold mb-1 isi-red">Pesanan Saya</h2>
                 <p class="text-muted mb-0">Nomor HP: <?= pbE($_SESSION['no_hp'] ?? '') ?></p>
             </div>
-            <a href="menu-pesan.php" class="btn bg-red text-white">+ Pesan Lagi</a>
+            <a href="index.php" class="btn bg-red text-white">+ Pesan Lagi</a>
         </div>
 
         <?php if ($pesan) : ?>
@@ -87,7 +87,7 @@ include 'includes/header.php';
         <?php if (empty($daftarPesanan) && $error === '') : ?>
             <div class="card p-5 text-center tidak-dicetak">
                 <h5>Kamu belum punya pesanan.</h5>
-                <div><a href="menu-pesan.php" class="btn btn-success mt-3">Pilih Menu</a></div>
+                <div><a href="index.php" class="btn btn-success mt-3">Pilih Menu</a></div>
             </div>
         <?php endif; ?>
 
@@ -202,11 +202,6 @@ include 'includes/header.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // pesanan baru sudah masuk database, jadi keranjang di browser dikosongkan
-    if (new URLSearchParams(window.location.search).get('status') === 'dibuat') {
-        try { localStorage.removeItem('keranjang_sikat'); } catch (e) {}
-    }
-
     // cetak nota: hanya kartu pesanan yang dipilih yang dicetak
     document.querySelectorAll('.btn-cetak-nota').forEach(function (tombol) {
         tombol.addEventListener('click', function () {

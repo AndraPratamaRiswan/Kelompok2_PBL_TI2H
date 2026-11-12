@@ -1,107 +1,93 @@
-<?php 
-$halaman = 'cek-pesanan'; 
-include 'includes/header.php'; 
+<?php
+// Daftar pesanan milik pembeli yang login. Tampilannya sama dengan "Daftar Pesanan" di
+// panel Admin (kode pesanan, nomor HP · nama, ringkasan menu, tanggal kirim, total,
+// status pembayaran, status pesanan). Tombol Detail/Edit/Hapus khusus admin tidak ikut.
+session_start();
+ob_start();
+
+$halaman = 'cek-pesanan';
+date_default_timezone_set('Asia/Jakarta');
+
+require_once __DIR__ . '/includes/koneksi.php';
+require_once __DIR__ . '/includes/queries/pesanan.php';
+require_once __DIR__ . '/includes/pesanan_helper.php';
+
+$sudahLogin    = isset($_SESSION['id_pembeli']);
+$daftarPesanan = [];
+$error         = '';
+
+if ($sudahLogin) {
+    try {
+        $daftarPesanan = pbDaftarPesanan($pdo, (int) $_SESSION['id_pembeli']);
+    } catch (PDOException $e) {
+        error_log('Baca pesanan gagal: ' . $e->getMessage());
+        $error = 'Pesananmu belum bisa ditampilkan. Coba lagi nanti.';
+    }
+}
+
+$cssTambahan = ['assets/css/daftar-pesanan.css'];
+include 'includes/header.php';
 ?>
 
-<div class="card p-4 col-md-8 mx-auto mt-5 mb-5">
-    <div class="row align-items-center">
-        <!-- Kolom Kiri -->
-        <div class="col-6 text-start">
-            <!-- ID MENU -->
-            <h5 class="fw-bold font-24 mb-1">SKT-002</h5>
-            <!-- ID MENU END -->
+<div class="container mt-5 mb-5">
 
-            <!-- KIRIM  -->
-            <p class="font-18 mb-0">Dikirim: Sabtu, 22 Des</p> 
-            <!-- KIRIM END -->
+    <?php if (!$sudahLogin) : ?>
+        <div class="card p-5 text-center col-md-8 mx-auto">
+            <h5>Masuk dulu untuk melihat pesananmu.</h5>
+            <p class="text-muted">Pesanan ditampilkan berdasarkan nomor HP akun kamu.</p>
+            <div><a href="login.php?next=cek-pesanan.php" class="btn bg-red text-white">Masuk</a></div>
+        </div>
+    <?php else : ?>
+
+        <div class="mb-3">
+            <h2 class="fw-bold mb-1 isi-red">Daftar Pesanan</h2>
+            <p class="text-muted mb-0">Pantau status pesanan katering kamu.</p>
         </div>
 
-        <!-- Kolom Kanan -->
-        <div class="col-6 text-end">
-            <!-- [UNTUK BACKEND] Daftar class warna badge status... -->
-            <span class="badge bg-red rounded-pill px-3 py-2 mb-2 d-inline-block font-18 fw-normal">
-                Dikonfirmasi
-            </span>
-            <br>
-            <br>
-            <button type="button" class="btn bg-red text-white rounded-pill font-18 fw-normal" data-bs-toggle="collapse" data-bs-target="#demo" style="--bs-btn-padding-y: .120rem; --bs-btn-padding-x: 2.3rem; --bs-btn-font-size: .75rem;">
-                Rincian
-            </button>
-        </div>
-    </div>
+        <?php if ($error !== '') : ?>
+            <div class="alert alert-danger"><?= pbE($error) ?></div>
+        <?php endif; ?>
 
-    <div id="demo" class="collapse mt-4 pt-4 pb-4 border-top ">
-        <div class="position-relative mt-2 mb-5">
-            <!-- Bar -->
-            <div style="position: absolute; top: 35px; left: 12%; right: 12%; height: 3px; background-color: #000; z-index: 1;"></div>
-            
-            <!-- 4 Kolom bundar -->
-            <div class="row text-center position-relative" style="z-index: 2;">
-                <!-- Status 1 -->
-                <div class="col-3">
-                    <p class="mb-2 fw-bold text-success font-18">Dikonfirmasi</p>
-                    <div class="rounded-circle bg-success mx-auto" style="width: 24px; height: 24px;"></div>
-                    <p class="mt-2 text-muted font-18">Rabu, 1 Jan</p>
-                </div>
-                <!-- Status 2 -->
-                <div class="col-3">
-                    <p class="mb-2 fw-bold font-18">Diproses</p>
-                    <div class="rounded-circle bg-dark mx-auto" style="width: 24px; height: 24px;"></div>
-                    <p class="mt-2 text-muted font-18">&nbsp;</p>
-                </div>
-                <!-- Status 3 -->
-                <div class="col-3">
-                    <p class="mb-2 fw-bold font-18">Dikirim</p>
-                    <div class="rounded-circle bg-dark mx-auto" style="width: 24px; height: 24px;"></div>
-                    <p class="mt-2 text-muted font-18">&nbsp;</p>
-                </div>
-                <!-- Status 4 -->
-                <div class="col-3">
-                    <p class="mb-2 fw-bold font-18">Selesai</p>
-                    <div class="rounded-circle bg-dark mx-auto" style="width: 24px; height: 24px;"></div>
-                    <p class="mt-2 text-muted font-18">&nbsp;</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- [BACKEND MENU] BUAT LIST MENU DAN HARGA -->
-         <!-- manu satuan -->
-        <div class="row">
-            <div class="col-8 text-start">
-                 <p class="fw-light font-18 mb-0">Nasi box ayam x10</p>
+        <section class="orders-panel">
+            <div class="orders-toolbar">
+                <div class="orders-title-group"><h2>Semua Pesanan (<?= count($daftarPesanan) ?>)</h2></div>
             </div>
 
-            <div class="col-4 text-end">
-                <p class="fw-light font-18 ">rp.50000</p>
+            <div class="order-list">
+                <?php if (empty($daftarPesanan) && $error === '') : ?>
+                    <p class="empty-state">
+                        Kamu belum punya pesanan. <a href="index.php">Pilih menu</a>
+                    </p>
+                <?php endif; ?>
+
+                <?php foreach ($daftarPesanan as $pesanan) : ?>
+                    <?php
+                    $ringkasan = [];
+                    foreach ($pesanan['items'] as $item) {
+                        $ringkasan[] = $item['nama_menu'] . ' (' . (int) $item['jumlah'] . ' box)';
+                    }
+                    ?>
+                    <article class="order-row">
+                        <div class="order-info">
+                            <strong>Pesanan <?= pbE(pbKode((int) $pesanan['id_pesanan'])) ?></strong>
+                            <span><?= pbE($_SESSION['no_hp'] ?? '') ?> · <?= pbE($pesanan['nama_pembeli']) ?></span>
+                            <span><?= pbE($ringkasan ? implode(', ', $ringkasan) : '-') ?></span>
+                            <small>Kirim <?= pbE(pbTanggalPanjang($pesanan['tanggal_pengiriman'])) ?> · Total <?= pbRupiah($pesanan['total_harga']) ?></small>
+                        </div>
+                        <span class="status-pill <?= pbKelasBayar((string) $pesanan['status_pembayaran']) ?>">
+                            <?= pbE($pesanan['status_pembayaran']) ?>
+                        </span>
+                        <div class="order-buttons">
+                            <span class="process-status"><?= pbE($pesanan['status_pesanan']) ?></span>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
             </div>
-            
-        </div>
-        <!-- menu satuan end -->
+        </section>
 
-
-        <!-- total harga keranajnga -->
-        <div class="row">
-            <div class="col-6 text-start fw-bold font-18">TOTAL</div>
-            <div class="col-6 text-end fw-bold font-18">rp.50000</div>
-        </div>
-        <!-- total harga keranjang end -->
-
-
-        <!-- ceteak nota -->
-        <div class="d-grid gap-2 mt-4">
-                <button class="btn bg-red text-white font-18 fw-bold " type="button">Cetak Nota</button>
-        </div>
-        <!-- cetak nota enda -->
-
-    </div>
-
-    
-
+    <?php endif; ?>
 </div>
 
-
-
-<?php 
-// Perhatikan bagian ini, pastikan path foldernya benar
-include 'includes/footer.php'; 
+<?php
+include 'includes/footer.php';
 ?>
