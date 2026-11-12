@@ -4,10 +4,10 @@ date_default_timezone_set('Asia/Jakarta');
 $periodeLabel = 'September 2026';
 
 $transaksiDummy = [
-    ['tanggal' => '2026-09-01', 'menu' => 'Nasi Ayam Bakar Sedap', 'qty' => 50, 'harga' => 25000],
-    ['tanggal' => '2026-09-01', 'menu' => 'Nasi Ayam Geprek Jos', 'qty' => 50, 'harga' => 25000],
-    ['tanggal' => '2026-09-02', 'menu' => 'Nasi Rendang Nyam', 'qty' => 50, 'harga' => 25000],
-    ['tanggal' => '2026-09-02', 'menu' => 'Nasi Kuning', 'qty' => 50, 'harga' => 25000],
+    ['id_pesanan' => 'SKT01', 'tanggal' => '2026-09-01', 'menu' => 'Nasi Ayam Bakar Sedap', 'qty' => 50, 'harga' => 25000],
+    ['id_pesanan' => 'SKT01', 'tanggal' => '2026-09-01', 'menu' => 'Nasi Ayam Geprek Jos', 'qty' => 50, 'harga' => 25000],
+    ['id_pesanan' => 'SKT02', 'tanggal' => '2026-09-02', 'menu' => 'Nasi Rendang Nyam', 'qty' => 50, 'harga' => 25000],
+    ['id_pesanan' => 'SKT02', 'tanggal' => '2026-09-02', 'menu' => 'Nasi Kuning', 'qty' => 50, 'harga' => 25000],
 ];
 
 // hitung total box, pendapatan, ama jumlah jenis menu
@@ -79,31 +79,33 @@ function laporanBuatPdf(string $periodeLabel, array $baris, int $totalQty, int $
     $stream .= laporanPdfText(575, 442, 10, 'Total Pendapatan', false, [1, 1, 1]);
     $stream .= laporanPdfText(575, 420, 16, laporanRupiah($totalPendapatan), true, [1, 1, 1]);
 
-    // header table
+    // header tabel PDF: kolom ID Pesanan ditambahkan di paling kiri.
     $stream .= laporanPdfRect(40, 365, 762, 30, [0.25, 0.37, 0.49]);
-    $stream .= laporanPdfText(52, 376, 10, 'Tanggal', false, [1, 1, 1]);
-    $stream .= laporanPdfText(175, 376, 10, 'Menu', false, [1, 1, 1]);
-    $stream .= laporanPdfText(475, 376, 10, 'Qty', false, [1, 1, 1]);
-    $stream .= laporanPdfText(550, 376, 10, 'Harga Satuan', false, [1, 1, 1]);
-    $stream .= laporanPdfText(705, 376, 10, 'Total', false, [1, 1, 1]);
+    $stream .= laporanPdfText(50, 376, 9, 'ID Pesanan', false, [1, 1, 1]);
+    $stream .= laporanPdfText(125, 376, 10, 'Tanggal', false, [1, 1, 1]);
+    $stream .= laporanPdfText(230, 376, 10, 'Menu', false, [1, 1, 1]);
+    $stream .= laporanPdfText(500, 376, 10, 'Jumlah', false, [1, 1, 1]);
+    $stream .= laporanPdfText(580, 376, 9, 'Harga Satuan', false, [1, 1, 1]);
+    $stream .= laporanPdfText(720, 376, 10, 'Total', false, [1, 1, 1]);
 
     $y = 335;
     foreach ($baris as $index => $row) {
         $warnaBaris = ($index % 2 === 0) ? [1, 1, 1] : [0.94, 0.96, 0.98];
         $stream .= laporanPdfRect(40, $y - 8, 762, 28, $warnaBaris);
-        $stream .= laporanPdfText(52, $y + 1, 9, laporanTanggal($row['tanggal']));
-        $stream .= laporanPdfText(175, $y + 1, 9, $row['menu']);
-        $stream .= laporanPdfText(475, $y + 1, 9, $row['qty'] . ' Box');
-        $stream .= laporanPdfText(550, $y + 1, 9, laporanRupiah($row['harga']));
-        $stream .= laporanPdfText(705, $y + 1, 9, laporanRupiah($row['total']));
+        $stream .= laporanPdfText(50, $y + 1, 9, $row['id_pesanan']);
+        $stream .= laporanPdfText(125, $y + 1, 9, laporanTanggal($row['tanggal']));
+        $stream .= laporanPdfText(230, $y + 1, 9, $row['menu']);
+        $stream .= laporanPdfText(500, $y + 1, 9, number_format((int) $row['qty'], 0, ',', '.') . ' Box');
+        $stream .= laporanPdfText(580, $y + 1, 9, laporanRupiah($row['harga']));
+        $stream .= laporanPdfText(720, $y + 1, 9, laporanRupiah($row['total']));
         $y -= 31;
     }
 
     // baris total
     $stream .= laporanPdfRect(40, $y - 8, 762, 32, [0.88, 0.92, 0.96]);
-    $stream .= laporanPdfText(52, $y + 3, 10, 'TOTAL KESELURUHAN', true);
-    $stream .= laporanPdfText(475, $y + 3, 10, number_format($totalQty, 0, ',', '.') . ' Box', true);
-    $stream .= laporanPdfText(705, $y + 3, 10, laporanRupiah($totalPendapatan), true);
+    $stream .= laporanPdfText(50, $y + 3, 10, 'TOTAL KESELURUHAN', true);
+    $stream .= laporanPdfText(500, $y + 3, 10, number_format($totalQty, 0, ',', '.') . ' Box', true);
+    $stream .= laporanPdfText(720, $y + 3, 10, laporanRupiah($totalPendapatan), true);
 
     // pembentuk file pdf
     $objects = [
@@ -166,7 +168,7 @@ require __DIR__ . '/includes/header.php';
         <!-- dropdown dummy -->
         <div class="report-filter no-print">
             <label for="periode">Periode</label>
-            <select id="periode" disabled>
+            <select id="periode">
                 <option selected>September 2026</option>
                 <option>Oktober 2026</option>
                 <option>November 2026</option>
@@ -192,9 +194,10 @@ require __DIR__ . '/includes/header.php';
             <table class="report-table">
                 <thead>
                     <tr>
+                        <th>ID Pesanan</th>
                         <th>Tanggal</th>
                         <th>Menu</th>
-                        <th>Qty</th>
+                        <th>Jumlah</th>
                         <th>Harga Satuan</th>
                         <th>Total</th>
                     </tr>
@@ -202,6 +205,7 @@ require __DIR__ . '/includes/header.php';
                 <tbody>
                     <?php foreach ($transaksiDummy as $row): ?>
                         <tr>
+                            <td><?= htmlspecialchars($row['id_pesanan'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars(laporanTanggal($row['tanggal']), ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars($row['menu'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= number_format($row['qty'], 0, ',', '.') ?> Box</td>
@@ -212,7 +216,7 @@ require __DIR__ . '/includes/header.php';
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="2">Total Keseluruhan</td>
+                        <td colspan="3">Total Keseluruhan</td>
                         <td><?= number_format($totalQty, 0, ',', '.') ?> Box</td>
                         <td></td>
                         <td><?= laporanRupiah($totalPendapatan) ?></td>
