@@ -31,6 +31,33 @@ function pbTanggalIndo(?string $tanggal): string
     return $hari[(int) date('w', $waktu)] . ', ' . (int) date('j', $waktu) . ' ' . $bulan[(int) date('n', $waktu)] . ' ' . date('Y', $waktu);
 }
 
+// Tanggal format panjang ("12 November 2026"), sama dengan daftar pesanan di Admin
+function pbTanggalPanjang(?string $tanggal): string
+{
+    if (!$tanggal) {
+        return '-';
+    }
+    $bulan = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+              'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    $waktu = strtotime($tanggal);
+    if ($waktu === false) {
+        return (string) $tanggal;
+    }
+    return (int) date('j', $waktu) . ' ' . $bulan[(int) date('n', $waktu)] . ' ' . date('Y', $waktu);
+}
+
+// Kelas warna label pembayaran (Lunas hijau, DP kuning), sama dengan di Admin
+function pbKelasBayar(string $statusBayar): string
+{
+    if ($statusBayar === 'Lunas') {
+        return 'status-pill--paid';
+    }
+    if ($statusBayar === 'DP') {
+        return 'status-pill--dp';
+    }
+    return '';
+}
+
 // Pemesanan minimal H-3, sama dengan aturan di keranjang.php
 function pbTanggalMinimal(): string
 {
@@ -169,4 +196,34 @@ function pbValidasiPesanan(array $in, array $menuMap, string $tanggalMin, ?strin
         'id_menu' => array_keys($gabung),
         'jumlah'  => array_values($gabung),
     ];
+}
+
+
+// ---------- KERANJANG (disimpan di $_SESSION['keranjang'], dipakai index.php dan keranjang.php) ----------
+
+// Tambah menu ke keranjang. Nama dan harga selalu diambil dari database, bukan dari browser.
+// Mengembalikan [jenis alert bootstrap, pesan] untuk ditampilkan ke pembeli.
+function pbTambahKeKeranjang(PDO $pdo, int $idMenu, int $jumlah): array
+{
+    if (!isset($_SESSION['keranjang']) || !is_array($_SESSION['keranjang'])) {
+        $_SESSION['keranjang'] = [];
+    }
+
+    $jumlah = max(1, min($jumlah, 1000));
+
+    $menu = pbMenuByIds($pdo, [$idMenu])[$idMenu] ?? null;
+    if (!$menu || !filter_var($menu['is_tersedia'], FILTER_VALIDATE_BOOLEAN)) {
+        return ['danger', 'Menu tersebut sudah tidak tersedia.'];
+    }
+
+    $sudahAda = $_SESSION['keranjang'][$idMenu]['kuantitas'] ?? 0;
+    $_SESSION['keranjang'][$idMenu] = [
+        'id'        => $idMenu,
+        'nama'      => $menu['nama_menu'],
+        'harga'     => (float) $menu['harga_menu'],
+        'deskripsi' => (string) ($menu['deskripsi'] ?? ''),
+        'gambar'    => (string) ($menu['gambar_url'] ?? ''),
+        'kuantitas' => min(10000, $sudahAda + $jumlah),
+    ];
+    return ['success', $jumlah . ' × ' . $menu['nama_menu'] . ' masuk keranjang.'];
 }
