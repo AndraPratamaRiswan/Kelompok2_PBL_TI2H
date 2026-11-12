@@ -1,42 +1,37 @@
 <?php
-// data dummy untuk kartu statistik, nanti konek ke database
-
-$statistik = [
-    ['label' => 'Total Pesanan', 'nilai' => '140', 'tema' => 'soft'],
-    ['label' => 'Pesanan Diproses', 'nilai' => '12', 'tema' => 'dark'],
-    ['label' => 'Pesanan Selesai', 'nilai' => '136', 'tema' => 'soft'],
-    ['label' => 'Total Pendapatan', 'nilai' => 'Rp 1.000.000', 'tema' => 'dark'],
-];
-
-// angka tinggi cuman buat tampilan tinggi batang grafik
-$trenPesanan = [
-    ['hari' => 'Sen', 'tinggi' => 58],
-    ['hari' => 'Sel', 'tinggi' => 68],
-    ['hari' => 'Rab', 'tinggi' => 46],
-    ['hari' => 'Kam', 'tinggi' => 58],
-    ['hari' => 'Jum', 'tinggi' => 29],
-    ['hari' => 'Sab', 'tinggi' => 72],
-    ['hari' => 'Ming', 'tinggi' => 44],
-];
-
-// daftar menu yang laris, persentase ngatur panjang bar nya
-$menuTerlaris = [
-    ['nama' => 'Ayam Goreng', 'persentase' => 86],
-    ['nama' => 'Nasi Kuning', 'persentase' => 76],
-    ['nama' => 'Ayam Geprek', 'persentase' => 63],
-    ['nama' => 'Nasi Rendang', 'persentase' => 48],
-    ['nama' => 'Nasi Tumpeng', 'persentase' => 34],
-];
-
-// daftar pesanan diambil dari database (sebelumnya data dummy)
+// Dashboard admin: semua angka, grafik, dan daftar pesanan dibaca langsung dari database.
 require_once __DIR__ . '/includes/koneksi.php';
 require_once __DIR__ . '/includes/queries/pesanan_crud.php';
+require_once __DIR__ . '/includes/queries/dashboard.php';
 require_once __DIR__ . '/includes/pesanan_helper.php';
 
-$daftarPesanan = [];
-$errorPesanan = '';
+date_default_timezone_set('Asia/Jakarta');
+
+$errorDashboard = '';
+$statistik      = [];
+$trenPesanan    = [];
+$menuTerlaris   = [];
+$daftarPesanan  = [];
+$errorPesanan   = '';
+
+// kartu statistik, tren pesanan mingguan, dan menu terlaris
 try {
-    foreach (array_slice(psnDaftar($pdo), 0, 20) as $baris) {
+    $angka = dashStatistik($pdo);
+    $statistik = [
+        ['label' => 'Total Pesanan',     'nilai' => number_format((int) $angka['total_pesanan'], 0, ',', '.'),    'tema' => 'soft'],
+        ['label' => 'Pesanan Diproses',  'nilai' => number_format((int) $angka['pesanan_diproses'], 0, ',', '.'), 'tema' => 'dark'],
+        ['label' => 'Pesanan Selesai',   'nilai' => number_format((int) $angka['pesanan_selesai'], 0, ',', '.'),  'tema' => 'soft'],
+        ['label' => 'Total Pendapatan',  'nilai' => psnRupiah($angka['total_pendapatan']),                        'tema' => 'dark'],
+    ];
+    $trenPesanan  = dashTrenMingguan($pdo);
+    $menuTerlaris = dashMenuTerlaris($pdo, 5);
+} catch (PDOException $e) {
+    $errorDashboard = 'Data dashboard gagal dibaca. Detail: ' . $e->getMessage();
+}
+
+// daftar pesanan: hanya yang belum selesai
+try {
+    foreach (psnDaftar($pdo, '', '', true) as $baris) {
         $daftarPesanan[] = [
             'id' => (int) $baris['id_pesanan'],
             'kode' => psnKode((int) $baris['id_pesanan']),
@@ -57,7 +52,7 @@ $activeNav = 'dashboard';
 require __DIR__ . '/includes/header.php';
 ?>
 
-<!-- bagian judul halaman, dan tombol cetak laporan (blom jalan) -->
+<!-- bagian judul halaman, dan tombol cetak laporan -->
 <section class="page-heading">
     <div>
         <h1>Dashboard</h1>
@@ -65,6 +60,10 @@ require __DIR__ . '/includes/header.php';
     </div>
     <a class="button button-report" href="pesanan_laporan.php">Cetak Laporan</a>
 </section>
+
+<?php if ($errorDashboard !== ''): ?>
+    <div class="form-message form-message--error"><?= psnE($errorDashboard) ?></div>
+<?php endif; ?>
 
 <!-- kartu statistik dijadiin array, biar ndak nulis berulang -->
 <section class="stats-grid" aria-label="Ringkasan statistik">
@@ -82,41 +81,45 @@ require __DIR__ . '/includes/header.php';
         <h2>Tren Pesanan Mingguan</h2>
         <div class="bar-chart">
             <?php foreach ($trenPesanan as $data): ?>
-                <div class="bar-chart__item">
+                <div class="bar-chart__item" title="<?= psnE($data['hari']) ?>, <?= psnE(psnTanggalIndo($data['tanggal'])) ?>: <?= (int) $data['jumlah'] ?> pesanan">
+                    <span class="bar-chart__value"><?= (int) $data['jumlah'] ?></span>
                     <div class="bar-chart__track">
                         <span class="bar-chart__bar" style="height: <?= (int) $data['tinggi'] ?>%"></span>
                     </div>
-                    <span class="bar-chart__label"><?= htmlspecialchars($data['hari']) ?></span>
+                    <span class="bar-chart__label"><?= psnE($data['hari']) ?></span>
                 </div>
             <?php endforeach; ?>
         </div>
+        <?php if (!empty($trenPesanan)): ?>
+            <p class="chart-note">Jumlah pesanan masuk <?= psnE(psnTanggalIndo($trenPesanan[0]['tanggal'])) ?> – <?= psnE(psnTanggalIndo($trenPesanan[6]['tanggal'])) ?>.</p>
+        <?php endif; ?>
     </article>
 
     <article class="panel">
         <h2>Menu Terlaris</h2>
         <div class="popular-list">
+            <?php if (empty($menuTerlaris)): ?>
+                <p class="chart-note">Belum ada data pesanan.</p>
+            <?php endif; ?>
             <?php foreach ($menuTerlaris as $menu): ?>
-                <div class="popular-item">
-                    <span class="popular-item__name"><?= htmlspecialchars($menu['nama']) ?></span>
+                <div class="popular-item" title="<?= psnE($menu['nama']) ?>: <?= (int) $menu['total_box'] ?> box">
+                    <span class="popular-item__name"><?= psnE($menu['nama']) ?></span>
                     <div class="popular-item__track">
                         <span style="width: <?= (int) $menu['persentase'] ?>%"></span>
                     </div>
+                    <span class="popular-item__qty"><?= number_format((int) $menu['total_box'], 0, ',', '.') ?> box</span>
                 </div>
             <?php endforeach; ?>
         </div>
     </article>
 </section>
 
-<!-- daftar pesanan dummy, tombol dan jalan -->
+<!-- daftar pesanan dari database, hanya yang belum selesai -->
 <section class="orders-panel">
     <div class="orders-toolbar">
         <div class="orders-title-group">
             <h2>Daftar Pesanan</h2>
-            <select class="simple-select" aria-label="Bulan pesanan">
-                <option>Oktober 2026</option>
-                <option>September 2026</option>
-                <option>Agustus 2026</option>
-            </select>
+            <span class="process-status">Menampilkan pesanan yang belum selesai (<?= count($daftarPesanan) ?>)</span>
         </div>
         <div class="orders-actions">
             <a class="button button-primary" href="pesanan_tambah.php">+ Add</a>
@@ -128,7 +131,7 @@ require __DIR__ . '/includes/header.php';
         <?php if ($errorPesanan !== ''): ?>
             <div class="form-message form-message--error"><?= htmlspecialchars($errorPesanan, ENT_QUOTES, 'UTF-8') ?></div>
         <?php elseif (empty($daftarPesanan)): ?>
-            <p class="empty-state">Belum ada pesanan.</p>
+            <p class="empty-state">Tidak ada pesanan yang belum selesai.</p>
         <?php endif; ?>
         <?php foreach ($daftarPesanan as $pesanan): ?>
             <article class="order-row" style="grid-template-columns: minmax(210px, 1fr) 96px minmax(240px, 1fr);">
