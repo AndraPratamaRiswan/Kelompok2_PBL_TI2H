@@ -3,9 +3,14 @@ session_start();
 require_once 'includes/koneksi.php';
 require_once 'includes/queries/login.php';
 
-// Kalau sudah login, langsung ke halaman utama
+// Halaman tujuan setelah login (hanya halaman pembeli yang diizinkan, supaya tidak bisa dipakai untuk redirect ke situs lain)
+$halamanBoleh = ['index.php', 'keranjang.php', 'cek-pesanan.php'];
+$next = $_POST['next'] ?? $_GET['next'] ?? 'index.php';
+$next = in_array($next, $halamanBoleh, true) ? $next : 'index.php';
+
+// Kalau sudah login, langsung ke halaman tujuan
 if (isset($_SESSION['id_pembeli'])) {
-    header('Location: index.php');
+    header('Location: ' . $next);
     exit();
 }
 
@@ -29,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['id_pembeli'] = $pembeli['id_pembeli'];
                 $_SESSION['no_hp']      = $pembeli['no_hp'];
 
-                header('Location: index.php');
+                header('Location: ' . $next);
                 exit();
             }
 
@@ -75,6 +80,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Form Body -->
         <div class="p-4">
+            <?php if (($_GET['status'] ?? '') === 'wajib') : ?>
+                <div class="alert alert-warning py-2 small">Silakan masuk dulu untuk memesan menu.</div>
+            <?php endif; ?>
             <?php if (($_GET['status'] ?? '') === 'registered') : ?>
                 <div class="alert alert-success py-2 small">Pendaftaran berhasil! Silakan masuk.</div>
             <?php endif; ?>
@@ -83,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form action="login.php" method="POST">
+                <input type="hidden" name="next" value="<?= htmlspecialchars($next); ?>">
                 <div class="mb-3">
                     <label class="form-label small text-muted mb-1">Nomor Handphone</label>
                     <div class="input-group">

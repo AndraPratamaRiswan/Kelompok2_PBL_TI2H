@@ -1,3 +1,19 @@
+<?php
+// Header dipakai semua halaman pembeli. Status login dibaca dari session.
+if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+    session_start();
+}
+$sudahLogin = isset($_SESSION['id_pembeli']);
+
+// jumlah box di keranjang (keranjang disimpan di session oleh index.php)
+$jumlahKeranjang = 0;
+if ($sudahLogin && !empty($_SESSION['keranjang']) && is_array($_SESSION['keranjang'])) {
+    foreach ($_SESSION['keranjang'] as $itemKeranjang) {
+        $jumlahKeranjang += (int) ($itemKeranjang['kuantitas'] ?? 0);
+    }
+}
+$cssTambahan = $cssTambahan ?? [];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +21,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css?v=1">
+    <?php foreach ($cssTambahan as $fileCss) : ?>
+    <link rel="stylesheet" href="<?= htmlspecialchars($fileCss, ENT_QUOTES, 'UTF-8') ?>">
+    <?php endforeach; ?>
  
      <!-- Bootstrap Icons CDN -->
      <link
@@ -42,9 +61,18 @@
     
     <a class="nav-link <?php echo ($halaman == 'tentang-kami') ? 'active' : ''; ?>" href="tentang-kami.php">Tentang kami</a>
     
-    <a class="nav-link <?php echo ($halaman == 'keranjang') ? 'active' : ''; ?>" href="keranjang.php">
+    <a class="nav-link position-relative <?php echo ($halaman == 'keranjang') ? 'active' : ''; ?>" href="keranjang.php" aria-label="Keranjang">
         <i class="bi bi-cart3" style="-webkit-text-stroke: 1px;"></i>
+        <?php if ($jumlahKeranjang > 0) : ?>
+            <span class="badge rounded-pill bg-red position-absolute top-0 start-100 translate-middle" style="font-size: 11px;"><?= (int) $jumlahKeranjang ?></span>
+        <?php endif; ?>
     </a>
+
+    <?php if ($sudahLogin) : ?>
+        <a class="nav-link" href="logout.php">Keluar</a>
+    <?php else : ?>
+        <a class="nav-link" href="login.php">Masuk</a>
+    <?php endif; ?>
         
       </div>
     </div>
