@@ -53,7 +53,7 @@ $barisMenu = !empty($data['baris']) ? $data['baris'] : [['id' => '', 'jumlah' =>
                 Status Pesanan
                 <select name="status_pesanan" required>
                     <option value="">Pilih status pesanan</option>
-                    <?php foreach (psnDaftarStatusPesanan() as $status): ?>
+                    <?php foreach (psnStatusPesananForm() as $status): ?>
                         <option value="<?= psnE($status) ?>" <?= $data['status_pesanan'] === $status ? 'selected' : '' ?>><?= psnE($status) ?></option>
                     <?php endforeach; ?>
                 </select>
@@ -62,7 +62,7 @@ $barisMenu = !empty($data['baris']) ? $data['baris'] : [['id' => '', 'jumlah' =>
                 Status Pembayaran
                 <select name="status_pembayaran" id="status-pembayaran" required>
                     <option value="">Pilih status pembayaran</option>
-                    <?php foreach (psnDaftarStatusBayar() as $status): ?>
+                    <?php foreach (psnStatusBayarForm() as $status): ?>
                         <option value="<?= psnE($status) ?>" <?= $data['status_pembayaran'] === $status ? 'selected' : '' ?>><?= psnE($status) ?></option>
                     <?php endforeach; ?>
                 </select>
@@ -83,7 +83,7 @@ $barisMenu = !empty($data['baris']) ? $data['baris'] : [['id' => '', 'jumlah' =>
             <!-- dp muncul kalau status bayarnya dp (diatur pesanan.js) -->
             <label id="field-jumlah-dp" hidden>
                 Jumlah DP (Rp)
-                <input type="number" name="jumlah_dp" id="jumlah-dp" min="1" step="1000" placeholder="Masukkan jumlah DP" value="<?= psnE($data['jumlah_dp']) ?>">
+                <input type="number" name="jumlah_dp" id="jumlah-dp" min="1" step="1" placeholder="Masukkan jumlah DP" value="<?= psnE($data['jumlah_dp']) ?>">
             </label>
         </div>
 

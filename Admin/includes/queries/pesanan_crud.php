@@ -6,7 +6,8 @@
 
 // ---------- PESANAN ----------
 
-function psnDaftar(PDO $pdo, string $q = '', string $status = ''): array
+// $belumSelesai = true hanya mengambil pesanan yang statusnya belum "Selesai" (dipakai dashboard)
+function psnDaftar(PDO $pdo, string $q = '', string $status = '', bool $belumSelesai = false): array
 {
     $sql = "SELECT p.id_pesanan, p.nama_pembeli, pb.no_hp,
                    p.tanggal_dipesan, p.tanggal_pengiriman,
@@ -35,6 +36,10 @@ function psnDaftar(PDO $pdo, string $q = '', string $status = ''): array
     if ($status !== '') {
         $sql .= " AND p.status_pesanan = :status";
         $params[':status'] = $status;
+    }
+
+    if ($belumSelesai) {
+        $sql .= " AND p.status_pesanan <> 'Selesai'";
     }
 
     $sql .= " GROUP BY p.id_pesanan, pb.no_hp

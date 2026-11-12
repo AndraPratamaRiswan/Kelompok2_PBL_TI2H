@@ -8,6 +8,10 @@ require_once __DIR__ . '/includes/pesanan_helper.php';
 date_default_timezone_set('Asia/Jakarta');
 $hariIni = date('Y-m-d');
 
+// di halaman tambah, status ini tidak tersedia
+$kecualiStatusPesanan = ['Belum Dikonfirmasi'];
+$kecualiStatusBayar   = ['Belum Bayar'];
+
 $pesanForm  = '';
 $daftarMenu = [];
 $data = [
@@ -24,7 +28,7 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pesanForm === '') {
-    $hasil = psnValidasiForm($_POST, $daftarMenu, $hariIni, true);
+    $hasil = psnValidasiForm($_POST, $daftarMenu, $hariIni, true, $kecualiStatusPesanan, $kecualiStatusBayar);
     $data = $hasil['data'];
     $pesanForm = $hasil['error'];
 

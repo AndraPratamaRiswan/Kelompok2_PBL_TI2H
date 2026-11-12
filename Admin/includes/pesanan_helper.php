@@ -27,6 +27,19 @@ function psnDaftarStatusBayar(): array
     return ['Belum Bayar', 'DP', 'Lunas'];
 }
 
+// Pilihan status di form tambah/ubah pesanan. "Belum Dikonfirmasi" dan "Belum Bayar"
+// sengaja tidak ada: itu status awal pesanan dari pembeli, admin tinggal memilih
+// status berikutnya. Daftar lengkap di atas tetap dipakai untuk filter dan tampilan.
+function psnStatusPesananForm(): array
+{
+    return ['Dikonfirmasi', 'Diproses', 'Dikirim', 'Selesai'];
+}
+
+function psnStatusBayarForm(): array
+{
+    return ['DP', 'Lunas'];
+}
+
 function psnKelasBayar(string $statusBayar): string
 {
     if ($statusBayar === 'Lunas') {
@@ -165,10 +178,10 @@ function psnValidasiForm(array $in, array $daftarMenu, string $tanggalMin, bool 
         $errors[] = 'Catatan maksimal 255 karakter.';
     }
 
-    if (!in_array($data['status_pesanan'], psnDaftarStatusPesanan(), true)) {
+    if (!in_array($data['status_pesanan'], psnStatusPesananForm(), true)) {
         $errors[] = 'Pilih status pesanan.';
     }
-    if (!in_array($data['status_pembayaran'], psnDaftarStatusBayar(), true)) {
+    if (!in_array($data['status_pembayaran'], psnStatusBayarForm(), true)) {
         $errors[] = 'Pilih status pembayaran.';
     }
 
