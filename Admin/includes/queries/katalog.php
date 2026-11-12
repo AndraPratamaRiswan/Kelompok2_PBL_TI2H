@@ -1,19 +1,31 @@
 <?php
-function ambilKatalogMenu(PDO $pdo, string $q = ''): array
+function ambilKatalogMenu(PDO $pdo, string $q = '', int $idKategori = 0): array
 {
-    $sql = "SELECT * FROM v_tampil_menu_catalog";
+    $sql = "SELECT * FROM v_tampil_menu_catalog v";
+    $where = [];
     $params = [];
 
     if ($q !== '') {
-        $sql .= " WHERE nama_menu ILIKE :nama
-                  OR COALESCE(deskripsi, '') ILIKE :deskripsi
-                  OR daftar_kategori ILIKE :kategori";
-        $params[':nama']      = '%' . $q . '%';
-        $params[':deskripsi'] = '%' . $q . '%';
-        $params[':kategori']  = '%' . $q . '%';
+        // dikurung supaya OR di sini tidak bercampur dengan filter kategori di bawahnya
+        $where[] = "(v.nama_menu ILIKE :nama
+                  OR COALESCE(v.deskripsi, '') ILIKE :deskripsi
+                  OR v.daftar_kategori ILIKE :kategori_teks)";
+        $params[':nama']           = '%' . $q . '%';
+        $params[':deskripsi']      = '%' . $q . '%';
+        $params[':kategori_teks']  = '%' . $q . '%';
     }
 
-    $sql .= " ORDER BY id_menu DESC";
+    if ($idKategori > 0) {
+        $where[] = "EXISTS (SELECT 1 FROM kategori_menu km
+                            WHERE km.id_menu = v.id_menu AND km.id_kategori = :id_kategori)";
+        $params[':id_kategori'] = $idKategori;
+    }
+
+    if (!empty($where)) {
+        $sql .= " WHERE " . implode(" AND ", $where);
+    }
+
+    $sql .= " ORDER BY v.id_menu DESC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);

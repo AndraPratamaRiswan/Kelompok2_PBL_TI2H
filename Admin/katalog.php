@@ -3,6 +3,8 @@ require __DIR__ . '/includes/koneksi.php';
 require __DIR__ . '/includes/queries/katalog.php';
 
 $q = trim($_GET['q'] ?? '');
+$idKategori = filter_input(INPUT_GET, 'kategori', FILTER_VALIDATE_INT);
+$idKategori = ($idKategori !== false && $idKategori !== null && $idKategori > 0) ? $idKategori : 0;
 $error = '';
 $pesan = '';
 $pesanMap = [
@@ -14,8 +16,10 @@ if (isset($pesanMap[$kodePesan])) {
     $pesan = $pesanMap[$kodePesan];
 }
 
+$daftarKategori = [];
 try {
-    $katalogMenu = ambilKatalogMenu($pdo, $q);
+    $daftarKategori = ambilKategori($pdo);
+    $katalogMenu = ambilKatalogMenu($pdo, $q, $idKategori);
 } catch (PDOException $e) {
     $katalogMenu = [];
     $error = 'Data menu gagal dibaca. Periksa apakah tabel menu, kategori, dan kategori_menu sudah dibuat. Detail: ' . $e->getMessage();
@@ -43,20 +47,22 @@ require __DIR__ . '/includes/header.php';
     <div class="form-message form-message--error"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
-<section class="catalog-toolbar">
+<section class="catalog-toolbar" style="grid-template-columns: 1fr;">
     <form method="get" action="katalog.php" class="catalog-search">
         <input type="search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Cari menu" aria-label="Cari menu">
+        <select class="simple-select" name="kategori" aria-label="Kategori menu" onchange="this.form.submit()">
+            <option value="">Semua Kategori</option>
+            <?php foreach ($daftarKategori as $kat): ?>
+                <option value="<?= (int) $kat['id_kategori'] ?>" <?= $idKategori === (int) $kat['id_kategori'] ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($kat['nama_kategori']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
         <button class="button button-primary" type="submit">Cari</button>
+        <?php if ($q !== '' || $idKategori > 0): ?>
+            <a class="button button-neutral" href="katalog.php">Reset</a>
+        <?php endif; ?>
     </form>
-    <select class="simple-select" aria-label="Kategori menu">
-        <option>Kategori Menu</option>
-    </select>
-    <select class="simple-select" aria-label="Rentang harga">
-        <option>Rentang Harga</option>
-    </select>
-    <select class="simple-select" aria-label="Menu terlaris">
-        <option>Menu Terlaris</option>
-    </select>
 </section>
 
 <section class="catalog-grid">
