@@ -57,7 +57,7 @@ $cssTambahan = $cssTambahan ?? [];
       <div class="navbar-nav ms-auto gap-4 align-items-center">
     <a class="nav-link <?php echo ($halaman == 'menu') ? 'active' : ''; ?>" href="index.php">Menu</a>
     
-    <a class="nav-link <?php echo ($halaman == 'cek-pesanan') ? 'active' : ''; ?>" href="cek-pesanan.php">Cek Pesanan</a>
+    <a class="nav-link <?php echo ($halaman == 'cek-pesanan') ? 'active' : ''; ?>" href="pesanan-saya.php">Cek Pesanan</a>
     
     <a class="nav-link <?php echo ($halaman == 'tentang-kami') ? 'active' : ''; ?>" href="tentang-kami.php">Tentang kami</a>
     

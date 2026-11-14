@@ -8,7 +8,7 @@ $halaman = 'cek-pesanan';
 date_default_timezone_set('Asia/Jakarta');
 
 if (!isset($_SESSION['id_pembeli'])) {
-    header('Location: login.php');
+    header('Location: login.php?status=wajib&next=pesanan-saya.php');
     exit;
 }
 

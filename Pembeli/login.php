@@ -4,7 +4,7 @@ require_once 'includes/koneksi.php';
 require_once 'includes/queries/login.php';
 
 // Halaman tujuan setelah login (hanya halaman pembeli yang diizinkan, supaya tidak bisa dipakai untuk redirect ke situs lain)
-$halamanBoleh = ['index.php', 'keranjang.php', 'cek-pesanan.php'];
+$halamanBoleh = ['index.php', 'keranjang.php', 'pesanan-saya.php'];
 $next = $_POST['next'] ?? $_GET['next'] ?? 'index.php';
 $next = in_array($next, $halamanBoleh, true) ? $next : 'index.php';
 
