@@ -2,6 +2,9 @@
 // Fungsi bantu CRUD pesanan sisi Pembeli. Hanya fungsi, tidak ada echo.
 // Semua nama fungsi diawali "pb" supaya tidak bentrok dengan kode yang sudah ada.
 
+// Minimal pemesanan: 15 box untuk setiap menu
+const PB_MIN_BOX = 15;
+
 function pbE($nilai): string
 {
     return htmlspecialchars((string) ($nilai ?? ''), ENT_QUOTES, 'UTF-8');
@@ -164,6 +167,13 @@ function pbValidasiPesanan(array $in, array $menuMap, string $tanggalMin, ?strin
     if (empty($gabung) && empty($errors)) {
         $errors[] = 'Pilih minimal satu menu.';
     }
+    // minimal pemesanan per menu (dicek setelah menu yang sama digabung)
+    foreach ($gabung as $id => $qty) {
+        if ($qty < PB_MIN_BOX) {
+            $errors[] = 'Pemesanan minimal ' . PB_MIN_BOX . ' box per menu (' . $menuMap[$id]['nama_menu'] . ' baru ' . $qty . ' box).';
+            break;
+        }
+    }
 
     $panjangNama = mb_strlen($data['nama']);
     if ($panjangNama < 1 || $panjangNama > 50) {
@@ -209,14 +219,18 @@ function pbTambahKeKeranjang(PDO $pdo, int $idMenu, int $jumlah): array
         $_SESSION['keranjang'] = [];
     }
 
-    $jumlah = max(1, min($jumlah, 1000));
+    $jumlah = min($jumlah, 1000);
 
     $menu = pbMenuByIds($pdo, [$idMenu])[$idMenu] ?? null;
     if (!$menu || !filter_var($menu['is_tersedia'], FILTER_VALIDATE_BOOLEAN)) {
         return ['danger', 'Menu tersebut sudah tidak tersedia.'];
     }
 
+    // jumlah menu ini di keranjang (setelah ditambah) harus minimal PB_MIN_BOX
     $sudahAda = $_SESSION['keranjang'][$idMenu]['kuantitas'] ?? 0;
+    if ($sudahAda + $jumlah < PB_MIN_BOX) {
+        return ['danger', 'Pemesanan minimal ' . PB_MIN_BOX . ' box per menu.'];
+    }
     $_SESSION['keranjang'][$idMenu] = [
         'id'        => $idMenu,
         'nama'      => $menu['nama_menu'],

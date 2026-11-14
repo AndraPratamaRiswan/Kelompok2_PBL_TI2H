@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($jenis === 'plus') {
                     $_SESSION['keranjang'][$id]['kuantitas'] = min(10000, $_SESSION['keranjang'][$id]['kuantitas'] + 1);
                 } elseif ($jenis === 'minus') {
-                    $_SESSION['keranjang'][$id]['kuantitas'] = max(1, $_SESSION['keranjang'][$id]['kuantitas'] - 1);
+                    $_SESSION['keranjang'][$id]['kuantitas'] = max(PB_MIN_BOX, $_SESSION['keranjang'][$id]['kuantitas'] - 1);
                 } else { // hapus
                     unset($_SESSION['keranjang'][$id]);
                 }
@@ -123,6 +123,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = 'Pemesanan minimal H-3! Silakan periksa kembali tanggal acara Anda.';
                 } elseif (!preg_match('/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', $data['jam'])) {
                     $error = 'Jam pengiriman tidak valid.';
+                }
+            }
+
+            if ($error === '') {
+                foreach ($_SESSION['keranjang'] as $itemCek) {
+                    if ($itemCek['kuantitas'] < PB_MIN_BOX) {
+                        $error = 'Pemesanan minimal ' . PB_MIN_BOX . ' box per menu. Tambah jumlah "' . $itemCek['nama'] . '" dulu.';
+                        break;
+                    }
                 }
             }
 
@@ -227,7 +236,8 @@ include 'includes/header.php';
 
     <div class="bg-white rounded-3 p-4 border shadow-sm">
 
-        <h6 class="fw-medium mb-4" style="font-size: 18px;">Rangkuman Pesanan</h6>
+        <h6 class="fw-medium mb-2" style="font-size: 18px;">Rangkuman Pesanan</h6>
+        <small class="text-muted d-block mb-3">Minimal <?= PB_MIN_BOX ?> box untuk setiap menu.</small>
 
         <?php if ($error !== '') : ?>
             <div class="alert alert-danger py-2 small"><?= pbE($error) ?></div>

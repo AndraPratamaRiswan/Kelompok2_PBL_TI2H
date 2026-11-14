@@ -39,9 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['aksi'] ?? '') === 'tambah'
     }
 
     $idMenu = filter_input(INPUT_POST, 'id_menu', FILTER_VALIDATE_INT);
-    $jumlah = filter_var($_POST['jumlah'] ?? '1', FILTER_VALIDATE_INT);
+    $jumlah = filter_var($_POST['jumlah'] ?? '', FILTER_VALIDATE_INT);
     if ($jumlah === false || $jumlah < 1) {
-        $jumlah = 1;
+        $jumlah = 0; // ditolak di pbTambahKeKeranjang (di bawah minimal)
     }
 
     try {
@@ -102,6 +102,7 @@ include 'includes/header.php';
 <?php if ($error !== '') : ?>
     <div class="alert alert-danger"><?= pbE($error) ?></div>
 <?php endif; ?>
+<div class="alert alert-info py-2">Pemesanan minimal <strong><?= PB_MIN_BOX ?> box</strong> untuk setiap menu.</div>
 <?php if (!$sudahLogin) : ?>
     <div class="alert alert-warning py-2">
         Kamu bisa melihat menu, tetapi harus <a href="login.php?next=index.php" class="alert-link">masuk</a> dulu untuk memesan.
@@ -185,7 +186,7 @@ include 'includes/header.php';
 
                         <div class="input-group input-group-sm w-50 shadow-sm">
                             <button class="btn btn-outline-secondary border-secondary-subtle btn-qty-minus" type="button">-</button>
-                            <input type="text" name="jumlah" inputmode="numeric" value="1"
+                            <input type="text" name="jumlah" inputmode="numeric" value="<?= PB_MIN_BOX ?>"
                                    class="form-control text-center border-secondary-subtle input-qty">
                             <button class="btn btn-outline-secondary border-secondary-subtle btn-qty-plus" type="button">+</button>
                         </div>
@@ -219,6 +220,7 @@ include 'includes/header.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    var MIN_BOX = <?= (int) PB_MIN_BOX ?>;
     var daftar = document.getElementById('daftar-menu');
     if (!daftar) return;
 
@@ -229,11 +231,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var form = tombol.closest('form');
         var input = form ? form.querySelector('.input-qty') : null;
         if (!input) return;
-        var sekarang = parseInt(input.value, 10) || 1;
+        var sekarang = parseInt(input.value, 10) || MIN_BOX;
         if (tombol.classList.contains('btn-qty-plus')) {
-            input.value = sekarang + 1;
+            input.value = Math.max(MIN_BOX, sekarang + 1);
         } else if (tombol.classList.contains('btn-qty-minus')) {
-            input.value = Math.max(1, sekarang - 1);
+            input.value = Math.max(MIN_BOX, sekarang - 1);
         }
     });
 });

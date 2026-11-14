@@ -1,6 +1,6 @@
 <?php
-// UPDATE pesanan milik pembeli. Hanya boleh selama status masih "Belum Dikonfirmasi".
-// Status, DP, dan ongkir tidak bisa diubah pembeli (itu urusan admin).
+// READ daftar pesanan milik pembeli yang login + DELETE (batalkan) pesanan.
+// Tampilan kartu mengikuti cek-pesanan.php, tapi datanya dari database.
 session_start();
 ob_start();
 
@@ -8,7 +8,7 @@ $halaman = 'cek-pesanan';
 date_default_timezone_set('Asia/Jakarta');
 
 if (!isset($_SESSION['id_pembeli'])) {
-    header('Location: login.php');
+    header('Location: login.php?status=wajib&next=pesanan-saya.php');
     exit;
 }
 
@@ -17,232 +17,202 @@ require_once __DIR__ . '/includes/queries/pesanan.php';
 require_once __DIR__ . '/includes/pesanan_helper.php';
 
 $idPembeli = (int) $_SESSION['id_pembeli'];
-$idPesanan = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-if (!$idPesanan || $idPesanan < 1) {
-    header('Location: pesanan-saya.php');
+
+// ---- tombol "Batalkan" (POST lalu redirect) ----
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['aksi'] ?? '') === 'hapus') {
+    $idPesanan = filter_input(INPUT_POST, 'id_pesanan', FILTER_VALIDATE_INT);
+    $kode = 'tidak_bisa';
+
+    if ($idPesanan && $idPesanan > 0) {
+        try {
+            $kode = pbHapusPesanan($pdo, $idPesanan, $idPembeli) ? 'dihapus' : 'tidak_bisa';
+        } catch (Throwable $e) {
+            error_log('Hapus pesanan gagal: ' . $e->getMessage());
+            $kode = 'gagal';
+        }
+    }
+    header('Location: pesanan-saya.php?status=' . $kode);
     exit;
 }
 
-// satu baris menu: dropdown + jumlah + tombol hapus baris
-function pbBarisMenuForm(array $opsiMenu, $idDipilih = '', $jumlah = 1): string
-{
-    $opsi = '<option value="">Pilih menu</option>';
-    foreach ($opsiMenu as $menu) {
-        $dipilih = ((string) $idDipilih === (string) $menu['id']) ? ' selected' : '';
-        $opsi .= '<option value="' . (int) $menu['id'] . '"' . $dipilih . '>'
-            . pbE($menu['nama'] . ' — ' . pbRupiah($menu['harga'])) . '</option>';
-    }
-    $jumlah = is_numeric($jumlah) ? max(1, (int) $jumlah) : 1;
+$pesanMap = [
+    'dibuat'     => ['success', 'Pesanan berhasil dibuat. Admin akan segera mengonfirmasi pesananmu.'],
+    'diubah'     => ['success', 'Perubahan pesanan berhasil disimpan.'],
+    'dihapus'    => ['success', 'Pesanan berhasil dibatalkan.'],
+    'tidak_bisa' => ['danger', 'Pesanan tidak bisa diubah atau dibatalkan karena sudah dikonfirmasi admin atau tidak ditemukan.'],
+    'gagal'      => ['danger', 'Terjadi kesalahan. Coba lagi nanti.'],
+];
+$statusUrl = $_GET['status'] ?? '';
+$pesan = $pesanMap[$statusUrl] ?? null;
 
-    return '<div class="row g-2 align-items-center baris-menu mb-2">'
-        . '<div class="col-7"><select name="menu_id[]" class="form-select" required>' . $opsi . '</select></div>'
-        . '<div class="col-3"><input type="number" name="jumlah[]" class="form-control" min="1" value="' . $jumlah . '" required></div>'
-        . '<div class="col-2"><button type="button" class="btn btn-outline-danger w-100 btn-hapus-baris" aria-label="Hapus baris"><i class="bi bi-trash-fill"></i></button></div>'
-        . '</div>';
-}
-
-$error        = '';
-$pesanan      = false;
-$items        = [];
-$opsiMenu     = [];
-$tidakBisaUbah = false;
-
+$error = '';
 try {
-    $pesanan = pbPesananById($pdo, $idPesanan, $idPembeli);
-    if (!$pesanan) {
-        header('Location: pesanan-saya.php?status=tidak_bisa');
-        exit;
-    }
-    $tidakBisaUbah = !pbBisaDiubah($pesanan);
-
-    $items = pbItemPesanan($pdo, [$idPesanan])[$idPesanan] ?? [];
-    foreach (pbMenuTersedia($pdo) as $menu) {
-        $opsiMenu[(int) $menu['id_menu']] = [
-            'id' => (int) $menu['id_menu'], 'nama' => $menu['nama_menu'], 'harga' => $menu['harga_menu'],
-        ];
-    }
-    // menu yang sudah ada di pesanan tetap bisa dipilih walau sekarang nonaktif
-    foreach ($items as $item) {
-        $idItem = (int) $item['id_menu'];
-        if (!isset($opsiMenu[$idItem])) {
-            $opsiMenu[$idItem] = [
-                'id' => $idItem, 'nama' => $item['nama_menu'] . ' (nonaktif)', 'harga' => $item['harga_satuan'],
-            ];
-        }
-    }
+    $daftarPesanan = pbDaftarPesanan($pdo, $idPembeli);
 } catch (PDOException $e) {
     error_log('Baca pesanan gagal: ' . $e->getMessage());
-    $error = 'Data pesanan belum bisa dibaca. Coba lagi nanti.';
+    $daftarPesanan = [];
+    $error = 'Pesananmu belum bisa ditampilkan. Coba lagi nanti.';
 }
 
-$tanggalMin  = pbTanggalMinimal();
-$tanggalLama = $pesanan ? (string) $pesanan['tanggal_pengiriman'] : null;
-$idLama      = array_map(function ($item) { return (int) $item['id_menu']; }, $items);
-
-// nilai awal form diambil dari database
-$data = [
-    'nama'    => $pesanan ? (string) $pesanan['nama_pembeli'] : '',
-    'tanggal' => $tanggalLama ?? '',
-    'jam'     => $pesanan ? substr((string) $pesanan['jam_pengiriman'], 0, 5) : '',
-    'alamat'  => $pesanan ? (string) $pesanan['alamat_pengiriman'] : '',
-    'catatan' => $pesanan ? (string) ($pesanan['catatan'] ?? '') : '',
-    'baris'   => [],
-];
-foreach ($items as $item) {
-    $data['baris'][] = ['id' => (string) $item['id_menu'], 'jumlah' => (string) $item['jumlah']];
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pesanan && !$tidakBisaUbah && $error === '') {
-    try {
-        $menuMap = pbMenuByIds($pdo, pbIdMenuDariPost($_POST));
-        $hasil   = pbValidasiPesanan($_POST, $menuMap, $tanggalMin, $tanggalLama, $idLama);
-        $data    = $hasil['data'];
-        $error   = $hasil['error'];
-
-        if ($error === '') {
-            // cek ulang status di dalam transaksi, jaga-jaga admin baru saja mengonfirmasi
-            $pdo->beginTransaction();
-            $terkunci = pbPesananById($pdo, $idPesanan, $idPembeli, true);
-
-            if (!$terkunci || !pbBisaDiubah($terkunci)) {
-                $pdo->rollBack();
-                header('Location: pesanan-saya.php?status=tidak_bisa');
-                exit;
-            }
-
-            pbUbahPesanan(
-                $pdo,
-                $idPesanan,
-                $terkunci,
-                $data['nama'],
-                $hasil['id_menu'],
-                $hasil['jumlah'],
-                $data['alamat'],
-                $data['tanggal'],
-                $data['jam'],
-                $data['catatan'] !== '' ? $data['catatan'] : null
-            );
-            $pdo->commit();
-
-            header('Location: pesanan-saya.php?status=diubah');
-            exit;
-        }
-    } catch (Throwable $e) {
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
-        }
-        error_log('Ubah pesanan gagal: ' . $e->getMessage());
-        $error = 'Perubahan pesanan belum berhasil disimpan. Silakan coba lagi.';
-    }
-}
-
-$barisMenu = !empty($data['baris']) ? $data['baris'] : [['id' => '', 'jumlah' => 1]];
-// tanggal lama boleh dipertahankan walau sudah lewat batas H-3
-$minTanggalInput = ($tanggalLama !== null && $tanggalLama < $tanggalMin) ? $tanggalLama : $tanggalMin;
+$langkahStatus = ['Dikonfirmasi', 'Diproses', 'Dikirim', 'Selesai'];
 
 include 'includes/header.php';
 ?>
-<div class="container py-4">
-    <div class="col-lg-8 mx-auto">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+
+<style>
+    @media print {
+        .navbar, footer, .tidak-dicetak { display: none !important; }
+        .kartu-pesanan:not(.sedang-dicetak) { display: none !important; }
+        .kartu-pesanan .collapse { display: block !important; }
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="col-md-8 mx-auto">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 tidak-dicetak">
             <div>
-                <h2 class="fw-bold mb-1 isi-red">Ubah Pesanan</h2>
-                <p class="text-muted mb-0"><?= $pesanan ? pbE(pbKode($idPesanan)) : '' ?></p>
+                <h2 class="fw-bold mb-1 isi-red">Pesanan Saya</h2>
+                <p class="text-muted mb-0">Nomor HP: <?= pbE($_SESSION['no_hp'] ?? '') ?></p>
             </div>
-            <a href="pesanan-saya.php" class="btn btn-outline-secondary text-dark"
-               onclick="return confirm('Keluar dari halaman ini? Perubahan yang belum disimpan akan hilang.');">Kembali</a>
+            <a href="index.php" class="btn bg-red text-white">+ Pesan Lagi</a>
         </div>
 
+        <?php if ($pesan) : ?>
+            <div class="alert alert-<?= pbE($pesan[0]) ?> tidak-dicetak"><?= pbE($pesan[1]) ?></div>
+        <?php endif; ?>
         <?php if ($error !== '') : ?>
-            <div class="alert alert-danger"><?= pbE($error) ?></div>
+            <div class="alert alert-danger tidak-dicetak"><?= pbE($error) ?></div>
         <?php endif; ?>
 
-        <?php if ($tidakBisaUbah) : ?>
-            <div class="alert alert-warning">
-                Pesanan ini sudah dikonfirmasi admin, jadi tidak bisa diubah dari sini. Hubungi admin bila perlu perubahan.
+        <?php if (empty($daftarPesanan) && $error === '') : ?>
+            <div class="card p-5 text-center tidak-dicetak">
+                <h5>Kamu belum punya pesanan.</h5>
+                <div><a href="index.php" class="btn btn-success mt-3">Pilih Menu</a></div>
             </div>
-        <?php elseif ($pesanan) : ?>
-            <form method="post" action="pesanan-ubah.php?id=<?= (int) $idPesanan ?>" class="bg-white rounded-3 p-4 border shadow-sm">
-                <div class="mb-3 fw-semibold">
-                    <label class="mb-2" for="nama">Atas Nama</label>
-                    <input id="nama" name="nama" type="text" maxlength="50" required
-                           class="form-control rounded-3 p-3 border shadow-sm" value="<?= pbE($data['nama']) ?>">
-                </div>
-
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="fw-semibold">Menu yang dipesan</span>
-                        <button type="button" id="tambah-baris" class="btn btn-sm btn-outline-success">+ Tambah Menu</button>
-                    </div>
-                    <div class="row g-2 text-muted small mb-1">
-                        <div class="col-7">Menu</div><div class="col-3">Jumlah (box)</div><div class="col-2"></div>
-                    </div>
-                    <div id="daftar-baris">
-                        <?php foreach ($barisMenu as $baris) : ?>
-                            <?= pbBarisMenuForm($opsiMenu, $baris['id'], $baris['jumlah']) ?>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-6 mb-3 fw-semibold">
-                        <label class="mb-2" for="tanggal" style="font-size: 14px;">Tanggal Kirim</label>
-                        <input id="tanggal" name="tanggal" type="date" min="<?= pbE($minTanggalInput) ?>" required
-                               class="form-control rounded-3 p-3 border shadow-sm" value="<?= pbE($data['tanggal']) ?>">
-                    </div>
-                    <div class="col-6 mb-3 fw-semibold">
-                        <label class="mb-2" for="jam" style="font-size: 14px;">Jam</label>
-                        <input id="jam" name="jam" type="time" required
-                               class="form-control rounded-3 p-3 border shadow-sm" value="<?= pbE($data['jam']) ?>">
-                    </div>
-                </div>
-                <small class="text-muted d-block mb-3">Tanggal baru minimal H-3 (mulai <?= pbE(pbTanggalIndo($tanggalMin)) ?>).</small>
-
-                <div class="mb-3 fw-semibold">
-                    <label class="mb-2" for="alamat">Alamat Pengiriman</label>
-                    <input id="alamat" name="alamat" type="text" maxlength="255" required
-                           class="form-control rounded-3 p-3 border shadow-sm" value="<?= pbE($data['alamat']) ?>">
-                </div>
-
-                <div class="mb-4 fw-semibold">
-                    <label class="mb-2" for="catatan">Catatan tambahan (opsional)</label>
-                    <input id="catatan" name="catatan" type="text" maxlength="255"
-                           class="form-control rounded-3 p-3 border shadow-sm" value="<?= pbE($data['catatan']) ?>">
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn bg-red text-white fw-bold px-4">Simpan Perubahan</button>
-                    <a href="pesanan-saya.php" class="btn btn-outline-secondary text-dark"
-                       onclick="return confirm('Batalkan perubahan? Data yang kamu ubah tidak akan disimpan.');">Batal</a>
-                </div>
-                <small class="text-muted d-block mt-2">Harga dihitung ulang dari daftar harga terbaru saat disimpan.</small>
-            </form>
-
-            <template id="template-baris">
-                <?= pbBarisMenuForm($opsiMenu) ?>
-            </template>
-
-            <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var daftar = document.getElementById('daftar-baris');
-                var templateBaris = document.getElementById('template-baris');
-
-                document.getElementById('tambah-baris').addEventListener('click', function () {
-                    daftar.appendChild(templateBaris.content.cloneNode(true));
-                });
-
-                daftar.addEventListener('click', function (event) {
-                    var tombol = event.target.closest('.btn-hapus-baris');
-                    if (!tombol) return;
-                    // minimal tersisa satu baris menu
-                    if (daftar.querySelectorAll('.baris-menu').length > 1) {
-                        tombol.closest('.baris-menu').remove();
-                    }
-                });
-            });
-            </script>
         <?php endif; ?>
+
+        <?php foreach ($daftarPesanan as $pesanan) : ?>
+            <?php
+            $id          = (int) $pesanan['id_pesanan'];
+            $statusNow   = (string) $pesanan['status_pesanan'];
+            $posisi      = array_search($statusNow, $langkahStatus, true); // false = belum dikonfirmasi
+            $posisi      = $posisi === false ? -1 : (int) $posisi;
+            $bisaDiubah  = pbBisaDiubah($pesanan);
+            $ongkir      = (float) $pesanan['biaya_ongkir'];
+            $dp          = (float) $pesanan['jumlah_dp'];
+            $total       = (float) $pesanan['total_harga'];
+            $idCollapse  = 'rincian-' . $id;
+            ?>
+            <div class="card p-4 mb-4 kartu-pesanan" id="pesanan-<?= $id ?>">
+                <div class="row align-items-center">
+                    <div class="col-6 text-start">
+                        <h5 class="fw-bold font-24 mb-1"><?= pbE(pbKode($id)) ?></h5>
+                        <p class="font-18 mb-0">Dikirim: <?= pbE(pbTanggalIndo($pesanan['tanggal_pengiriman'])) ?></p>
+                    </div>
+                    <div class="col-6 text-end">
+                        <span class="badge bg-red rounded-pill px-3 py-2 mb-2 d-inline-block font-18 fw-normal">
+                            <?= pbE($statusNow) ?>
+                        </span>
+                        <br><br>
+                        <button type="button" class="btn bg-red text-white rounded-pill font-18 fw-normal tidak-dicetak"
+                                data-bs-toggle="collapse" data-bs-target="#<?= $idCollapse ?>"
+                                style="--bs-btn-padding-y: .120rem; --bs-btn-padding-x: 2.3rem; --bs-btn-font-size: .75rem;">
+                            Rincian
+                        </button>
+                    </div>
+                </div>
+
+                <div id="<?= $idCollapse ?>" class="collapse mt-4 pt-4 pb-4 border-top">
+                    <div class="position-relative mt-2 mb-5">
+                        <div style="position: absolute; top: 35px; left: 12%; right: 12%; height: 3px; background-color: #000; z-index: 1;"></div>
+                        <div class="row text-center position-relative" style="z-index: 2;">
+                            <?php foreach ($langkahStatus as $i => $langkah) : ?>
+                                <?php $tercapai = $i <= $posisi; ?>
+                                <div class="col-3">
+                                    <p class="mb-2 fw-bold font-18 <?= $tercapai ? 'text-success' : '' ?>"><?= pbE($langkah) ?></p>
+                                    <div class="rounded-circle <?= $tercapai ? 'bg-success' : 'bg-dark' ?> mx-auto" style="width: 24px; height: 24px;"></div>
+                                    <p class="mt-2 text-muted font-18">&nbsp;</p>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <p class="mb-1 font-18"><strong>Atas nama:</strong> <?= pbE($pesanan['nama_pembeli']) ?></p>
+                    <p class="mb-1 font-18"><strong>Alamat:</strong> <?= pbE($pesanan['alamat_pengiriman']) ?></p>
+                    <p class="mb-3 font-18"><strong>Jam kirim:</strong> <?= pbE(substr((string) $pesanan['jam_pengiriman'], 0, 5)) ?> WIB</p>
+                    <?php if (trim((string) ($pesanan['catatan'] ?? '')) !== '') : ?>
+                        <p class="mb-3 font-18"><strong>Catatan:</strong> <?= pbE($pesanan['catatan']) ?></p>
+                    <?php endif; ?>
+
+                    <?php foreach ($pesanan['items'] as $item) : ?>
+                        <div class="row">
+                            <div class="col-8 text-start">
+                                <p class="fw-light font-18 mb-0"><?= pbE($item['nama_menu']) ?> x<?= (int) $item['jumlah'] ?></p>
+                            </div>
+                            <div class="col-4 text-end">
+                                <p class="fw-light font-18"><?= pbRupiah($item['subtotal']) ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <?php if ($ongkir > 0) : ?>
+                        <div class="row">
+                            <div class="col-8 text-start"><p class="fw-light font-18 mb-0">Ongkir</p></div>
+                            <div class="col-4 text-end"><p class="fw-light font-18"><?= pbRupiah($ongkir) ?></p></div>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="row">
+                        <div class="col-6 text-start fw-bold font-18">TOTAL</div>
+                        <div class="col-6 text-end fw-bold font-18"><?= pbRupiah($total) ?></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-start font-18">Pembayaran</div>
+                        <div class="col-6 text-end font-18">
+                            <?= pbE($pesanan['status_pembayaran']) ?><?= $pesanan['status_pembayaran'] === 'DP' ? ' (' . pbRupiah($dp) . ')' : '' ?>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4 tidak-dicetak">
+                        <button class="btn bg-red text-white font-18 fw-bold btn-cetak-nota" type="button">Cetak Nota</button>
+
+                        <?php if ($bisaDiubah) : ?>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <a class="btn btn-outline-secondary text-dark w-100 font-18" href="pesanan-ubah.php?id=<?= $id ?>">Ubah Pesanan</a>
+                                </div>
+                                <div class="col-6">
+                                    <form method="post" action="pesanan-saya.php"
+                                          onsubmit="return confirm('Batalkan pesanan <?= pbE(pbKode($id)) ?>? Pesanan yang dibatalkan tidak bisa dikembalikan.');">
+                                        <input type="hidden" name="aksi" value="hapus">
+                                        <input type="hidden" name="id_pesanan" value="<?= $id ?>">
+                                        <button class="btn btn-outline-danger w-100 font-18" type="submit">Batalkan Pesanan</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <?php else : ?>
+                            <small class="text-muted text-center">Pesanan yang sudah dikonfirmasi tidak bisa diubah atau dibatalkan dari sini. Hubungi admin bila perlu perubahan.</small>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // cetak nota: hanya kartu pesanan yang dipilih yang dicetak
+    document.querySelectorAll('.btn-cetak-nota').forEach(function (tombol) {
+        tombol.addEventListener('click', function () {
+            document.querySelectorAll('.kartu-pesanan').forEach(function (kartu) {
+                kartu.classList.remove('sedang-dicetak');
+            });
+            tombol.closest('.kartu-pesanan').classList.add('sedang-dicetak');
+            window.print();
+        });
+    });
+});
+</script>
 
 <?php include 'includes/footer.php'; ?>
