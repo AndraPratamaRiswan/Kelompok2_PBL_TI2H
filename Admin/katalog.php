@@ -1,19 +1,59 @@
 <?php
 require __DIR__ . '/includes/koneksi.php';
 require __DIR__ . '/includes/queries/katalog.php';
+require_once __DIR__ . '/includes/queries/pesanan_crud.php'; // mnuUbahStatus()
 
 $q = trim($_GET['q'] ?? '');
 $idKategori = filter_input(INPUT_GET, 'kategori', FILTER_VALIDATE_INT);
 $idKategori = ($idKategori !== false && $idKategori !== null && $idKategori > 0) ? $idKategori : 0;
+
+// alamat katalog dengan pencarian dan kategori yang sedang aktif (dipakai form dan redirect)
+$queryAktif = [];
+if ($q !== '') {
+    $queryAktif['q'] = $q;
+}
+if ($idKategori > 0) {
+    $queryAktif['kategori'] = $idKategori;
+}
+$urlKatalog = 'katalog.php' . ($queryAktif ? '?' . http_build_query($queryAktif) : '');
+
+// ---- tombol Aktifkan / Nonaktifkan (POST lalu redirect) ----
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $aksi   = $_POST['aksi'] ?? '';
+    $idMenu = filter_input(INPUT_POST, 'id_menu', FILTER_VALIDATE_INT);
+    $kode   = 'gagal';
+
+    if ($idMenu && $idMenu > 0 && ($aksi === 'aktifkan' || $aksi === 'nonaktifkan')) {
+        try {
+            $berhasil = mnuUbahStatus($pdo, $idMenu, $aksi === 'aktifkan');
+            $kode = $berhasil ? ($aksi === 'aktifkan' ? 'diaktifkan' : 'dinonaktifkan') : 'tidak_ditemukan';
+        } catch (Throwable $e) {
+            $kode = 'gagal';
+        }
+    }
+
+    $query = $queryAktif;
+    $query['pesan'] = $kode;
+    header('Location: katalog.php?' . http_build_query($query));
+    exit;
+}
 $error = '';
 $pesan = '';
 $pesanMap = [
     'ditambah' => 'Menu berhasil ditambahkan.',
     'diedit' => 'Perubahan menu berhasil disimpan.',
+    'diaktifkan' => 'Menu diaktifkan dan tampil lagi untuk pembeli.',
+    'dinonaktifkan' => 'Menu dinonaktifkan dan tidak tampil untuk pembeli.',
+];
+$pesanError = [
+    'tidak_ditemukan' => 'Menu tidak ditemukan.',
+    'gagal' => 'Aksi gagal diproses. Coba lagi.',
 ];
 $kodePesan = $_GET['pesan'] ?? '';
 if (isset($pesanMap[$kodePesan])) {
     $pesan = $pesanMap[$kodePesan];
+} elseif (isset($pesanError[$kodePesan])) {
+    $error = $pesanError[$kodePesan];
 }
 
 $daftarKategori = [];
@@ -85,10 +125,14 @@ require __DIR__ . '/includes/header.php';
                 </span>
                 <div class="menu-card__buttons">
                     <a class="button button-neutral" href="edit_menu.php?id=<?= (int) $menu['id_menu'] ?>">Edit</a>
-                    <!-- LANJUTAN KATALOG 3.4 — Tombol status sengaja belum menjalankan UPDATE. -->
-                    <button class="button button-status <?= $aktif ? 'button-delete' : 'button-primary' ?>" type="button" disabled title="Fungsi aktif/nonaktif belum dibuat">
-                        <?= $aktif ? 'Nonaktifkan' : 'Aktifkan' ?>
-                    </button>
+                    <form method="post" action="<?= htmlspecialchars($urlKatalog) ?>" style="margin:0"
+                          <?php if ($aktif): ?>onsubmit="return confirm('Nonaktifkan menu ini? Menu tidak akan tampil untuk pembeli.');"<?php endif; ?>>
+                        <input type="hidden" name="id_menu" value="<?= (int) $menu['id_menu'] ?>">
+                        <input type="hidden" name="aksi" value="<?= $aktif ? 'nonaktifkan' : 'aktifkan' ?>">
+                        <button class="button button-status <?= $aktif ? 'button-delete' : 'button-primary' ?>" type="submit">
+                            <?= $aktif ? 'Nonaktifkan' : 'Aktifkan' ?>
+                        </button>
+                    </form>
                 </div>
             </div>
         </article>
