@@ -2,6 +2,7 @@
 require __DIR__ . '/includes/koneksi.php';
 require __DIR__ . '/includes/queries/katalog.php';
 require __DIR__ . '/includes/queries/edit_menu.php';
+require_once __DIR__ . '/includes/gambar_upload.php';
 
 $idMenu = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$idMenu || $idMenu < 1) {
@@ -11,7 +12,6 @@ if (!$idMenu || $idMenu < 1) {
 
 $error = '';
 $kategoriList = [];
-$gambarList = daftarGambarMenu();
 $menu = null;
 $idKategori = 0;
 
@@ -32,29 +32,55 @@ $nama = trim($_POST['nama_menu'] ?? ($menu['nama_menu'] ?? ''));
 $deskripsi = trim($_POST['deskripsi'] ?? ($menu['deskripsi'] ?? ''));
 $harga = trim($_POST['harga_menu'] ?? (string) ($menu['harga_menu'] ?? ''));
 $idKategoriForm = (int) ($_POST['id_kategori'] ?? $idKategori);
-$gambarAwal = basename(parse_url((string) ($menu['gambar_url'] ?? ''), PHP_URL_PATH) ?: (string) ($menu['gambar_url'] ?? ''));
-$gambarFile = $_POST['gambar_file'] ?? (isset($gambarList[$gambarAwal]) ? $gambarAwal : 'nasikuning.jpg');
+$gambarAwalDb = (string) ($menu['gambar_url'] ?? '');
 
+// Gambar hanya bisa diganti lewat upload. Kalau tidak ada file dipilih, gambar sekarang dipertahankan apa adanya.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === '' && $menu) {
-    if ($nama === '' || !is_numeric($harga) || (float) $harga <= 0 ||!isset($gambarList[$gambarFile])) {
-        $error = 'Isi nama, harga yang valid, dan gambar terlebih dahulu.';
-    } else {
-        try {
-            editMenu(
-                $pdo,
-                $idMenu,
-                $idKategoriForm > 0 ? [$idKategoriForm] : [],
-                $nama,
-                (float) $harga,
-                $deskripsi !== '' ? $deskripsi : null,
-                '../Admin/assets/img/' . $gambarFile
-            );
+    $adaUpload = isset($_FILES['gambar_upload'])
+        && ($_FILES['gambar_upload']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
 
-    header('Location: katalog.php?pesan=diedit');
-    exit;
-} catch (Throwable $e) {
-    $error = 'Perubahan menu gagal disimpan. Detail: ' . $e->getMessage();
-}
+    if (uploadMelebihiBatasServer()) {
+        $error = 'Ukuran gambar terlalu besar. Maksimal 2 MB.';
+    } elseif ($nama === '' || !is_numeric($harga) || (float) $harga <= 0) {
+        $error = 'Isi nama dan harga yang valid terlebih dahulu.';
+    } else {
+        $fileBaru = null;
+        $gambarSimpan = $gambarAwalDb;
+
+        if ($adaUpload) {
+            $hasilUpload = simpanGambarMenuUpload($_FILES['gambar_upload']);
+            if ($hasilUpload['error'] !== '') {
+                $error = $hasilUpload['error'];
+            } else {
+                $fileBaru = $hasilUpload['path'];
+                $gambarSimpan = $fileBaru;
+            }
+        }
+
+        if ($error === '') {
+            try {
+                editMenu(
+                    $pdo,
+                    $idMenu,
+                    $idKategoriForm > 0 ? [$idKategoriForm] : [],
+                    $nama,
+                    (float) $harga,
+                    $deskripsi !== '' ? $deskripsi : null,
+                    $gambarSimpan
+                );
+
+                // gambar hasil upload yang lama sudah diganti: hapus filenya (gambar bawaan tidak pernah dihapus)
+                if ($fileBaru !== null) {
+                    hapusGambarUpload($gambarAwalDb);
+                }
+
+                header('Location: katalog.php?pesan=diedit');
+                exit;
+            } catch (Throwable $e) {
+                hapusGambarUpload($fileBaru);
+                $error = 'Perubahan menu gagal disimpan. Detail: ' . $e->getMessage();
+            }
+        }
     }
 }
 
@@ -79,7 +105,7 @@ require __DIR__ . '/includes/header.php';
     <?php endif; ?>
 
     <?php if ($menu): ?>
-        <form method="post" action="edit_menu.php?id=<?= (int) $idMenu ?>" class="menu-form">
+        <form method="post" action="edit_menu.php?id=<?= (int) $idMenu ?>" class="menu-form" enctype="multipart/form-data">
             <label>Nama menu
                 <input type="text" name="nama_menu" maxlength="100" value="<?= htmlspecialchars($nama) ?>" required>
             </label>
@@ -98,12 +124,10 @@ require __DIR__ . '/includes/header.php';
                 </select>
             </label>
             <label>Gambar menu
-                <select name="gambar_file" required>
-                    <?php foreach ($gambarList as $file => $label): ?>
-                        <option value="<?= htmlspecialchars($file) ?>" <?= $gambarFile === $file ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <small>Gambar diambil dari folder Admin/assets/img.</small>
+                <input type="file" name="gambar_upload" id="gambar-upload" accept="image/jpeg,image/png,image/webp">
+                <small>Pilih file untuk mengganti gambar (JPG, PNG, atau WebP, maksimal 2 MB). Kosongkan kalau gambar tidak diganti.</small>
+                <img id="gambar-preview" src="<?= htmlspecialchars(gambarMenuLokal($menu['gambar_url'] ?? null, $menu['nama_menu'])) ?>" alt="Gambar menu saat ini"
+                     style="max-width:220px; max-height:160px; margin-top:6px; border-radius:8px; object-fit:cover;">
             </label>
             <div class="menu-form-actions">
                 <button class="button button-primary" type="submit">Simpan Perubahan</button>
@@ -115,5 +139,28 @@ require __DIR__ . '/includes/header.php';
         <a class="button button-neutral" href="katalog.php">Kembali ke Katalog</a>
     <?php endif; ?>
 </section>
+
+<script>
+// pratinjau gambar yang dipilih + cek ukuran/format sebelum dikirim
+(function () {
+    var input = document.getElementById('gambar-upload');
+    var preview = document.getElementById('gambar-preview');
+    if (!input) return;
+    var gambarSemula = preview.getAttribute('src');
+    input.addEventListener('change', function () {
+        var file = input.files[0];
+        if (!file) { preview.src = gambarSemula; return; }
+        if (['image/jpeg', 'image/png', 'image/webp'].indexOf(file.type) === -1) {
+            alert('Format gambar harus JPG, PNG, atau WebP.');
+            input.value = ''; preview.src = gambarSemula; return;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran gambar maksimal 2 MB.');
+            input.value = ''; preview.src = gambarSemula; return;
+        }
+        preview.src = URL.createObjectURL(file);
+    });
+})();
+</script>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

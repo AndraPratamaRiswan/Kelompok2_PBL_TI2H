@@ -53,6 +53,13 @@ function daftarGambarMenu(): array
 
 function gambarMenuLokal(?string $gambarUrl, string $namaMenu = ''): string
 {
+    // gambar hasil upload (kalau filenya hilang dari folder, jatuh ke gambar bawaan di bawah)
+    require_once __DIR__ . '/../gambar_upload.php';
+    $upload = namaFileGambarUpload($gambarUrl);
+    if ($upload !== null && is_file(gambarUploadDirFisik() . '/' . $upload)) {
+        return '../Admin/assets/img/' . GAMBAR_UPLOAD_FOLDER . '/' . $upload;
+    }
+
     $daftar = daftarGambarMenu();
     $namaFile = $gambarUrl ? basename(parse_url($gambarUrl, PHP_URL_PATH) ?: $gambarUrl) : '';
 
