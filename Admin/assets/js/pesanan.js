@@ -32,8 +32,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (tombolJumlah) {
             const inputJumlah = tombolJumlah.parentElement.querySelector('input[name="jumlah[]"]');
             const perubahan = Number(tombolJumlah.dataset.qtyChange);
-            const jumlahSekarang = Number(inputJumlah.value) || 1;
-            inputJumlah.value = Math.max(1, jumlahSekarang + perubahan);
+            const jumlahMin = Number(inputJumlah.min) || 1; // minimal dari atribut min (15 di tambah pesanan)
+            const jumlahSekarang = Number(inputJumlah.value) || jumlahMin;
+            inputJumlah.value = Math.max(jumlahMin, jumlahSekarang + perubahan);
         }
 
         if (tombolHapus) {

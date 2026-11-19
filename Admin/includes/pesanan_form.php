@@ -2,7 +2,9 @@
 // Partial form pesanan, dipakai oleh pesanan_tambah.php dan pesanan_ubah.php.
 // Variabel yang harus sudah ada: $mode ('tambah' | 'ubah'), $formAction, $data,
 // $daftarMenu, $tanggalMin, $labelSimpan, $urlBatal, $pesanForm (boleh kosong).
-$barisMenu = !empty($data['baris']) ? $data['baris'] : [['id' => '', 'jumlah' => 1]];
+// Opsional: $jumlahMin = minimal box per menu (default 1).
+$jumlahMin = isset($jumlahMin) ? max(1, (int) $jumlahMin) : 1;
+$barisMenu = !empty($data['baris']) ? $data['baris'] : [['id' => '', 'jumlah' => $jumlahMin]];
 ?>
 <?php if ($pesanForm !== ''): ?>
     <div class="form-message form-message--error"><?= psnE($pesanForm) ?></div>
@@ -37,13 +39,13 @@ $barisMenu = !empty($data['baris']) ? $data['baris'] : [['id' => '', 'jumlah' =>
             <div class="order-section-heading">
                 <div>
                     <h2>Menu yang dipesan</h2>
-                    <p>Pilih menu dan jumlah box untuk setiap baris.</p>
+                    <p>Pilih menu dan jumlah box untuk setiap baris.<?= $jumlahMin > 1 ? ' Minimal ' . $jumlahMin . ' box per menu.' : '' ?></p>
                 </div>
                 <button class="button button-add-item" type="button" id="tambah-baris-menu">+ Tambah Menu</button>
             </div>
             <div class="order-item-list" id="daftar-baris-menu">
                 <?php foreach ($barisMenu as $baris): ?>
-                    <?= psnBarisMenu($daftarMenu, $baris['id'], $baris['jumlah']) ?>
+                    <?= psnBarisMenu($daftarMenu, $baris['id'], $baris['jumlah'], $jumlahMin) ?>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -101,7 +103,7 @@ $barisMenu = !empty($data['baris']) ? $data['baris'] : [['id' => '', 'jumlah' =>
 
 <!-- template baris menu berikutnya, dipakai pesanan.js -->
 <template id="template-baris-menu">
-    <?= psnBarisMenu($daftarMenu) ?>
+    <?= psnBarisMenu($daftarMenu, '', $jumlahMin, $jumlahMin) ?>
 </template>
 
 <script src="assets/js/pesanan.js"></script>
