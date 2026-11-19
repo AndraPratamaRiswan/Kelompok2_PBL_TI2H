@@ -3,9 +3,12 @@ require_once __DIR__ . '/includes/koneksi.php';
 require_once __DIR__ . '/includes/menu_helper.php';
 require_once __DIR__ . '/includes/gambar_upload.php';
 require_once __DIR__ . '/includes/queries/tambah_menu.php';
+require_once __DIR__ . '/includes/queries/katalog.php'; // pastikanKategoriDasar()
+
+pastikanKategoriDasar($pdo);
 
 $kategoriList = $pdo->query(
-    'SELECT id_kategori, nama_kategori FROM kategori ORDER BY nama_kategori'
+    'SELECT id_kategori, nama_kategori FROM kategori ORDER BY id_kategori'
 )->fetchAll();
 
 $pesanError = '';
@@ -34,6 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pesanError = 'Nama menu wajib diisi.';
     } elseif (!is_numeric($formData['harga_menu']) || (float) $formData['harga_menu'] < 1000) {
         $pesanError = 'Harga menu minimal Rp1.000.';
+    } elseif (!in_array((int) $formData['id_kategori'], array_map('intval', array_column($kategoriList, 'id_kategori')), true)) {
+        $pesanError = 'Pilih kategori menu.';
     } elseif (!$adaUpload) {
         $pesanError = 'Gambar menu wajib diupload.';
     } else {
@@ -62,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 tambahMenu(
                     $pdo,
                     (int) $idAdmin,
-                    $formData['id_kategori'] !== '' ? [(int) $formData['id_kategori']] : [],
+                    [(int) $formData['id_kategori']],
                     $formData['nama_menu'],
                     (float) $formData['harga_menu'],
                     $formData['deskripsi'] !== '' ? $formData['deskripsi'] : null,
@@ -120,8 +125,8 @@ require __DIR__ . '/includes/header.php';
 
         <label>
             Kategori
-            <select name="id_kategori">
-                <option value="">Belum pilih kategori</option>
+            <select name="id_kategori" required>
+                <option value="">Pilih kategori</option>
                 <?php foreach ($kategoriList as $kategori): ?>
                     <option value="<?= (int) $kategori['id_kategori'] ?>" <?= (string) $formData['id_kategori'] === (string) $kategori['id_kategori'] ? 'selected' : '' ?>>
                         <?= eMenu($kategori['nama_kategori']) ?>

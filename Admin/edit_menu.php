@@ -22,6 +22,7 @@ try {
         exit;
     }
 
+    pastikanKategoriDasar($pdo);
     $kategoriList = ambilKategori($pdo);
     $idKategori = ambilIdKategoriMenu($pdo, $idMenu);
 } catch (PDOException $e) {
@@ -43,6 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === '' && $menu) {
         $error = 'Ukuran gambar terlalu besar. Maksimal 2 MB.';
     } elseif ($nama === '' || !is_numeric($harga) || (float) $harga <= 0) {
         $error = 'Isi nama dan harga yang valid terlebih dahulu.';
+    } elseif (!in_array($idKategoriForm, array_map('intval', array_column($kategoriList, 'id_kategori')), true)) {
+        $error = 'Pilih kategori menu.';
     } else {
         $fileBaru = null;
         $gambarSimpan = $gambarAwalDb;
@@ -62,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === '' && $menu) {
                 editMenu(
                     $pdo,
                     $idMenu,
-                    $idKategoriForm > 0 ? [$idKategoriForm] : [],
+                    [$idKategoriForm],
                     $nama,
                     (float) $harga,
                     $deskripsi !== '' ? $deskripsi : null,
@@ -116,7 +119,7 @@ require __DIR__ . '/includes/header.php';
                 <textarea name="deskripsi" maxlength="255" rows="3"><?= htmlspecialchars($deskripsi) ?></textarea>
             </label>
             <label>Kategori
-                <select name="id_kategori" <?= empty($kategoriList) ? 'disabled' : '' ?>>
+                <select name="id_kategori" required <?= empty($kategoriList) ? 'disabled' : '' ?>>
                     <option value="">Pilih kategori</option>
                     <?php foreach ($kategoriList as $kategori): ?>
                         <option value="<?= (int) $kategori['id_kategori'] ?>" <?= $idKategoriForm === (int) $kategori['id_kategori'] ? 'selected' : '' ?>><?= htmlspecialchars($kategori['nama_kategori']) ?></option>

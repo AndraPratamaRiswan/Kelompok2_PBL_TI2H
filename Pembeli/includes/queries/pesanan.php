@@ -6,7 +6,7 @@
 
 function pbKategoriMenu(PDO $pdo): array
 {
-    return $pdo->query('SELECT nama_kategori FROM kategori ORDER BY nama_kategori')->fetchAll(PDO::FETCH_COLUMN);
+    return $pdo->query('SELECT nama_kategori FROM kategori ORDER BY id_kategori')->fetchAll(PDO::FETCH_COLUMN);
 }
 
 // Hanya menu yang tersedia (is_tersedia = true) yang tampil untuk pembeli
