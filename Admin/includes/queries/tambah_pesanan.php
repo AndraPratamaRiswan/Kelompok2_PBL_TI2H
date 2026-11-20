@@ -49,3 +49,15 @@ function tambahPesanan(
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
 }
+
+// ---------------------------------------------------------------------
+// LANGKAH 2 - bagian PHP
+// Salin HANYA fungsi di bawah (mulai dari baris "function") ke bagian
+// paling akhir file Admin/includes/queries/tambah_pesanan.php.
+// Jangan ikut menyalin baris "<?php" di atas dan jangan hapus
+// fungsi tambahPesanan() yang lama dulu.
+// ---------------------------------------------------------------------
+
+// Tambah pesanan dari Admin. Pembeli dicari (atau dibuat) berdasarkan nomor HP,
+// lalu pesanan disimpan, semuanya oleh prosedur sp_tambah_pesanan_admin dalam
+// satu transaksi database. Karena itu di PHP tidak ada beginTransaction/commit.

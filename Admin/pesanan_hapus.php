@@ -1,7 +1,7 @@
 <?php
 // DELETE pesanan. Hanya menerima POST dari tombol "Hapus", lalu kembali ke daftar.
 require_once __DIR__ . '/includes/koneksi.php';
-require_once __DIR__ . '/includes/queries/pesanan_crud.php';
+require_once __DIR__ . '/includes/queries/pesanan_hapus.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: pesanan_daftar.php');

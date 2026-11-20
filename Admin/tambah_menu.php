@@ -35,14 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
     // Cari admin yang sudah ada supaya fk id_admin valid
-            $idAdmin = $pdo->query(
-                'SELECT id_admin FROM admin ORDER BY id_admin LIMIT 1'
-            )->fetchColumn();
-
-            if ($idAdmin === false) {
-                throw new RuntimeException('Tabel admin masih kosong. Masukkan data admin dulu.');
-            }
-
+            $idAdmin = adminId();
             tambahMenu(
                 $pdo,
                 (int) $idAdmin,

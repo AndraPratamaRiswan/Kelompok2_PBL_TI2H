@@ -1,7 +1,7 @@
 <?php
 // Dashboard admin: semua angka, grafik, dan daftar pesanan dibaca langsung dari database.
 require_once __DIR__ . '/includes/koneksi.php';
-require_once __DIR__ . '/includes/queries/pesanan_crud.php';
+require_once __DIR__ . '/includes/queries/pesanan_daftar.php';
 require_once __DIR__ . '/includes/queries/dashboard.php';
 require_once __DIR__ . '/includes/pesanan_helper.php';
 

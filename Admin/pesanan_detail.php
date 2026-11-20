@@ -1,8 +1,7 @@
 <?php
 // READ satu pesanan dari database. Tampilan mengikuti detail_pesanan.php.
 require_once __DIR__ . '/includes/koneksi.php';
-require_once __DIR__ . '/includes/queries/pesanan_crud.php';
-require_once __DIR__ . '/includes/pesanan_helper.php';
+require_once __DIR__ . '/includes/pesanan_detail.php';
 
 // halaman asal untuk menentukan tujuan tombol "kembali"
 $asal = (($_GET['asal'] ?? 'daftar') === 'dashboard') ? 'dashboard' : 'daftar';

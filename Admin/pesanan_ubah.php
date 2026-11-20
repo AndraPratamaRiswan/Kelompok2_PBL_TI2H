@@ -2,8 +2,9 @@
 // UPDATE pesanan (tersimpan ke database). Tampilan mengikuti edit_pesanan.php.
 require_once __DIR__ . '/includes/koneksi.php';
 require_once __DIR__ . '/includes/queries/edit_pesanan.php'; // editPesanan() yang sudah ada
-require_once __DIR__ . '/includes/queries/pesanan_crud.php';
 require_once __DIR__ . '/includes/pesanan_helper.php';
+require_once __DIR__ . '/includes/queries/pesanan_detail.php';
+require_once __DIR__ . '/includes/queries/pesanan_ubah.php';
 
 date_default_timezone_set('Asia/Jakarta');
 

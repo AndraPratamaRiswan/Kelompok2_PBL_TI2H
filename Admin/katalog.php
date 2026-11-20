@@ -1,7 +1,6 @@
 <?php
 require __DIR__ . '/includes/koneksi.php';
 require __DIR__ . '/includes/queries/katalog.php';
-require_once __DIR__ . '/includes/queries/pesanan_crud.php'; // mnuUbahStatus()
 
 $q = trim($_GET['q'] ?? '');
 $idKategori = filter_input(INPUT_GET, 'kategori', FILTER_VALIDATE_INT);

@@ -1,3 +1,38 @@
+<?php
+// Login Admin. Akun admin TIDAK didaftarkan lewat web: superadmin menambahkannya
+// langsung ke tabel admin di database (lihat langkah2b_admin_dan_klaim_akun.sql).
+define('ADMIN_HALAMAN_PUBLIK', true); // halaman ini boleh dibuka tanpa login
+require_once __DIR__ . '/includes/koneksi.php';
+require_once __DIR__ . '/includes/queries/login.php'; // loginAkun()
+
+
+$error    = '';
+$username = ''; 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    if ($username === '' || $password === '') {
+        $error = 'Username dan kata sandi wajib diisi.';
+    } else {
+        try {
+            $admin = loginAkun($pdo, $username, $password); // data admin, atau false
+            if ($admin) {
+                session_regenerate_id(true); // cegah session fixation
+                $_SESSION['id_admin']   = (int) $admin['id_admin'];
+                $_SESSION['nama_admin'] = $admin['nama_lengkap'];
+                header('Location: index.php');
+                exit;
+            }
+            $error = 'Username atau kata sandi salah.';
+        } catch (PDOException $e) {
+            error_log('Login admin gagal: ' . $e->getMessage());
+            $error = 'Terjadi kesalahan. Silakan coba lagi.';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -25,12 +60,15 @@
 
         <!-- Form Body -->
         <div class="p-4">
-            <form action="index.php" method="POST">
+            <?php if ($error !== ''): ?>
+                <div class="alert alert-danger py-2 small"><?= htmlspecialchars($error) ?></div>
+            <?php endif; ?>
+            <form action="login.php" method="POST">
                 <div class="mb-3">
-                    <label class="form-label small text-muted mb-1">Nomor Handphone</label>
+                    <label class="form-label small text-muted mb-1">Username</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-phone"></i></span>
-                        <input type="text" class="form-control border-start-0 ps-0" name="nomor_hp" placeholder="Masukkan Nomor Handphone" required>
+                        <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control border-start-0 ps-0" name="username" value="<?= htmlspecialchars($username) ?>" placeholder="Masukkan Username" autocomplete="username" required>
                     </div>
                 </div>
 
@@ -44,13 +82,6 @@
 
                 <button type="submit" class="btn btn-gray w-100 py-2 mb-3">Masuk</button>
             </form>
-
-            <hr class="my-3 text-muted">
-
-            <div class="text-center small">
-                <span class="text-muted">Belum memiliki akun?</span> 
-                <a href="register.php" class="text-decoration-none fw-semibold text-dark">Daftar Sekarang</a>
-            </div>
         </div>
     </div>
 

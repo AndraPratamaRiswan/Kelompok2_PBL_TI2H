@@ -9,8 +9,8 @@ function ambilKatalogMenu(PDO $pdo, string $q = '', string $kategori = ''): arra
     $params = [];
 
     if ($q !== '') {
-        $sql .= " AND v.nama_menu ILIKE :q";
-        $params[':q'] = '%' . $q . '%';
+        $sql .= " AND v.id_menu IN (SELECT menu_id FROM fn_cari_menu(:q))";
+        $params[':q'] = $q;
     }
     if ($kategori !== '') {
         $sql .= " AND EXISTS (

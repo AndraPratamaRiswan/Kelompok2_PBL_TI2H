@@ -18,8 +18,8 @@ function pbMenuTersedia(PDO $pdo, string $q = '', string $kategori = ''): array
     $params = [];
 
     if ($q !== '') {
-        $sql .= " AND nama_menu ILIKE :q";
-        $params[':q'] = '%' . $q . '%';
+        $sql .= " AND id_menu IN (SELECT menu_id FROM fn_cari_menu(:q))";
+        $params[':q'] = $q;
     }
     if ($kategori !== '') {
         $sql .= " AND (', ' || daftar_kategori || ', ') LIKE :kategori";

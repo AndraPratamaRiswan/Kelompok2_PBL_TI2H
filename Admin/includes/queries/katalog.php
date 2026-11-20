@@ -7,12 +7,10 @@ function ambilKatalogMenu(PDO $pdo, string $q = '', int $idKategori = 0): array
 
     if ($q !== '') {
         // dikurung supaya OR di sini tidak bercampur dengan filter kategori di bawahnya
-        $where[] = "(v.nama_menu ILIKE :nama
-                  OR COALESCE(v.deskripsi, '') ILIKE :deskripsi
-                  OR v.daftar_kategori ILIKE :kategori_teks)";
-        $params[':nama']           = '%' . $q . '%';
-        $params[':deskripsi']      = '%' . $q . '%';
-        $params[':kategori_teks']  = '%' . $q . '%';
+        $where[] = "(v.id_menu IN (SELECT menu_id FROM fn_cari_menu(:q))
+          OR v.daftar_kategori ILIKE :kategori_teks)";
+        $params[':q']             = $q;
+        $params[':kategori_teks'] = '%' . $q . '%';
     }
 
     if ($idKategori > 0) {
@@ -76,4 +74,12 @@ function gambarMenuLokal(?string $gambarUrl, string $namaMenu = ''): string
         }
     }
     return '../Admin/assets/img/nasikuning.jpg';
+}
+
+
+function mnuUbahStatus(PDO $pdo, int $idMenu, bool $tersedia): bool
+{
+    $stmt = $pdo->prepare('SELECT fn_ubah_status_menu(:id, CAST(:tersedia AS boolean))');
+    $stmt->execute([':id' => $idMenu, ':tersedia' => $tersedia ? 'true' : 'false']);
+    return filter_var($stmt->fetchColumn(), FILTER_VALIDATE_BOOLEAN);
 }

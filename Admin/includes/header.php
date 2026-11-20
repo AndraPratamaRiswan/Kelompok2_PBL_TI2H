@@ -29,6 +29,8 @@ $activeNav = $activeNav ?? 'dashboard';
                 <path d="M5 20c.5-3.6 3.1-5.5 7-5.5s6.5 1.9 7 5.5"></path>
             </svg>
         </span>
+        <span><?= htmlspecialchars($_SESSION['nama_admin'] ?? 'Admin') ?></span>
+        <a class="topnav__link" href="logout.php">Keluar</a>
     </nav>
 </header>
 
