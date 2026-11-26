@@ -3,12 +3,9 @@ require_once __DIR__ . '/includes/koneksi.php';
 require_once __DIR__ . '/includes/menu_helper.php';
 require_once __DIR__ . '/includes/gambar_upload.php';
 require_once __DIR__ . '/includes/queries/tambah_menu.php';
-require_once __DIR__ . '/includes/queries/katalog.php'; // pastikanKategoriDasar()
-
-pastikanKategoriDasar($pdo);
 
 $kategoriList = $pdo->query(
-    'SELECT id_kategori, nama_kategori FROM kategori ORDER BY id_kategori'
+    'SELECT id_kategori, nama_kategori FROM kategori ORDER BY nama_kategori'
 )->fetchAll();
 
 $pesanError = '';
@@ -123,16 +120,19 @@ require __DIR__ . '/includes/header.php';
             <textarea name="deskripsi" maxlength="255" rows="3"><?= eMenu($formData['deskripsi']) ?></textarea>
         </label>
 
-        <label>
+                <label>
             Kategori
-            <select name="id_kategori" required>
-                <option value="">Pilih kategori</option>
-                <?php foreach ($kategoriList as $kategori): ?>
-                    <option value="<?= (int) $kategori['id_kategori'] ?>" <?= (string) $formData['id_kategori'] === (string) $kategori['id_kategori'] ? 'selected' : '' ?>>
-                        <?= eMenu($kategori['nama_kategori']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <div class="select-with-action">
+                <select name="id_kategori" id="kategori-select" required>
+                    <option value="">Pilih kategori</option>
+                    <?php foreach ($kategoriList as $kategori): ?>
+                        <option value="<?= (int) $kategori['id_kategori'] ?>" <?= (string) $formData['id_kategori'] === (string) $kategori['id_kategori'] ? 'selected' : '' ?>>
+                            <?= eMenu($kategori['nama_kategori']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="button" class="button button-neutral" id="btn-buka-kategori">+ Kategori</button>
+            </div>
         </label>
 
         <label>
@@ -152,7 +152,101 @@ require __DIR__ . '/includes/header.php';
         </div>
     </form>
 </section>
+<!-- Overlay tambah kategori -->
+<div class="modal-overlay" id="overlay-kategori" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="judul-kategori">
+        <h2 id="judul-kategori">Tambah Kategori</h2>
+        <label class="modal-field">
+            Nama kategori
+            <input type="text" id="input-kategori" maxlength="50" autocomplete="off" placeholder="Contoh: Makanan Jepang">
+        </label>
+        <div class="modal-error" id="error-kategori" hidden></div>
+        <div class="modal-actions">
+            <button type="button" class="button button-primary" id="btn-simpan-kategori">Simpan</button>
+            <button type="button" class="button button-neutral" id="btn-tutup-kategori">Batal</button>
+        </div>
+    </div>
+</div>
 
+
+<script>
+// overlay tambah kategori: simpan lewat fetch supaya isian form menu (termasuk gambar) tidak hilang
+(function () {
+    var overlay   = document.getElementById('overlay-kategori');
+    var input     = document.getElementById('input-kategori');
+    var errorBox  = document.getElementById('error-kategori');
+    var btnBuka   = document.getElementById('btn-buka-kategori');
+    var btnSimpan = document.getElementById('btn-simpan-kategori');
+    var btnTutup  = document.getElementById('btn-tutup-kategori');
+    var select    = document.getElementById('kategori-select');
+    if (!overlay) return;
+
+    function tampilError(pesan) {
+        errorBox.textContent = pesan;
+        errorBox.hidden = false;
+    }
+
+    function buka() {
+        input.value = '';
+        errorBox.hidden = true;
+        overlay.hidden = false;
+        input.focus();
+    }
+
+    function tutup() {
+        overlay.hidden = true;
+        btnBuka.focus();
+    }
+
+    function simpan() {
+        var nama = input.value.trim();
+        if (nama === '') { tampilError('Nama kategori wajib diisi.'); input.focus(); return; }
+
+        var data = new FormData();
+        data.append('nama_kategori', nama);
+
+        btnSimpan.disabled = true;
+        btnSimpan.textContent = 'Menyimpan...';
+        errorBox.hidden = true;
+
+        fetch('kategori_tambah.php', { method: 'POST', body: data })
+            .then(function (res) {
+                // json() gagal kalau sesi login habis (server membalas halaman login)
+                return res.json().catch(function () { return null; });
+            })
+            .then(function (hasil) {
+                if (!hasil) { tampilError('Gagal menyimpan. Coba muat ulang halaman dan login kembali.'); return; }
+                if (!hasil.ok) { tampilError(hasil.error || 'Kategori belum berhasil disimpan.'); return; }
+
+                var opsi = document.createElement('option');
+                opsi.value = hasil.id;
+                opsi.textContent = hasil.nama;
+                select.appendChild(opsi);
+                select.value = String(hasil.id);   // langsung terpilih
+                tutup();
+            })
+            .catch(function () { tampilError('Koneksi bermasalah. Coba lagi.'); })
+            .then(function () {
+                btnSimpan.disabled = false;
+                btnSimpan.textContent = 'Simpan';
+            });
+    }
+
+    btnBuka.addEventListener('click', buka);
+    btnTutup.addEventListener('click', tutup);
+    btnSimpan.addEventListener('click', simpan);
+
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); simpan(); }
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !overlay.hidden) tutup();
+    });
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) tutup();   // klik area gelap di luar kotak
+    });
+})();
+</script>
 <script>
 // pratinjau gambar yang dipilih + cek ukuran/format sebelum dikirim
 (function () {

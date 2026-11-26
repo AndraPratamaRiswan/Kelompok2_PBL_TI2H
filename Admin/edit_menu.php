@@ -21,8 +21,6 @@ try {
         header('Location: katalog.php');
         exit;
     }
-
-    pastikanKategoriDasar($pdo);
     $kategoriList = ambilKategori($pdo);
     $idKategori = ambilIdKategoriMenu($pdo, $idMenu);
 } catch (PDOException $e) {

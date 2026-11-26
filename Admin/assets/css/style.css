@@ -346,3 +346,30 @@ button { cursor: pointer; }
     .report-table th { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
     .report-summary-card, .report-table td, .report-table tfoot td { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
+
+/* dropdown + tombol di sebelahnya */
+.select-with-action { display: flex; gap: 8px; align-items: stretch; }
+.select-with-action select { flex: 1; }
+.select-with-action .button { white-space: nowrap; }
+
+/* overlay */
+.modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px; background: rgba(20, 30, 40, 0.5);
+}
+.modal-overlay[hidden] { display: none; }
+.modal-box {
+    width: 100%; max-width: 380px; padding: 20px;
+    border-radius: 10px; background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.modal-box h2 { margin: 0 0 14px; font-size: 20px; }
+.modal-field { display: flex; flex-direction: column; gap: 6px; font-weight: 600; }
+.modal-field input {
+    width: 100%; padding: 9px 10px; border: 1px solid #ccd4dc;
+    border-radius: 7px; background: #f9fbfd; color: var(--text);
+}
+.modal-error { margin-top: 10px; padding: 8px 10px; border-radius: 7px; background: #fdecec; color: #b3261e; font-size: 14px; }
+.modal-error[hidden] { display: none; }
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; }
