@@ -82,10 +82,14 @@ include 'includes/header.php';
   <div class="container-fluid py-2">
     
     
-    <h2 class="fw-bold teks-jumbotron-judul">Custom Jumbotron</h2>
-    
-    
-    <p class="col-md-10 fw-light teks-jumbotron-deskripsi">Using a series of utilities, you can create this jumbotron, just like the one in previous versions of Bootstrap. Remix and restyle it to your liking.</p>
+    <h2 class="fw-bold teks-jumbotron-judul">Yuk, Pesan Catering Nasi Kotak by "Tya" Sekarang!</h2>
+
+<p class="col-md-10 fw-light teks-jumbotron-deskripsi">
+  1. Pilih menu yang kamu mau (minimal 15 box per menu).<br>
+  2. Masuk atau daftar dengan nomor HP.<br>
+  3. Buka Keranjang, isi tanggal, jam, dan alamat (pesan minimal H-3).<br>
+  4. Klik tombol WhatsApp untuk mengirim pesanan, lalu pantau statusnya di Cek Pesanan.
+</p>
     
   </div>
 </div>

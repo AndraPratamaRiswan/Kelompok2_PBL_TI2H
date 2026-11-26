@@ -1,11 +1,14 @@
 <?php
 require_once __DIR__ . '/includes/koneksi.php';
 require_once __DIR__ . '/includes/menu_helper.php';
+require_once __DIR__ . '/includes/gambar_upload.php';
 require_once __DIR__ . '/includes/queries/tambah_menu.php';
+require_once __DIR__ . '/includes/queries/katalog.php'; // pastikanKategoriDasar()
 
-$pilihanGambar = pilihanGambarMenu();
+pastikanKategoriDasar($pdo);
+
 $kategoriList = $pdo->query(
-    'SELECT id_kategori, nama_kategori FROM kategori ORDER BY nama_kategori'
+    'SELECT id_kategori, nama_kategori FROM kategori ORDER BY id_kategori'
 )->fetchAll();
 
 $pesanError = '';
@@ -14,7 +17,6 @@ $formData = [
     'harga_menu' => '',
     'deskripsi' => '',
     'id_kategori' => '',
-    'gambar_url' => 'nasikuning.jpg',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,33 +25,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'harga_menu' => trim($_POST['harga_menu'] ?? ''),
         'deskripsi' => trim($_POST['deskripsi'] ?? ''),
         'id_kategori' => trim($_POST['id_kategori'] ?? ''),
-        'gambar_url' => $_POST['gambar_url'] ?? 'nasikuning.jpg',
     ];
 
-    if ($formData['nama_menu'] === '') {
+    // gambar wajib diupload (tidak ada lagi pilihan gambar bawaan)
+    $adaUpload = isset($_FILES['gambar_upload'])
+        && ($_FILES['gambar_upload']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
+
+    if (uploadMelebihiBatasServer()) {
+        $pesanError = 'Ukuran gambar terlalu besar. Maksimal 2 MB.';
+    } elseif ($formData['nama_menu'] === '') {
         $pesanError = 'Nama menu wajib diisi.';
     } elseif (!is_numeric($formData['harga_menu']) || (float) $formData['harga_menu'] < 1000) {
         $pesanError = 'Harga menu minimal Rp1.000.';
-    } elseif (!isset($pilihanGambar[$formData['gambar_url']])) {
-        $pesanError = 'Pilih gambar yang tersedia.';
+    } elseif (!in_array((int) $formData['id_kategori'], array_map('intval', array_column($kategoriList, 'id_kategori')), true)) {
+        $pesanError = 'Pilih kategori menu.';
+    } elseif (!$adaUpload) {
+        $pesanError = 'Gambar menu wajib diupload.';
     } else {
-        try {
-    // Cari admin yang sudah ada supaya fk id_admin valid
-            $idAdmin = adminId();
-            tambahMenu(
-                $pdo,
-                (int) $idAdmin,
-                $formData['id_kategori'] !== '' ? [(int) $formData['id_kategori']] : [],
-                $formData['nama_menu'],
-                (float) $formData['harga_menu'],
-                $formData['deskripsi'] !== '' ? $formData['deskripsi'] : null,
-                $formData['gambar_url']
-            );
+        $gambarSimpan = null;
+        $fileBaru = null;
 
-            header('Location: katalog.php?pesan=tambah');
-            exit;
-        } catch (Throwable $error) {
-            $pesanError = 'Menu belum berhasil disimpan. Detail: ' . $error->getMessage();
+        $hasilUpload = simpanGambarMenuUpload($_FILES['gambar_upload']);
+        if ($hasilUpload['error'] !== '') {
+            $pesanError = $hasilUpload['error'];
+        } else {
+            $fileBaru = $hasilUpload['path'];
+            $gambarSimpan = $fileBaru;
+        }
+
+        if ($pesanError === '') {
+            try {
+                // Cari admin yang sudah ada supaya fk id_admin valid
+                $idAdmin = $pdo->query(
+                    'SELECT id_admin FROM admin ORDER BY id_admin LIMIT 1'
+                )->fetchColumn();
+
+                if ($idAdmin === false) {
+                    throw new RuntimeException('Tabel admin masih kosong. Masukkan data admin dulu.');
+                }
+
+                tambahMenu(
+                    $pdo,
+                    (int) $idAdmin,
+                    [(int) $formData['id_kategori']],
+                    $formData['nama_menu'],
+                    (float) $formData['harga_menu'],
+                    $formData['deskripsi'] !== '' ? $formData['deskripsi'] : null,
+                    $gambarSimpan
+                );
+
+                header('Location: katalog.php?pesan=tambah');
+                exit;
+            } catch (Throwable $error) {
+                // menu gagal disimpan: jangan tinggalkan file upload yang tidak terpakai
+                hapusGambarUpload($fileBaru);
+                $pesanError = 'Menu belum berhasil disimpan. Detail: ' . $error->getMessage();
+            }
         }
     }
 }
@@ -76,7 +107,7 @@ require __DIR__ . '/includes/header.php';
 <?php endif; ?>
 
 <section class="menu-form-panel">
-    <form method="post" action="tambah_menu.php" class="menu-form">
+    <form method="post" action="tambah_menu.php" class="menu-form" enctype="multipart/form-data">
         <label>
             Nama menu
             <input type="text" name="nama_menu" maxlength="100" required value="<?= eMenu($formData['nama_menu']) ?>">
@@ -94,8 +125,8 @@ require __DIR__ . '/includes/header.php';
 
         <label>
             Kategori
-            <select name="id_kategori">
-                <option value="">Belum pilih kategori</option>
+            <select name="id_kategori" required>
+                <option value="">Pilih kategori</option>
                 <?php foreach ($kategoriList as $kategori): ?>
                     <option value="<?= (int) $kategori['id_kategori'] ?>" <?= (string) $formData['id_kategori'] === (string) $kategori['id_kategori'] ? 'selected' : '' ?>>
                         <?= eMenu($kategori['nama_kategori']) ?>
@@ -106,14 +137,9 @@ require __DIR__ . '/includes/header.php';
 
         <label>
             Gambar menu
-            <select name="gambar_url" required>
-                <?php foreach ($pilihanGambar as $namaFile => $labelGambar): ?>
-                    <option value="<?= eMenu($namaFile) ?>" <?= $formData['gambar_url'] === $namaFile ? 'selected' : '' ?>>
-                        <?= eMenu($labelGambar) ?> (<?= eMenu($namaFile) ?>)
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <small>Pakai gambar yang sudah ada di folder Admin/assets/img.</small>
+            <input type="file" name="gambar_upload" id="gambar-upload" accept="image/jpeg,image/png,image/webp" required>
+            <small>Wajib diupload. Format JPG, PNG, atau WebP, maksimal 2 MB.</small>
+            <img id="gambar-preview" alt="Pratinjau gambar" style="display:none; max-width:220px; max-height:160px; margin-top:6px; border-radius:8px; object-fit:cover;">
         </label>
 
         <div class="menu-form-actions">
@@ -126,5 +152,28 @@ require __DIR__ . '/includes/header.php';
         </div>
     </form>
 </section>
+
+<script>
+// pratinjau gambar yang dipilih + cek ukuran/format sebelum dikirim
+(function () {
+    var input = document.getElementById('gambar-upload');
+    var preview = document.getElementById('gambar-preview');
+    if (!input) return;
+    input.addEventListener('change', function () {
+        var file = input.files[0];
+        if (!file) { preview.style.display = 'none'; return; }
+        if (['image/jpeg', 'image/png', 'image/webp'].indexOf(file.type) === -1) {
+            alert('Format gambar harus JPG, PNG, atau WebP.');
+            input.value = ''; preview.style.display = 'none'; return;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran gambar maksimal 2 MB.');
+            input.value = ''; preview.style.display = 'none'; return;
+        }
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+    });
+})();
+</script>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

@@ -30,6 +30,29 @@ function ambilKatalogMenu(PDO $pdo, string $q = '', int $idKategori = 0): array
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Memastikan tiga kategori dasar ada di tabel kategori (dibuat kalau belum ada, tidak pernah menimpa
+// atau menduplikasi). Dipanggil dari halaman admin yang memakai daftar kategori, jadi file SQL tidak perlu diubah.
+// Dibuat satu per satu secara berurutan supaya id (dan urutan tampil) sesuai urutan di bawah, dan memakai
+// INSERT ... SELECT ... WHERE NOT EXISTS supaya nomor serial tidak terbuang tiap halaman dibuka.
+function pastikanKategoriDasar(PDO $pdo): void
+{
+    $kategoriDasar = ['Makanan Oriental', 'Makanan Khas Indonesia', 'Makanan Western'];
+
+    try {
+        $stmt = $pdo->prepare(
+            "INSERT INTO kategori (nama_kategori)
+             SELECT CAST(:nama AS varchar)
+             WHERE NOT EXISTS (SELECT 1 FROM kategori WHERE nama_kategori = :nama2)"
+        );
+        foreach ($kategoriDasar as $nama) {
+            $stmt->execute([':nama' => $nama, ':nama2' => $nama]);
+        }
+    } catch (PDOException $e) {
+        error_log('Gagal memastikan kategori dasar: ' . $e->getMessage());
+    }
+}
+
+
 function ambilKategori(PDO $pdo): array
 {
     return $pdo->query('SELECT id_kategori, nama_kategori FROM kategori ORDER BY nama_kategori')->fetchAll();
@@ -51,6 +74,13 @@ function daftarGambarMenu(): array
 
 function gambarMenuLokal(?string $gambarUrl, string $namaMenu = ''): string
 {
+    // gambar hasil upload (kalau filenya hilang dari folder, jatuh ke gambar bawaan di bawah)
+    require_once __DIR__ . '/../gambar_upload.php';
+    $upload = namaFileGambarUpload($gambarUrl);
+    if ($upload !== null && is_file(gambarUploadDirFisik() . '/' . $upload)) {
+        return '../Admin/assets/img/' . GAMBAR_UPLOAD_FOLDER . '/' . $upload;
+    }
+
     $daftar = daftarGambarMenu();
     $namaFile = $gambarUrl ? basename(parse_url($gambarUrl, PHP_URL_PATH) ?: $gambarUrl) : '';
 
@@ -75,7 +105,6 @@ function gambarMenuLokal(?string $gambarUrl, string $namaMenu = ''): string
     }
     return '../Admin/assets/img/nasikuning.jpg';
 }
-
 
 function mnuUbahStatus(PDO $pdo, int $idMenu, bool $tersedia): bool
 {

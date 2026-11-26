@@ -29,6 +29,12 @@ function fileGambarMenu($gambar, $namaMenu)
     $daftarGambar = array_keys(pilihanGambarMenu());
 
     if ($gambar !== '') {
+        require_once __DIR__ . '/gambar_upload.php';
+        $upload = namaFileGambarUpload($gambar);
+        if ($upload !== null && is_file(gambarUploadDirFisik() . '/' . $upload)) {
+            return 'assets/img/' . GAMBAR_UPLOAD_FOLDER . '/' . $upload;
+        }
+
         $url = filter_var($gambar, FILTER_VALIDATE_URL);
 
         if ($url && stripos($gambar, 'example.com') === false) {

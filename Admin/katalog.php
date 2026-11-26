@@ -57,6 +57,7 @@ if (isset($pesanMap[$kodePesan])) {
 
 $daftarKategori = [];
 try {
+    pastikanKategoriDasar($pdo);
     $daftarKategori = ambilKategori($pdo);
     $katalogMenu = ambilKatalogMenu($pdo, $q, $idKategori);
 } catch (PDOException $e) {

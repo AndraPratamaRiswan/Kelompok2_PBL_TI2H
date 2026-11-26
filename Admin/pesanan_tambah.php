@@ -3,12 +3,13 @@
 require_once __DIR__ . '/includes/koneksi.php';
 require_once __DIR__ . '/includes/pesanan_helper.php';
 require_once __DIR__ . '/includes/queries/pesanan_tambah.php'; // tambahPesanan() yang sudah ada
+require_once __DIR__ . '/includes/pesanan_helper.php';
 
 date_default_timezone_set('Asia/Jakarta');
 $hariIni = date('Y-m-d');
 
-
 $pesanForm  = '';
+$jumlahMin  = PSN_MIN_BOX_TAMBAH; // minimal 15 box per menu
 $daftarMenu = [];
 $data = [
     'nomor' => '', 'nama' => '', 'alamat' => '',
@@ -24,19 +25,26 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pesanForm === '') {
-    $hasil = psnValidasiForm($_POST, $daftarMenu, $hariIni, true);
+    $hasil = psnValidasiForm($_POST, $daftarMenu, $hariIni, true, PSN_MIN_BOX_TAMBAH);
     $data = $hasil['data'];
     $pesanForm = $hasil['error'];
 
     if ($pesanForm === '') {
-                try {
-            $idAdmin = adminId(); // admin yang sedang login
-            // pembeli (cari/buat dari no HP) dan pesanan disimpan atomik oleh prosedur database
-            tambahPesananAdmin(
+        try {
+            $idAdmin = psnIdAdminPertama($pdo); // sama seperti tambah_menu.php: pakai admin pertama
+            if ($idAdmin === null) {
+                throw new RuntimeException('Tabel admin masih kosong. Masukkan data admin dulu.');
+            }
+
+            // buat akun pembeli (kalau perlu) dan pesanan dalam satu transaksi
+            $pdo->beginTransaction();
+            $idPembeli = psnCariAtauBuatPembeli($pdo, $data['nomor']);
+
+            tambahPesanan(
                 $pdo,
                 $idAdmin,
-                $data['nomor'],
                 $data['nama'],
+                $idPembeli,
                 $hasil['id_menu'],
                 $hasil['jumlah'],
                 $data['alamat'],
@@ -48,10 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pesanForm === '') {
                 $hasil['dp_num'],
                 $hasil['ongkir_num']
             );
+            $pdo->commit();
 
             header('Location: pesanan_daftar.php?pesan=ditambah');
             exit;
         } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             $pesanForm = 'Pesanan belum berhasil disimpan. Detail: ' . $e->getMessage();
         }
     }

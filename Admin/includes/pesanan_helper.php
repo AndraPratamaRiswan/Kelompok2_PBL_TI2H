@@ -67,7 +67,10 @@ function psnTanggalIndo(?string $tanggal): string
 
 // Satu baris menu (dropdown + jumlah). Markup sama dengan form tambah/edit pesanan
 // yang sudah ada, jadi assets/js/pesanan.js dan CSS lama langsung bisa dipakai.
-function psnBarisMenu(array $daftarMenu, $idDipilih = '', $jumlah = 1): string
+// Minimal jumlah box per menu saat admin menambah pesanan baru
+const PSN_MIN_BOX_TAMBAH = 15;
+
+function psnBarisMenu(array $daftarMenu, $idDipilih = '', $jumlah = 1, int $jumlahMin = 1): string
 {
     $opsi = '<option value="">Pilih Menu</option>';
     foreach ($daftarMenu as $menu) {
@@ -79,7 +82,8 @@ function psnBarisMenu(array $daftarMenu, $idDipilih = '', $jumlah = 1): string
         $opsi .= '<option value="' . (int) $menu['id_menu'] . '"' . $dipilih . '>' . psnE($label) . '</option>';
     }
 
-    $jumlah = is_numeric($jumlah) ? max(1, (int) $jumlah) : 1;
+    $jumlahMin = max(1, $jumlahMin);
+    $jumlah = is_numeric($jumlah) ? max($jumlahMin, (int) $jumlah) : $jumlahMin;
 
     return '<div class="order-item-row">'
         . '<label class="order-menu-field">Menu'
@@ -88,7 +92,7 @@ function psnBarisMenu(array $daftarMenu, $idDipilih = '', $jumlah = 1): string
         . '<div class="order-qty-field"><span>Jumlah (box)</span>'
         . '<div class="qty-control">'
         . '<button type="button" class="qty-button" data-qty-change="-1">−</button>'
-        . '<input type="number" name="jumlah[]" min="1" value="' . $jumlah . '" required>'
+        . '<input type="number" name="jumlah[]" min="' . $jumlahMin . '" value="' . $jumlah . '" required>'
         . '<button type="button" class="qty-button" data-qty-change="1">+</button>'
         . '</div></div>'
         . '<button type="button" class="remove-order-item">Hapus</button>'
@@ -100,12 +104,13 @@ function psnBarisMenu(array $daftarMenu, $idDipilih = '', $jumlah = 1): string
  *
  * @param array       $in           biasanya $_POST
  * @param array       $daftarMenu   hasil psnMenuUntukForm()
+ * (parameter $jumlahMin = minimal box per menu, dicek setelah baris menu yang sama digabung)
  * @param string      $tanggalMin   tanggal kirim paling awal (Y-m-d)
  * @param bool        $periksaNomor false untuk halaman ubah (nomor HP tidak diubah)
  * @return array ['data' => nilai form (untuk isi ulang), 'error' => string,
  *                'id_menu' => int[], 'jumlah' => int[], 'ongkir_num' => float, 'dp_num' => float]
  */
-function psnValidasiForm(array $in, array $daftarMenu, string $tanggalMin, bool $periksaNomor = true): array
+function psnValidasiForm(array $in, array $daftarMenu, string $tanggalMin, bool $periksaNomor = true, int $jumlahMin = 1): array
 {
     $errors = [];
     $teks = function ($kunci) use ($in) {
@@ -158,6 +163,19 @@ function psnValidasiForm(array $in, array $daftarMenu, string $tanggalMin, bool 
     }
     if (empty($gabung) && empty($errors)) {
         $errors[] = 'Pilih minimal satu menu.';
+    }
+    // minimal box per menu (dicek setelah menu yang sama digabung)
+    if ($jumlahMin > 1) {
+        $namaMenu = [];
+        foreach ($daftarMenu as $menu) {
+            $namaMenu[(int) $menu['id_menu']] = $menu['nama_menu'];
+        }
+        foreach ($gabung as $id => $qty) {
+            if ($qty < $jumlahMin) {
+                $errors[] = 'Pemesanan minimal ' . $jumlahMin . ' box per menu (' . $namaMenu[$id] . ' baru ' . $qty . ' box).';
+                break;
+            }
+        }
     }
 
     if ($periksaNomor && !preg_match('/^[0-9]{9,15}$/', $data['nomor'])) {
