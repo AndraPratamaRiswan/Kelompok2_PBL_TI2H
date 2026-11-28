@@ -79,16 +79,8 @@ require __DIR__ . '/includes/header.php';
 <section class="analytics-grid">
     <article class="panel">
         <h2>Tren Pesanan Mingguan</h2>
-        <div class="bar-chart">
-            <?php foreach ($trenPesanan as $data): ?>
-                <div class="bar-chart__item" title="<?= psnE($data['hari']) ?>, <?= psnE(psnTanggalIndo($data['tanggal'])) ?>: <?= (int) $data['jumlah'] ?> pesanan">
-                    <span class="bar-chart__value"><?= (int) $data['jumlah'] ?></span>
-                    <div class="bar-chart__track">
-                        <span class="bar-chart__bar" style="height: <?= (int) $data['tinggi'] ?>%"></span>
-                    </div>
-                    <span class="bar-chart__label"><?= psnE($data['hari']) ?></span>
-                </div>
-            <?php endforeach; ?>
+        <div class="chart-wrap">
+            <canvas id="grafikMingguan"></canvas>
         </div>
         <?php if (!empty($trenPesanan)): ?>
             <p class="chart-note">Jumlah pesanan masuk <?= psnE(psnTanggalIndo($trenPesanan[0]['tanggal'])) ?> – <?= psnE(psnTanggalIndo($trenPesanan[6]['tanggal'])) ?>.</p>
@@ -97,20 +89,13 @@ require __DIR__ . '/includes/header.php';
 
     <article class="panel">
         <h2>Menu Terlaris</h2>
-        <div class="popular-list">
-            <?php if (empty($menuTerlaris)): ?>
-                <p class="chart-note">Belum ada data pesanan.</p>
-            <?php endif; ?>
-            <?php foreach ($menuTerlaris as $menu): ?>
-                <div class="popular-item" title="<?= psnE($menu['nama']) ?>: <?= (int) $menu['total_box'] ?> box">
-                    <span class="popular-item__name"><?= psnE($menu['nama']) ?></span>
-                    <div class="popular-item__track">
-                        <span style="width: <?= (int) $menu['persentase'] ?>%"></span>
-                    </div>
-                    <span class="popular-item__qty"><?= number_format((int) $menu['total_box'], 0, ',', '.') ?> box</span>
-                </div>
-            <?php endforeach; ?>
-        </div>
+        <?php if (empty($menuTerlaris)): ?>
+    <p class="chart-note">Belum ada data pesanan.</p>
+<?php else: ?>
+    <div class="chart-wrap">
+        <canvas id="grafikMenu"></canvas>
+    </div>
+<?php endif; ?>
     </article>
 </section>
 
@@ -153,5 +138,47 @@ require __DIR__ . '/includes/header.php';
         <?php endforeach; ?>
     </div>
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+const labelHari    = <?= json_encode(array_column($trenPesanan, 'hari')) ?>;
+const jumlahPesan  = <?= json_encode(array_column($trenPesanan, 'jumlah')) ?>;
+const tanggalIndo  = <?= json_encode(array_map(fn($d) => psnTanggalIndo($d['tanggal']), $trenPesanan)) ?>;
+
+new Chart(document.getElementById('grafikMingguan'), {
+    type: 'bar',
+    data: {
+        labels: labelHari,
+        datasets: [{ label: 'Jumlah pesanan', data: jumlahPesan, borderRadius: 4 }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { title: (items) => tanggalIndo[items[0].dataIndex] } }
+        },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+});
+const namaMenu = <?= json_encode(array_column($menuTerlaris, 'nama'), JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+const totalBox = <?= json_encode(array_map(fn($m) => (int) $m['total_box'], $menuTerlaris)) ?>;
+
+const kanvasMenu = document.getElementById('grafikMenu');
+if (kanvasMenu) {
+    new Chart(kanvasMenu, {
+        type: 'bar',
+        data: {
+            labels: namaMenu,
+            datasets: [{ label: 'Total box', data: totalBox, borderRadius: 4 }]
+        },
+        options: {
+            indexAxis: 'y',              // batang mendatar
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+}
+</script>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
