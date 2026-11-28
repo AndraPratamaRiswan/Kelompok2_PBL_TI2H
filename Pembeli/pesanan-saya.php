@@ -18,23 +18,6 @@ require_once __DIR__ . '/includes/pesanan_helper.php';
 
 $idPembeli = (int) $_SESSION['id_pembeli'];
 
-// ---- tombol "Batalkan" (POST lalu redirect) ----
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['aksi'] ?? '') === 'hapus') {
-    $idPesanan = filter_input(INPUT_POST, 'id_pesanan', FILTER_VALIDATE_INT);
-    $kode = 'tidak_bisa';
-
-    if ($idPesanan && $idPesanan > 0) {
-        try {
-            $kode = pbHapusPesanan($pdo, $idPesanan, $idPembeli) ? 'dihapus' : 'tidak_bisa';
-        } catch (Throwable $e) {
-            error_log('Hapus pesanan gagal: ' . $e->getMessage());
-            $kode = 'gagal';
-        }
-    }
-    header('Location: pesanan-saya.php?status=' . $kode);
-    exit;
-}
-
 $pesanMap = [
     'dibuat'     => ['success', 'Pesanan berhasil dibuat. Admin akan segera mengonfirmasi pesananmu.'],
     'diubah'     => ['success', 'Perubahan pesanan berhasil disimpan.'],

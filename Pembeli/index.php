@@ -167,8 +167,8 @@ include 'includes/header.php';
         <div class="col-md-3" id="menu-<?= (int) $item['id_menu'] ?>">
             <div class="card h-100 shadow-sm border-0 rounded-4">
 
-                <img src="<?= pbE(pbGambarMenu($item['gambar_url'] ?? null, $item['nama_menu'])) ?>" 
-                    class="card-img-top gambar-menu rounded-top-4" 
+                <img src="<?= pbE(pbGambarMenu($item['gambar_url'] ?? null)) ?>"
+                    class="card-img-top gambar-menu rounded-top-4"
                     style="height: 160px; object-fit: cover;"
                     alt="<?= pbE($item['nama_menu']) ?>">
 

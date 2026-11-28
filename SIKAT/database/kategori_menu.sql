@@ -1,11 +1,13 @@
-create table kategori_menu (
-    id_menu integer,
-    id_kategori integer,
+-- =====================================================================
+-- KATEGORI_MENU
+-- Tabel penghubung menu dan kategori. Butuh tabel menu dan kategori.
+-- =====================================================================
 
-    constraint fk_id_menu
-    foreign key (id_menu) references menu (id_menu)
-    on delete cascade,
-    constraint fk_id_kategori
-    foreign key (id_kategori) references kategori (id_kategori)
-    on delete cascade
-)
+CREATE TABLE public.kategori_menu (
+    id_menu     integer,
+    id_kategori integer,
+    CONSTRAINT fk_id_menu     FOREIGN KEY (id_menu)
+        REFERENCES public.menu (id_menu) ON DELETE CASCADE,
+    CONSTRAINT fk_id_kategori FOREIGN KEY (id_kategori)
+        REFERENCES public.kategori (id_kategori) ON DELETE CASCADE
+);

@@ -1,5 +1,10 @@
-create table kategori (
-    id_kategori Serial primary key,
-    nama_kategori varchar(50) not null unique,
-    created_at timestamp not null default now()
-)
+-- =====================================================================
+-- KATEGORI
+-- =====================================================================
+
+CREATE TABLE public.kategori (
+    id_kategori   serial      PRIMARY KEY,
+    nama_kategori varchar(50) NOT NULL,
+    created_at    timestamp   NOT NULL DEFAULT now(),
+    CONSTRAINT kategori_nama_kategori_key UNIQUE (nama_kategori)
+);

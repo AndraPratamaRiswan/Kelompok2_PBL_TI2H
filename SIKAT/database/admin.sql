@@ -1,7 +1,8 @@
-create table admin (
-    id_admin serial primary key,
-    username varchar(50) not null unique,
-    password_hash varchar(255) not null,
-    nama_lengkap varchar(100) not null,
-    created_at timestamp not null default now()
+CREATE TABLE public.admin (
+    id_admin      serial       PRIMARY KEY,
+    username      varchar(50)  NOT NULL,
+    password_hash varchar(255) NOT NULL,
+    nama_lengkap  varchar(100) NOT NULL,
+    created_at    timestamp    NOT NULL DEFAULT now(),
+    CONSTRAINT admin_username_key UNIQUE (username)
 );

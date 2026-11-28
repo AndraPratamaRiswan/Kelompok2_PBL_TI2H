@@ -68,37 +68,22 @@ function pbTanggalMinimal(): string
 }
 
 // Gambar menu diambil dari folder Admin/assets/img (sama seperti katalog Admin)
-function pbGambarMenu(?string $gambarUrl, string $namaMenu = ''): string
+function pbGambarMenu(?string $gambarUrl): string
 {
-    // gambar hasil upload admin (disimpan di Admin/assets/img/upload/)
-    if ($gambarUrl !== null && preg_match('#(?:^|/)upload/(menu_[0-9]{14}_[a-f0-9]{8}\.(?:jpg|png|webp))$#', $gambarUrl, $m)
-        && is_file(__DIR__ . '/../../Admin/assets/img/upload/' . $m[1])) {
+    // Gambar hasil upload admin
+    if (
+        $gambarUrl !== null &&
+        preg_match(
+            '#(?:^|/)upload/(menu_[0-9]{14}_[a-f0-9]{8}\.(?:jpg|png|webp))$#',
+            $gambarUrl,
+            $m
+        ) &&
+        is_file(__DIR__ . '/../../Admin/assets/img/upload/' . $m[1])
+    ) {
         return '../Admin/assets/img/upload/' . $m[1];
     }
 
-    $tersedia = ['nasikuning.jpg', 'ayamgeprek.jpg', 'nasirendang.jpg', 'ayambakar.jpg',
-                 'nasitumpeng.jpg', 'ayamgoreng.jpg', 'gulekambing.jpg', 'nasiuduk.jpg'];
-    $namaFile = $gambarUrl ? basename(parse_url($gambarUrl, PHP_URL_PATH) ?: $gambarUrl) : '';
-    if (in_array($namaFile, $tersedia, true)) {
-        return '../Admin/assets/img/' . $namaFile;
-    }
-
-    $nama = strtolower($namaMenu);
-    $peta = [
-        'geprek'  => 'ayamgeprek.jpg',
-        'rendang' => 'nasirendang.jpg',
-        'bakar'   => 'ayambakar.jpg',
-        'tumpeng' => 'nasitumpeng.jpg',
-        'goreng'  => 'ayamgoreng.jpg',
-        'gule'    => 'gulekambing.jpg',
-        'kambing' => 'gulekambing.jpg',
-        'uduk'    => 'nasiuduk.jpg',
-    ];
-    foreach ($peta as $kata => $file) {
-        if (strpos($nama, $kata) !== false) {
-            return '../Admin/assets/img/' . $file;
-        }
-    }
+    // Fallback jika gambar kosong atau file upload tidak ditemukan
     return '../Admin/assets/img/nasikuning.jpg';
 }
 
